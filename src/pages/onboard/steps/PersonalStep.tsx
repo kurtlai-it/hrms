@@ -140,7 +140,7 @@ export default function PersonalStep({
         />
       </Field>
 
-      <div className="space-y-4 rounded-xl border bg-stone-50/60 p-4 dark:bg-stone-900/30">
+      <div className="space-y-4 rounded-xl border p-4">
         <p className="text-sm font-medium">Employment</p>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {presetPosition ? (

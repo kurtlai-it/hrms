@@ -6,7 +6,9 @@
  * state — only living costs move.
  */
 import { useMemo, useState } from 'react';
-import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import {
+  Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis, LabelList,
+} from 'recharts';
 import { Info, MapPin, Wallet } from 'lucide-react';
 import { states } from '@/lib/holidays';
 import { COST_OF_LIVING, colAdjustedSalary } from '@/lib/salaryBenchmark';
@@ -23,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { CHART_TICK, valueLabel } from '@/lib/chartText';
 
 const shortRM = (v: number) => `RM ${Number(v).toLocaleString('en-MY', { maximumFractionDigits: 0 })}`;
 
@@ -125,15 +128,15 @@ export default function StateCompareTool() {
           </div>
 
           {takeHome && (
-            <div className="space-y-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
-              <div className="flex items-center gap-2 text-sm font-medium text-amber-900">
+            <div className="space-y-2 rounded-xl border border-warning/40 bg-warning-soft px-4 py-3">
+              <div className="flex items-center gap-2 text-sm font-medium text-warning">
                 <Wallet className="h-4 w-4" /> Take-home is the same in every state
               </div>
-              <p className="text-2xl font-semibold tabular-nums text-amber-900">
+              <p className="text-2xl font-semibold tabular-nums text-warning">
                 {fmtRM(takeHome.net)}
-                <span className="ml-1 text-sm font-normal text-amber-800/80">/ month</span>
+                <span className="ml-1 text-sm font-normal text-warning">/ month</span>
               </p>
-              <p className="text-xs text-amber-900/80">
+              <p className="text-xs text-warning">
                 On {fmtRM(amount)} gross: EPF −{fmtRM(takeHome.epf)}, SOCSO −{fmtRM(takeHome.socso)},
                 EIS −{fmtRM(takeHome.eis)}, PCB −{fmtRM(takeHome.pcb)}. EPF, SOCSO, EIS and PCB are
                 federal schemes — identical nationwide. Only the cost of living changes by state.
@@ -166,26 +169,28 @@ export default function StateCompareTool() {
         <CardContent className="space-y-5">
           {valid && rows.length > 0 ? (
             <>
-              <div className="h-[260px] w-full">
+              {/* Horizontal bars: one row per state, so the state codes never overlap. */}
+              <div className="w-full" style={{ height: rows.length * 30 + 48 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={rows} margin={{ top: 8, right: 16, bottom: 0, left: 0 }} barCategoryGap="25%">
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" vertical={false} />
-                    <XAxis dataKey="state" tick={{ fontSize: 10 }} interval={0} />
-                    <YAxis
-                      width={48}
-                      tick={{ fontSize: 11 }}
+                  <BarChart data={rows} layout="vertical" margin={{ top: 8, right: 16, bottom: 0, left: 0 }} barCategoryGap="20%">
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--chart-grid))" horizontal={false} />
+                    <XAxis
+                      type="number"
+                      tick={CHART_TICK}
                       tickFormatter={(v: number) => `${Math.round(Number(v) / 1000)}k`}
                     />
+                    <YAxis type="category" dataKey="state" width={56} tick={CHART_TICK} interval={0} />
                     <Tooltip
                       formatter={(value, _name, item) => [
                         fmtRM(Number(value)),
                         `${(item.payload as CompareRow).stateName} (index ${(item.payload as CompareRow).index})`,
                       ]}
                     />
-                    <Bar dataKey="adjusted" name="Equivalent salary" radius={[6, 6, 0, 0]}>
+                    <Bar dataKey="adjusted" name="Equivalent salary" radius={[0, 6, 6, 0]}>
                       {rows.map((r) => (
-                        <Cell key={r.state} fill={r.state === fromState ? '#d97706' : '#fbbf24'} />
+                        <Cell key={r.state} fill={r.state === fromState ? 'hsl(var(--chart-1))' : 'hsl(var(--chart-4))'} />
                       ))}
+                      <LabelList content={valueLabel((v) => `RM ${Math.round(v).toLocaleString('en-MY')}`, 'right')} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
@@ -197,19 +202,19 @@ export default function StateCompareTool() {
                     key={r.state}
                     className={cn(
                       'grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-1 rounded-lg px-2 py-1.5 sm:grid-cols-[160px_1fr_110px_110px]',
-                      r.state === fromState && 'bg-amber-50',
+                      r.state === fromState && 'bg-warning-soft',
                     )}
                   >
                     <p className="text-sm font-medium">
                       {r.stateName}
-                      {r.estimated && <span className="text-amber-600"> *</span>}
+                      {r.estimated && <span className="text-primary"> *</span>}
                       {r.state === fromState && (
-                        <span className="ml-1.5 text-xs font-normal text-amber-700">(current)</span>
+                        <span className="ml-1.5 text-xs font-normal text-primary">(current)</span>
                       )}
                     </p>
-                    <div className="col-span-2 h-2 overflow-hidden rounded-full bg-stone-200 sm:col-span-1">
+                    <div className="col-span-2 h-2 overflow-hidden rounded-full bg-secondary sm:col-span-1">
                       <div
-                        className={cn('h-full rounded-full', r.state === fromState ? 'bg-amber-600' : 'bg-amber-400')}
+                        className={cn('h-full rounded-full', r.state === fromState ? 'bg-primary' : 'bg-primary')}
                         style={{ width: `${Math.min(100, r.index)}%` }}
                       />
                     </div>
@@ -227,7 +232,7 @@ export default function StateCompareTool() {
             </>
           ) : (
             <div className="flex flex-col items-center gap-2 py-10 text-center">
-              <MapPin className="h-6 w-6 text-amber-500" />
+              <MapPin className="h-6 w-6 text-primary" />
               <p className="text-sm font-medium">Enter a monthly gross salary</p>
               <p className="max-w-xs text-sm text-muted-foreground">
                 The tool converts it across all 16 states and federal territories at

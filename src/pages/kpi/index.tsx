@@ -7,6 +7,7 @@
  * computed from the current role; hub stats are draft-free (submitted and
  * acknowledged reviews only).
  */
+import { SummaryLine } from '@/components/ui/summary-line';
 import { useMemo } from 'react';
 import {
   BellRing, ClipboardList, Gauge, Grid3X3, LibraryBig, ListChecks, Scale,
@@ -16,7 +17,7 @@ import { useCollection } from '@/lib/db';
 import type { Department, Employee, Position } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import KpiLibrary from './KpiLibrary';
 import CycleList from './CycleList';
@@ -92,7 +93,7 @@ export default function KpiPage() {
     <div className="space-y-8">
       <div className="space-y-1">
         <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
-          <Gauge className="h-6 w-6 text-amber-600" />
+          <Gauge className="h-6 w-6 text-primary" />
           KPI &amp; Performance
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -100,60 +101,28 @@ export default function KpiPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="rounded-xl">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Active KPIs</CardTitle>
-            <LibraryBig className="h-4 w-4 text-amber-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-semibold">{stats.activeKpis}</div>
-            <p className="mt-1 text-xs text-muted-foreground">{kpis.length} total in library</p>
-          </CardContent>
-        </Card>
-        <Card className="rounded-xl">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Review cycles</CardTitle>
-            <ListChecks className="h-4 w-4 text-amber-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-semibold">{stats.cycleCount}</div>
-            <p className="mt-1 text-xs text-muted-foreground">{stats.reviewCount} individual reviews</p>
-          </CardContent>
-        </Card>
-        <Card className="rounded-xl">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Latest cycle avg</CardTitle>
-            <TrendingUp className="h-4 w-4 text-amber-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-semibold">
-              {stats.avg100 > 0 ? `${score100to5(stats.avg100).toFixed(1)} / 5` : '—'}
-            </div>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {stats.latest ? `${stats.latest}${latestBand ? ` · ${latestBand.label}` : ''} (submitted only)` : 'No scored reviews yet'}
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="rounded-xl">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Completion</CardTitle>
-            <Scale className="h-4 w-4 text-amber-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-semibold">
-              {stats.reviewCount ? `${Math.round((stats.submitted / stats.reviewCount) * 100)}%` : '—'}
-            </div>
-            <p className="mt-1 text-xs text-muted-foreground">reviews submitted or acknowledged</p>
-          </CardContent>
-        </Card>
-      </div>
+      <SummaryLine
+        items={[
+          { label: 'Active KPIs', value: stats.activeKpis, hint: `${kpis.length} in the library` },
+          { label: 'Review cycles', value: stats.cycleCount, hint: `${stats.reviewCount} reviews` },
+          {
+            label: 'Latest cycle average',
+            value: stats.avg100 > 0 ? `${score100to5(stats.avg100).toFixed(1)} / 5` : '—',
+            hint: stats.latest ? `${stats.latest}${latestBand ? ` · ${latestBand.label}` : ''} (submitted only)` : 'No scored reviews yet',
+          },
+          {
+            label: 'Completed',
+            value: stats.reviewCount ? `${Math.round((stats.submitted / stats.reviewCount) * 100)}%` : '—',
+            hint: 'reviews submitted or acknowledged',
+          },
+        ]}
+      />
 
       {/* Pending actions — notification-style badges */}
-      <Card className="rounded-xl border-amber-200 bg-amber-50/50">
+      <Card className="rounded-xl border-warning/40 bg-warning-soft">
         <CardContent className="flex flex-wrap items-center gap-x-6 gap-y-3 p-4">
           <span className="flex items-center gap-2 text-sm font-medium">
-            <BellRing className="h-4 w-4 text-amber-600" />
+            <BellRing className="h-4 w-4 text-primary" />
             Pending actions
           </span>
           <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
@@ -173,7 +142,7 @@ export default function KpiPage() {
             <Badge variant={pending.activePips > 0 ? 'default' : 'secondary'}>{pending.activePips}</Badge>
           </span>
           {pendingTotal === 0 && (
-            <span className="text-xs text-emerald-700">All caught up — nothing waiting on you.</span>
+            <span className="text-xs text-success">All caught up — nothing waiting on you.</span>
           )}
         </CardContent>
       </Card>

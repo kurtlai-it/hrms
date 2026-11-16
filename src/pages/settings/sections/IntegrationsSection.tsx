@@ -113,7 +113,7 @@ export default function IntegrationsSection() {
       >
         {savedKey && !dirty ? (
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="outline" className="border-lime-300 bg-lime-50 text-lime-800 dark:border-lime-700 dark:bg-lime-950/40 dark:text-lime-300">
+            <Badge variant="outline" className="border-success/40 bg-success-soft text-success">
               Configured
             </Badge>
             <code className="rounded bg-muted px-1.5 py-0.5 text-xs">{maskApiKey(savedKey)}</code>
@@ -168,7 +168,7 @@ export default function IntegrationsSection() {
               type="button"
               variant="outline"
               size="sm"
-              className="text-red-600 hover:text-red-700"
+              className="text-destructive hover:text-destructive"
               onClick={onRemove}
             >
               <Trash2 className="h-3.5 w-3.5" /> Remove key
@@ -180,8 +180,8 @@ export default function IntegrationsSection() {
           <p
             className={
               outcome.ok
-                ? 'flex items-center gap-1.5 text-sm text-lime-700 dark:text-lime-400'
-                : 'flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400'
+                ? 'flex items-center gap-1.5 text-sm text-success'
+                : 'flex items-center gap-1.5 text-sm text-destructive'
             }
           >
             {outcome.ok ? (
@@ -194,7 +194,7 @@ export default function IntegrationsSection() {
         ) : null}
 
         <p className="flex items-start gap-1.5 text-xs text-muted-foreground">
-          <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-600" />
+          <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
           The key is stored in this browser for your company only — never sent anywhere except
           api.deepseek.com. It is never logged and appears only masked (sk-…last4) on this screen.
         </p>

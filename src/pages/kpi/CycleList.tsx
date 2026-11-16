@@ -63,17 +63,17 @@ interface DraftWeights {
 function stageBadge(stage: KpiCycle['stage']): string {
   switch (stage) {
     case 'setup':
-      return 'bg-stone-200 text-stone-700 border-stone-300';
+      return 'bg-secondary text-foreground border-border';
     case 'self-review':
-      return 'bg-amber-100 text-amber-800 border-amber-200';
+      return 'bg-warning-soft text-warning border-warning/40';
     case 'manager-review':
-      return 'bg-orange-100 text-orange-800 border-orange-200';
+      return 'bg-warning-soft text-warning border-warning/40';
     case 'calibration':
-      return 'bg-lime-100 text-lime-800 border-lime-200';
+      return 'bg-success-soft text-success border-success/40';
     case 'acknowledged':
-      return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+      return 'bg-success-soft text-success border-success/40';
     case 'closed':
-      return 'bg-stone-300 text-stone-800 border-stone-400';
+      return 'bg-secondary text-foreground border-input';
   }
 }
 
@@ -342,7 +342,7 @@ export default function CycleList({ employees, departments, kpis, reviews }: Pro
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">
-          <ListChecks className="h-4 w-4 text-amber-600" />
+          <ListChecks className="h-4 w-4 text-primary" />
           <h2 className="text-base font-semibold">Review cycles</h2>
         </div>
         {mayManage && (
@@ -392,12 +392,12 @@ export default function CycleList({ employees, departments, kpis, reviews }: Pro
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {/* Stage stepper */}
-                  <div className="flex flex-wrap items-center gap-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                  <div className="flex flex-wrap items-center gap-1 text-xs font-bold text-muted-foreground">
                     {(['setup', 'self-review', 'manager-review', 'calibration', 'acknowledged', 'closed'] as const).map((s, i, arr) => (
                       <span key={s} className="flex items-center gap-1">
                         <span className={cn(
                           'rounded-full px-2 py-0.5',
-                          s === cycle.stage ? 'bg-amber-100 text-amber-800' : 'bg-muted/60',
+                          s === cycle.stage ? 'bg-warning-soft text-warning' : 'bg-muted/60',
                         )}>
                           {CYCLE_STAGE_LABELS[s]}
                         </span>
@@ -457,7 +457,7 @@ export default function CycleList({ employees, departments, kpis, reviews }: Pro
                       <CardTitle className="text-base">{c.name}</CardTitle>
                       <CardDescription>Period {c.period} · {c.total} employees</CardDescription>
                     </div>
-                    <Badge variant="secondary" className="border bg-stone-200 text-stone-700 border-stone-300">
+                    <Badge variant="secondary" className="border bg-secondary text-foreground border-border">
                       Legacy cycle
                     </Badge>
                   </div>
@@ -513,7 +513,7 @@ export default function CycleList({ employees, departments, kpis, reviews }: Pro
                 <Label htmlFor="cyc-period">Period</Label>
                 <Input id="cyc-period" value={period} onChange={(e) => setPeriod(e.target.value)} placeholder="2026-H1" />
                 {periodTaken && (
-                  <p className="text-xs text-orange-700">A cycle already exists for this period.</p>
+                  <p className="text-xs text-primary">A cycle already exists for this period.</p>
                 )}
               </div>
             </div>
@@ -528,7 +528,7 @@ export default function CycleList({ employees, departments, kpis, reviews }: Pro
                       key={d.id}
                       className={cn(
                         'flex cursor-pointer items-center gap-2.5 rounded-lg border px-3 py-2.5 text-sm transition-colors',
-                        checked ? 'border-amber-300 bg-amber-50' : 'hover:bg-muted/50',
+                        checked ? 'border-warning/40 bg-warning-soft' : 'hover:bg-muted/50',
                       )}
                     >
                       <Checkbox checked={checked} onCheckedChange={() => toggleDept(d.id)} />
@@ -564,8 +564,8 @@ export default function CycleList({ employees, departments, kpis, reviews }: Pro
                     <Badge
                       variant="secondary"
                       className={cn('border', total === 100
-                        ? 'bg-lime-100 text-lime-800 border-lime-200'
-                        : 'bg-orange-100 text-orange-800 border-orange-200')}
+                        ? 'bg-success-soft text-success border-success/40'
+                        : 'bg-warning-soft text-warning border-warning/40')}
                     >
                       Total {total}%
                     </Badge>

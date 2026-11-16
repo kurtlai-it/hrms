@@ -551,7 +551,7 @@ export function aggregateSalaryReport(input: SalaryReportInput): SalaryReportMod
     companyRegNo: company?.regNo ?? settings?.companyRegNo ?? '',
     companyCode: company?.code ?? 'COMPANY',
     logoText: company?.branding.logoText ?? company?.code ?? 'HR',
-    accentColor: company?.branding.accentColor ?? '#b45309',
+    accentColor: company?.branding.accentColor ?? '#2E2F70',
     expectedMonths: period.months.length,
     finalizedMonths,
     missingMonths,

@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button';
 function SheetSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mt-5 break-inside-avoid">
-      <h2 className="border-b border-stone-300 pb-1 text-sm font-semibold uppercase tracking-wide text-stone-700">
+      <h2 className="border-b border-border pb-1 text-sm font-semibold uppercase tracking-wide text-foreground">
         {title}
       </h2>
       {children}
@@ -29,14 +29,14 @@ function SheetSection({ title, children }: { title: string; children: React.Reac
 function SheetRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <tr className="align-top">
-      <td className="w-48 py-1 pr-4 text-xs text-stone-500">{label}</td>
+      <td className="w-48 py-1 pr-4 text-xs text-muted-foreground">{label}</td>
       <td className="py-1 text-sm">{value ?? '—'}</td>
     </tr>
   );
 }
 
 function SheetTable({ head, rows }: { head: string[]; rows: React.ReactNode[][] }) {
-  if (rows.length === 0) return <p className="py-2 text-xs italic text-stone-400">None recorded.</p>;
+  if (rows.length === 0) return <p className="py-2 text-xs text-muted-foreground">None recorded.</p>;
   return (
     <table className="mt-2 w-full border-collapse text-sm">
       <thead>
@@ -44,7 +44,7 @@ function SheetTable({ head, rows }: { head: string[]; rows: React.ReactNode[][] 
           {head.map((h) => (
             <th
               key={h}
-              className="border-b border-stone-300 pb-1 text-left text-xs font-medium text-stone-500"
+              className="border-b border-border pb-1 text-left text-xs font-medium text-muted-foreground"
             >
               {h}
             </th>
@@ -53,7 +53,7 @@ function SheetTable({ head, rows }: { head: string[]; rows: React.ReactNode[][] 
       </thead>
       <tbody>
         {rows.map((cells, i) => (
-          <tr key={i} className="border-b border-stone-200 align-top">
+          <tr key={i} className="border-b border-border align-top">
             {cells.map((c, j) => (
               <td key={j} className="py-1.5 pr-3 text-sm">
                 {c}
@@ -87,7 +87,7 @@ export default function PrintSheet({
     [...(list ?? [])].sort((a, b) => (by(b) > by(a) ? 1 : by(b) < by(a) ? -1 : 0));
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-stone-100">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-muted">
       {/* Scoped print CSS: hide everything except the sheet. */}
       <style>{`
         @media print {
@@ -98,10 +98,10 @@ export default function PrintSheet({
       `}</style>
 
       {/* Toolbar (screen only) */}
-      <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-stone-200 bg-white px-4 py-3 print:hidden">
+      <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-border bg-card px-4 py-3 print:hidden">
         <p className="text-sm font-medium">Personal data sheet — {employee.name}</p>
         <div className="flex gap-2">
-          <Button className="bg-amber-600 text-white hover:bg-amber-700" onClick={print}>
+          <Button className="bg-primary text-primary-foreground hover:bg-primary" onClick={print}>
             <Printer className="mr-1.5 h-4 w-4" /> Print
           </Button>
           <Button variant="outline" onClick={onClose}>
@@ -110,12 +110,12 @@ export default function PrintSheet({
         </div>
       </div>
 
-      <div className="mx-auto my-6 max-w-3xl bg-white p-10 shadow-sm print:my-0">
+      <div className="theme-light mx-auto my-6 max-w-3xl bg-card p-10 text-foreground shadow-sm print:my-0">
         <div id="records-print-sheet">
           {/* Header */}
-          <header className="border-b-2 border-stone-800 pb-4">
+          <header className="border-b-2 border-foreground pb-4">
             <h1 className="text-xl font-bold tracking-tight">Employee Personal Data Sheet</h1>
-            <p className="mt-1 text-xs text-stone-500">
+            <p className="mt-1 text-xs text-muted-foreground">
               {employee.name}
               {employee.employeeNo ? ` · ${employee.employeeNo}` : ''} · generated{' '}
               {fmtDate(new Date().toISOString())} — confidential HR record
@@ -286,7 +286,7 @@ export default function PrintSheet({
             />
           </SheetSection>
 
-          <footer className="mt-8 border-t border-stone-300 pt-3 text-[10px] text-stone-400">
+          <footer className="mt-8 border-t border-border pt-3 text-[10px] text-muted-foreground">
             Generated from MY HRMS personnel records · Employment Act 1955 s.61 register ·
             confidential
           </footer>

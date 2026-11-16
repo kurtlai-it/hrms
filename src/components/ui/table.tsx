@@ -3,8 +3,24 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 function Table({ className, ...props }: React.ComponentProps<"table">) {
+  const box = React.useRef<HTMLDivElement>(null)
+  // A table wider than the page scrolls sideways; make it keyboard-reachable.
+  React.useEffect(() => {
+    const el = box.current
+    if (!el) return
+    const sync = () => {
+      if (el.scrollWidth > el.clientWidth + 1) el.tabIndex = 0
+      else el.removeAttribute("tabindex")
+    }
+    sync()
+    if (typeof ResizeObserver === "undefined") return
+    const ro = new ResizeObserver(sync)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
   return (
     <div
+      ref={box}
       data-slot="table-container"
       className="relative w-full overflow-x-auto"
     >
@@ -21,7 +37,7 @@ function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
   return (
     <thead
       data-slot="table-header"
-      className={cn("[&_tr]:border-b", className)}
+      className={cn("[&_tr]:border-b-2", className)}
       {...props}
     />
   )
@@ -68,7 +84,7 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
     <th
       data-slot="table-head"
       className={cn(
-        "text-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        "text-foreground bg-muted h-12 px-2 text-left align-middle font-bold whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
         className
       )}
       {...props}

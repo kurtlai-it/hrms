@@ -106,7 +106,7 @@ export default function OnboardingPage() {
           </p>
         </div>
         {view === 'checklists' && (
-          <Button onClick={() => setDialogOpen(true)} className="bg-amber-600 text-white hover:bg-amber-700">
+          <Button onClick={() => setDialogOpen(true)} className="bg-primary text-primary-foreground hover:bg-primary">
             <Plus className="mr-1.5 h-4 w-4" /> Start onboarding
           </Button>
         )}
@@ -132,7 +132,7 @@ export default function OnboardingPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Card className="rounded-xl">
           <CardContent className="flex items-center gap-3 p-4">
-            <div className="rounded-lg bg-amber-100 p-2 text-amber-700 dark:bg-amber-950/60 dark:text-amber-400">
+            <div className="rounded-lg bg-warning-soft p-2 text-warning">
               <Users className="h-5 w-5" />
             </div>
             <div>
@@ -143,7 +143,7 @@ export default function OnboardingPage() {
         </Card>
         <Card className="rounded-xl">
           <CardContent className="flex items-center gap-3 p-4">
-            <div className="rounded-lg bg-stone-200/70 p-2 text-stone-700 dark:bg-stone-800 dark:text-stone-300">
+            <div className="rounded-lg bg-secondary p-2 text-foreground">
               <ClipboardCheck className="h-5 w-5" />
             </div>
             <div>
@@ -154,7 +154,7 @@ export default function OnboardingPage() {
         </Card>
         <Card className="rounded-xl">
           <CardContent className="flex items-center gap-3 p-4">
-            <div className="rounded-lg bg-lime-100 p-2 text-lime-700 dark:bg-lime-950/60 dark:text-lime-400">
+            <div className="rounded-lg bg-success-soft p-2 text-success">
               <UserPlus className="h-5 w-5" />
             </div>
             <div>
@@ -183,7 +183,7 @@ export default function OnboardingPage() {
       {visible.length === 0 ? (
         <Card className="rounded-xl">
           <CardContent className="py-12 text-center">
-            <UserPlus className="mx-auto mb-3 h-8 w-8 text-muted-foreground/50" />
+            <UserPlus className="mx-auto mb-3 h-8 w-8 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">
               {tab === 'completed'
                 ? 'No completed onboardings yet.'
@@ -219,7 +219,7 @@ export default function OnboardingPage() {
         <Card className="rounded-xl">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <FileText className="h-4 w-4 text-amber-600" /> Pre-boarding documents
+              <FileText className="h-4 w-4 text-primary" /> Pre-boarding documents
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -231,7 +231,7 @@ export default function OnboardingPage() {
                 </li>
               ))}
             </ul>
-            <p className="mt-4 rounded-lg bg-stone-100 p-3 text-xs text-muted-foreground dark:bg-stone-900/60">
+            <p className="mt-4 rounded-lg bg-muted p-3 text-xs text-muted-foreground">
               These map to the <span className="font-medium text-foreground">Documents</span>{' '}
               category of every onboarding checklist — collect them before day one so statutory
               registration (EPF / SOCSO / EIS / PCB) never blocks the first payroll.
@@ -242,7 +242,7 @@ export default function OnboardingPage() {
         <Card className="rounded-xl">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Gift className="h-4 w-4 text-amber-600" /> Welcome packet
+              <Gift className="h-4 w-4 text-primary" /> Welcome packet
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-muted-foreground">
@@ -254,7 +254,7 @@ export default function OnboardingPage() {
               For now, the orientation items in each checklist track delivery step-by-step, and the
               buddy assignment keeps a human accountable for the first week.
             </p>
-            <Badge variant="outline" className="border-amber-500 text-amber-700 dark:text-amber-400">
+            <Badge variant="outline" className="border-warning text-warning">
               Coming in Wave 2
             </Badge>
           </CardContent>

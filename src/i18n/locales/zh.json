@@ -1,0 +1,785 @@
+{
+  "bar": {
+    "back": "返回",
+    "home": "主页",
+    "help": "帮助",
+    "me": "我的",
+    "todo": "待办 ({{count}})",
+    "logo": "ASM"
+  },
+  "me": {
+    "language": "语言",
+    "textSize": "字体大小",
+    "normal": "标准",
+    "big": "大",
+    "bigger": "特大",
+    "signOut": "退出登录",
+    "screen": "屏幕",
+    "light": "浅色",
+    "dark": "深色",
+    "myPayslips": "我的工资单",
+    "superAdmin": "超级管理员控制台",
+    "devRole": "测试角色（仅限开发人员）",
+    "signedInAs": "已登录：{{name}}（{{role}}）"
+  },
+  "home": {
+    "what": "您想做什么？",
+    "pick": "请选择：",
+    "start": "开始",
+    "nothing": "目前没有等您处理的事项。新的申请会显示在这里。",
+    "todoLeave_one": "待批准的请假（{{count}}）",
+    "todoLeave_other": "待批准的请假（{{count}}）",
+    "todoClaims_one": "待批准的报销（{{count}}）· {{amount}}",
+    "todoClaims_other": "待批准的报销（{{count}}）· {{amount}}",
+    "todoOt_one": "待批准的加班（{{count}}）",
+    "todoOt_other": "待批准的加班（{{count}}）",
+    "todoClockIn": "您今天还没有打卡",
+    "clockIn": "打卡",
+    "todoPayrollStart": "{{month}}工资：尚未开始",
+    "todoPayrollFinish": "{{month}}工资：草稿，尚未完成",
+    "todoOnboarding_one": "待检查的新员工表格（{{count}}）",
+    "todoOnboarding_other": "待检查的新员工表格（{{count}}）",
+    "todoOwnLeave_one": "您等待审批的请假（{{count}}）",
+    "todoOwnLeave_other": "您等待审批的请假（{{count}}）",
+    "todoOwnClaims_one": "您等待审批的报销（{{count}}）",
+    "todoOwnClaims_other": "您等待审批的报销（{{count}}）",
+    "myNumbers": "我的数字",
+    "leaveLeft": "剩余年假",
+    "presentMonth": "本月出勤天数",
+    "claimsWaiting": "待审批的报销",
+    "noRecord": "还没有记录",
+    "claimsValue_one": "{{count}} 份报销（{{amount}}）",
+    "claimsValue_other": "{{count}} 份报销（{{amount}}）",
+    "waitingFor": "等您处理 · {{date}}",
+    "reviewLeave": "审核请假",
+    "reviewClaims": "审核报销",
+    "reviewOt": "审核加班",
+    "checkForms": "检查表格",
+    "startPayroll": "开始计算工资",
+    "finishPayroll": "完成工资",
+    "seeMyLeave": "查看我的请假",
+    "seeMyClaims": "查看我的报销",
+    "todoPayrollStartDue": "{{month}}工资：尚未开始 · 须在{{date}}前发薪",
+    "todoPayrollFinishDue": "{{month}}工资：草稿，尚未完成 · 须在{{date}}前发薪",
+    "todoStaffPay": "发放{{month}}工资：截止{{date}}",
+    "todoStatutory": "{{month}}的公积金、社险、就业保险和PCB：截止{{date}}",
+    "todoProbationEnded_one": "试用期已结束但未确认（{{count}}）· {{date}}结束",
+    "todoProbationEnded_other": "试用期已结束但未确认（{{count}}）· 最早于{{date}}结束",
+    "todoProbationEnds_one": "试用期即将结束（{{count}}）· {{date}}结束",
+    "todoProbationEnds_other": "试用期即将结束（{{count}}）· 最早于{{date}}结束",
+    "todoContracts_one": "即将到期的合同（{{count}}）· {{date}}到期",
+    "todoContracts_other": "即将到期的合同（{{count}}）· 最早于{{date}}到期",
+    "openPayroll": "打开工资",
+    "confirmOrExtend": "确认或延长",
+    "reviewContracts": "审核合同",
+    "showAll": "显示全部（{{count}}）",
+    "showFewer": "收起",
+    "nextPayday": "下一个发薪日",
+    "clockedIn": "今天打卡时间"
+  },
+  "group": {
+    "staff": "员工",
+    "time": "请假与考勤",
+    "pay": "薪资",
+    "claims": "报销",
+    "reports": "报告",
+    "company": "公司"
+  },
+  "page": {
+    "findStaff": {
+      "name": "查找员工"
+    },
+    "addStaff": {
+      "name": "新增员工"
+    },
+    "leavingStaff": {
+      "name": "离职员工"
+    },
+    "contracts": {
+      "name": "合同"
+    },
+    "approveLeave": {
+      "name": "审批请假"
+    },
+    "attendanceToday": {
+      "name": "今日考勤"
+    },
+    "holidays": {
+      "name": "公共假期"
+    },
+    "runPayroll": {
+      "name": "计算每月薪资"
+    },
+    "payslips": {
+      "name": "工资单"
+    },
+    "loansBenefits": {
+      "name": "贷款与福利"
+    },
+    "approveClaims": {
+      "name": "审批报销"
+    },
+    "allClaims": {
+      "name": "所有报销"
+    },
+    "monthlyReports": {
+      "name": "月度报告"
+    },
+    "kpi": {
+      "name": "员工考核 (KPI)"
+    },
+    "salaryComparison": {
+      "name": "薪资比较"
+    },
+    "companyDetails": {
+      "name": "公司资料"
+    },
+    "departments": {
+      "name": "部门"
+    },
+    "settings": {
+      "name": "设置"
+    },
+    "leave": {
+      "name": "请假"
+    },
+    "claims": {
+      "name": "报销"
+    },
+    "orgChart": {
+      "name": "组织架构图"
+    }
+  },
+  "role": {
+    "Admin": "管理员",
+    "HR": "人事",
+    "Manager": "经理",
+    "Employee": "员工",
+    "SuperAdmin": "超级管理员"
+  },
+  "nav": {
+    "dashboard": "仪表板",
+    "approvals": "审批",
+    "employees": "员工",
+    "contracts": "合同",
+    "organization": "组织",
+    "orgChart": "组织结构图",
+    "attendance": "考勤",
+    "leave": "请假",
+    "holidays": "公共假期",
+    "claims": "报销",
+    "payroll": "薪资",
+    "loansBenefits": "贷款与福利",
+    "myPayslips": "我的工资单",
+    "kpi": "KPI",
+    "salaryInsights": "薪资分析",
+    "reports": "报告",
+    "onboarding": "入职",
+    "offboarding": "离职",
+    "companySetup": "公司设置",
+    "settings": "设置",
+    "superAdmin": "超级管理员"
+  },
+  "shell": {
+    "brand": "MY HRMS",
+    "guest": "访客",
+    "notSignedIn": "未登录",
+    "systemView": "系统视图",
+    "systemViewBanner": "正在查看系统 — 请进入一家公司来管理其资料。",
+    "enterCompany": "进入公司…",
+    "openSuperAdmin": "打开超级管理员控制台"
+  },
+  "search": {
+    "results": "搜索结果",
+    "noResults": "没有找到“{{query}}”的结果",
+    "searching": "正在搜索…",
+    "staffPlaceholder": "输入姓名、员工编号或身份证号码"
+  },
+  "leaveType": {
+    "annual": "年假",
+    "sick": "病假",
+    "hospitalization": "住院假",
+    "maternity": "产假",
+    "paternity": "陪产假",
+    "unpaid": "无薪假",
+    "emergency": "紧急假",
+    "compassionate": "丧假"
+  },
+  "claimCategory": {
+    "travel": "交通差旅",
+    "meal": "餐费",
+    "medical": "医药费",
+    "parking": "停车费",
+    "telephone": "电话费",
+    "training": "培训",
+    "other": "其他"
+  },
+  "common": {
+    "days_one": "{{count}} 天",
+    "days_other": "{{count}} 天",
+    "more": "另有 {{count}} 位",
+    "notAvailable": "暂不可用"
+  },
+  "dash": {
+    "title": "仪表板",
+    "subtitleEmployee": "您的考勤、请假和报销一览 · {{date}}",
+    "subtitleStaff": "员工、薪资和法定合规一览 · {{date}}",
+    "quickActions": "快捷操作",
+    "qa": {
+      "employees": "名录、资料和文件",
+      "attendance": "打卡、班次和加班审批",
+      "claims": "提交、审批和付款",
+      "payroll": "每月薪资计算和工资单"
+    },
+    "stat": {
+      "myAttendance": "我本月的考勤",
+      "myAttendanceHint": "出勤 {{present}} · 半天 {{half}} · 请假 {{leave}}",
+      "myLeaveBalance": "我的年假余额",
+      "leaveUsedHint": "{{year}} 年应得 {{total}} 天，已用 {{used}} 天",
+      "noLeaveBalance": "还没有假期余额记录",
+      "myPendingClaims": "我待审批的报销",
+      "claimsAwaiting": "{{amount}} 等待审批",
+      "leaveRequestsPending_one": "{{count}} 份请假申请待审批",
+      "leaveRequestsPending_other": "{{count}} 份请假申请待审批",
+      "nothingAwaiting": "没有待审批的事项",
+      "teamHeadcount": "团队人数",
+      "activeHeadcount": "在职人数",
+      "headcountHint": "试用期 {{probation}} 人 · 已离职 {{resigned}} 人",
+      "presentToday": "今日出勤",
+      "presentHint": "{{count}} 名在职员工中已打卡的人数",
+      "pendingApprovals": "待审批",
+      "pendingHint": "请假 {{leave}} · 报销 {{claims}} · 加班 {{ot}}",
+      "payrollCost": "本月薪资成本",
+      "payrollFinalized": "{{month}} 薪资已确认 · {{count}} 份工资单",
+      "payrollDraft": "估算 · {{month}} 薪资仍是草稿",
+      "payrollLastRun": "估算 · 上次薪资 {{month}} 为 {{amount}}",
+      "payrollNoRun": "按当前薪资估算 · 尚未计算薪资"
+    },
+    "compliance": {
+      "title": "法定截止日期",
+      "desc": "下一个法定申报日期",
+      "dueToday": "今天截止",
+      "daysLeft_one": "还剩 {{count}} 天",
+      "daysLeft_other": "还剩 {{count}} 天",
+      "contrib": {
+        "title": "公积金 / 社险 / 就业保险缴款",
+        "note": "上一个工资期的缴款"
+      },
+      "cp39": {
+        "title": "CP39 — PCB / MTD 缴款",
+        "note": "每月扣缴的税款交给内陆税收局 (LHDN)"
+      },
+      "hrd": {
+        "title": "HRD Corp 人力资源税缴款",
+        "note": "注册雇主每月缴交（2001年PSMB法令）"
+      },
+      "ea": {
+        "title": "向员工发放EA表格",
+        "note": "上一课税年的年度薪酬报表"
+      },
+      "formE": {
+        "title": "雇主E表格申报",
+        "note": "每年向内陆税收局 (LHDN) 提交的雇主申报"
+      }
+    },
+    "holidays": {
+      "title": "即将到来的公共假期",
+      "next": "{{state}} · 接下来 {{count}} 个",
+      "none": "{{state}} 没有即将到来的公共假期。",
+      "eaCompulsory": "EA s.60D",
+      "tentative": "待定"
+    },
+    "alerts": {
+      "title": "提醒",
+      "desc": "法定标准和员工事项提醒",
+      "allClear": "一切正常",
+      "allClearDesc": "目前没有最低工资、加班上限或试用期问题。",
+      "probationOverdue": "试用期已逾期",
+      "probationOverdueDetail": "{{name}} 已超过试用期结束日 {{days}}{{more}} — 请确认转正或延长",
+      "belowMinWage": "低于最低工资",
+      "belowMinWageDetail": "{{names}}{{more}} 的基本工资低于 {{amount}}",
+      "otOverCap": "加班超过每月上限",
+      "otOverCapDetail": "最高：{{name}} {{hours}} 小时（上限 {{cap}} 小时）",
+      "probationEnding": "试用期即将结束",
+      "probationEndingDetail": "{{name}} 将在 {{days}} 后结束试用期 — 请确认转正或延长",
+      "foreignEpf": "外籍员工须缴公积金",
+      "foreignEpfDetail_one": "{{count}} 名外籍员工 — 必须缴纳 2% + 2% 公积金（2025年公积金（修订）法令）",
+      "foreignEpfDetail_other": "{{count}} 名外籍员工 — 必须缴纳 2% + 2% 公积金（2025年公积金（修订）法令）"
+    },
+    "charts": {
+      "headcountTitle": "各部门人数",
+      "headcountDesc": "在职和试用期员工",
+      "headcountEmpty": "还没有在职员工 — 添加员工后可查看分布。",
+      "employees": "员工",
+      "payrollTitle": "薪资成本趋势",
+      "payrollDesc": "已确认薪资的雇主总成本（最近 6 次）",
+      "payrollEmpty": "尚无已完成的工资。第一次工资完成后才显示趋势。目前估计每月成本：{{amount}}。",
+      "employerCost": "雇主成本",
+      "attendanceTitle": "出勤率",
+      "attendanceDesc": "最近 14 天排班员工的出勤比例",
+      "attendanceEmpty": "最近 14 天没有考勤记录。",
+      "attendanceRate": "出勤率",
+      "claimsTitle": "按类别的报销",
+      "claimsDesc_one": "共 {{count}} 份报销记录，包括所有状态",
+      "claimsDesc_other": "共 {{count}} 份报销记录，包括所有状态",
+      "claimsEmpty": "还没有报销 — 提交的费用会在这里分类显示。",
+      "total": "合计"
+    },
+    "overview": "概览"
+  },
+  "a11y": {
+    "skip": "跳到主要内容",
+    "breadcrumb": "页面路径",
+    "mainNav": "主菜单"
+  },
+  "help": {
+    "title": "本页帮助",
+    "close": "关闭",
+    "tips": {
+      "home": [
+        "等您处理的工作列在最上面，每项都有一个按钮。",
+        "在“前往”下点击图标打开页面。“更多”列出所有页面。",
+        "随时点击顶部的“主页”回到这里。",
+        "点击“我的”可以更改语言或放大文字。"
+      ],
+      "staff": [
+        "在搜索框输入姓名来查找员工。",
+        "点击员工可以查看和修改资料。",
+        "使用“新增员工”按步骤填写表格。"
+      ],
+      "time": [
+        "等待您审批的请假申请排在最前面。",
+        "“今日考勤”显示谁已打卡。",
+        "“公共假期”列出您所在州今年的假期。",
+        "假期余额依照《1955年雇佣法令》（第60E和60F条），从入职日期起计算。公共假期和休息日不扣假期。",
+        "余额在每年1月1日按全年设定，入职当年不按比例计算。公司额外的天数加在法定最低天数之上。"
+      ],
+      "pay": [
+        "“计算每月薪资”按步骤进行，可以中途停下再继续。",
+        "确认当月薪资前请先核对总额。",
+        "工资单可以打印或保存为PDF。"
+      ],
+      "claims": [
+        "每份报销请附上收据照片。",
+        "等待您审批的报销排在最前面。",
+        "已批准的报销通过工资发放，在工资单上显示为退款，不计入公积金、社险、就业保险或PCB。",
+        "原始收据须保存7年（《1967年所得税法令》第82条）。",
+        "收据资料会被保存，若公司启用LHDN MyInvois电子发票即可使用。"
+      ],
+      "reports": [
+        "先选择月份，再选择报告。",
+        "每份报告都可以打印或下载。",
+        "“员工考核 (KPI)”显示绩效考核。"
+      ],
+      "company": [
+        "“公司资料”包含名称、标志和地址。",
+        "“部门”显示汇报关系。",
+        "只有管理员可以更改“设置”。"
+      ],
+      "other": [
+        "点击顶部的“返回”回到上一页。",
+        "点击“主页”重新开始。",
+        "需要帮忙？请致电HR支援。"
+      ]
+    },
+    "hrSupport": "需要帮忙？请致电HR支援：{{ext}}。"
+  },
+  "tracker": {
+    "title": "{{month}}薪资：5个步骤",
+    "youAreHere": "您在这里",
+    "done": "已完成",
+    "stepN": "第 {{n}} 步：",
+    "allDone": "{{month}}的5个步骤已全部完成。",
+    "s1Title": "开始计算{{month}}薪资",
+    "s1Detail": "选择月份和要包括的员工。",
+    "s2Title": "检查工资单",
+    "s2Detail": "查看每份工资单，修正额外收入或扣款。",
+    "s3Title": "确认本月薪资",
+    "s3Detail": "锁定工资单，让员工可以查看。",
+    "s4Title": "发放员工工资",
+    "s4Detail": "下载银行文件并发放工资。",
+    "s4DetailDate": "下载银行文件，并在 {{date}} 前发放工资。",
+    "s5Title": "缴交公积金、社险、就业保险和PCB",
+    "s5Detail": "截止日期：{{date}}。",
+    "due": "截止 {{date}}",
+    "step": "第 {{n}} 步",
+    "start": "开始",
+    "open": "打开",
+    "markDone": "标记为完成",
+    "doneBy": "由 {{name}} 于 {{date}} 完成",
+    "undo": "撤销",
+    "undoTitle": "取消“{{step}}”的完成标记？",
+    "undoBody": "这只会取消标记，不会更改或取消任何付款。",
+    "undoConfirm": "是的，取消标记",
+    "cancel": "取消",
+    "stepOf": "第 {{n}} 步（共5步）：{{title}}"
+  },
+  "settings": {
+    "hrPhone": "HR支援电话或分机",
+    "hrPhoneHint": "会在帮助栏中显示给员工：“需要帮忙？请致电HR支援：…”。留空则不显示这句话。",
+    "hrPhonePlaceholder": "例如 03-1234 5678 分机 210"
+  },
+  "reports": {
+    "title": "报告",
+    "intro": "给HR和财务的报告。可以在屏幕上查看，或下载为电子表格（CSV）。",
+    "managerScope": "只显示您的部门。全公司的薪资和合规报告只限管理员和HR。",
+    "noAccessTitle": "无法查看报告",
+    "noAccessBody": "报告只限管理员、HR和经理查看。如需报告中的数字，请联系HR。",
+    "noDataTitle": "还没有数据",
+    "noDataBody": "报告使用员工名单、考勤和薪资数据。如果示范数据没有载入，请在“设置”中重新载入。",
+    "openReport": "打开报告",
+    "csv": "CSV",
+    "downloadCsvFor": "下载{{title}}（CSV）",
+    "downloadCsv": "下载 CSV",
+    "rows_one": "{{count}} 行",
+    "rows_other": "{{count}} 行",
+    "month": "月份",
+    "salaryTitle": "薪资报告",
+    "salaryDesc": "多个月的薪资：趋势、每人合计、部门和分布（只限已确认的薪资）。可下载PDF或CSV。",
+    "openSalary": "打开薪资报告",
+    "noPayslipsTitle": "{{month}}没有工资单",
+    "noPayslipsHR": "这份报告读取已保存的工资单。请计算本月薪资来产生工资单。",
+    "noPayslipsOther": "这份报告读取已保存的工资单。{{month}}的薪资还没有计算。HR可以在“薪资”页面计算。",
+    "running": "正在计算薪资…",
+    "runFor": "计算{{month}}薪资",
+    "nothingTitle": "没有可报告的内容",
+    "nothingBody": "所选月份没有符合这份报告的记录。请试试其他月份。",
+    "meta": {
+      "headcount": {
+        "title": "员工人数报告",
+        "desc": "按部门、州属和雇佣状态统计员工。"
+      },
+      "attendance": {
+        "title": "考勤汇总",
+        "desc": "一个月内的出勤天数、迟到和加班（已批准及待审批）。"
+      },
+      "leave": {
+        "title": "假期负债",
+        "desc": "尚未休的年假，按正常日薪计算价值。"
+      },
+      "payroll": {
+        "title": "薪资登记表",
+        "desc": "每份工资单，包括公积金、社险、就业保险、PCB和HRD税。"
+      },
+      "dept-cost": {
+        "title": "各部门薪资成本",
+        "desc": "每个部门的公司成本，附成本中心代码（只限已确认的薪资）。"
+      },
+      "compliance": {
+        "title": "法定合规检查表",
+        "desc": "缴款截止日期、EA表格准备情况、最低工资和加班上限检查。"
+      }
+    },
+    "note": {
+      "headcount": "今天员工名单的快照。已离职的员工显示在“状态”下。",
+      "attendance": "迟到 = 在班次开始后才打卡。加班费按《雇佣法令》的倍率（1.5×、2×、3×）计算，只限已批准的加班。",
+      "leave": "{{year}}年尚未休的年假，按正常工资计算（月薪 ÷ 26，《雇佣法令》第60I(a)条）。这是需要在账目中预留的金额。",
+      "payroll": "{{month}}的所有工资单。“员工”是员工承担的部分，“公司”是公司承担的部分。金额与薪资系统的计算完全相同。",
+      "dept-cost": "只限{{month}}已确认的薪资；不包括草稿。成本中心代码来自“部门”。公司总成本 = 总工资 + 公司公积金/社险/就业保险 + HRD税 + 报销。",
+      "compliance": "根据薪资、考勤和员工名单得出的检查表。这里不记录缴交给公积金局、社险机构、就业保险、内陆税收局和HRD Corp的款项，请到各机构网站核对。"
+    },
+    "status": {
+      "pass": "通过",
+      "review": "需检查",
+      "actionRequired": "需要处理",
+      "notDue": "未到期",
+      "pending": "等待中"
+    },
+    "chart": {
+      "gross": "总工资",
+      "erStatutory": "公司公积金/社险/就业保险",
+      "hrd": "HRD税",
+      "claims": "报销"
+    },
+    "col": {
+      "section": "部分",
+      "category": "类别",
+      "headcount": "人数",
+      "sharePct": "占比 %",
+      "employee": "员工",
+      "department": "部门",
+      "present": "出勤",
+      "late": "迟到",
+      "absent": "缺勤",
+      "leaveDays": "请假",
+      "restDays": "休息日 / 公共假期",
+      "otApproved": "加班时数（已批准）",
+      "otPending": "加班时数（待审批）",
+      "otPay": "加班费（已批准）",
+      "entitled": "应得",
+      "carried": "结转",
+      "used": "已用",
+      "balance": "剩余",
+      "dailyRate": "日薪",
+      "liability": "假期价值",
+      "gross": "总工资",
+      "epfEE": "公积金（员工）",
+      "epfER": "公积金（公司）",
+      "socsoEE": "社险（员工）",
+      "socsoER": "社险（公司）",
+      "eisEE": "就业保险（员工）",
+      "eisER": "就业保险（公司）",
+      "pcb": "PCB",
+      "hrd": "HRD 税",
+      "net": "实发工资",
+      "cost": "公司成本",
+      "costCenter": "成本中心",
+      "erStatutory": "公司公积金/社险/就业保险",
+      "claims": "报销",
+      "totalCost": "公司总成本",
+      "check": "检查项目",
+      "status": "状态",
+      "detail": "详情"
+    },
+    "listTitle": "报告",
+    "colReport": "报告",
+    "colShows": "内容",
+    "colActions": "操作"
+  },
+  "run": {
+    "notFoundTitle": "找不到这次薪资计算",
+    "notFoundBody": "这个月可能已重新计算，原记录被取代了。",
+    "backToPayroll": "返回薪资",
+    "title": "{{month}}薪资",
+    "statusFinished": "已完成",
+    "statusNotFinished": "未完成",
+    "finishedBy": "由 {{name}} 于 {{date}} 完成。",
+    "startedBy": "由 {{name}} 于 {{date}} 开始，尚未完成。",
+    "staffPaid": "领薪员工",
+    "staffPaidSub": "本次计算的人数",
+    "totalBefore": "扣除前总工资",
+    "totalBeforeSubGross": "也称为总工资",
+    "totalTakeHome": "实发工资总额",
+    "totalTakeHomeSub": "银行支付给员工的金额",
+    "totalCost": "公司总成本",
+    "totalCostSub": "工资加公司公积金、社险、就业保险和HRD税",
+    "whatNow": "现在要做的事",
+    "downloadBank": "下载银行付款文件",
+    "bankMissing_one": "{{count}} 名员工没有银行资料：{{names}}。请在把文件交给银行前补上。",
+    "bankMissing_other": "{{count}} 名员工没有银行资料：{{names}}。请在把文件交给银行前补上。",
+    "printAll": "打印所有工资单",
+    "statutoryFiles": "公积金、社险、就业保险和PCB文件",
+    "statutoryDesc": "下载每个文件，然后在下个月15日前到各机构网站提交。",
+    "reviewApprove": "检查并批准",
+    "draftHelp": "请检查下面每个人。用“修改”更正额外收入或扣款，然后点击“检查并批准”。",
+    "warnings_one": "{{count}} 项需要检查",
+    "warnings_other": "{{count}} 项需要检查",
+    "payEach": "每位员工的工资",
+    "search": "查找员工（姓名或身份证）",
+    "showAll": "显示全部明细",
+    "showFewer": "显示较少明细",
+    "colStaff": "员工",
+    "colPayBefore": "扣除前工资",
+    "colDeductions": "扣款",
+    "colTakeHome": "实发工资",
+    "colPayslip": "工资单",
+    "colBasic": "基本工资",
+    "colAllowances": "津贴",
+    "colOvertime": "加班",
+    "colEpf": "公积金（员工 / 公司）",
+    "colSocso": "社险（员工 / 公司）",
+    "colEis": "就业保险（员工 / 公司）",
+    "colPcb": "PCB 税",
+    "colOther": "其他扣款",
+    "colCost": "公司成本",
+    "hours_one": "{{count}} 小时",
+    "hours_other": "{{count}} 小时",
+    "ic": "身份证 {{ic}}",
+    "view": "查看",
+    "viewFor": "查看{{name}}的工资单",
+    "viewPayslip": "查看工资单",
+    "change": "修改",
+    "changeFor": "修改{{name}}的工资",
+    "total_one": "合计（{{count}} 名员工）",
+    "total_other": "合计（{{count}} 名员工）",
+    "totalTakeHomeShort": "实发合计（{{count}}）",
+    "noneMatch": "没有找到“{{query}}”。请检查拼写，或输入部分姓名或身份证号码。",
+    "clearSearch": "清除搜索",
+    "noSlips": "这次计算没有工资单",
+    "badgeChanged": "已修改",
+    "badgeOptOut": "已选择退出",
+    "badgeDaily": "按日计薪",
+    "badgeHourly": "按小时计薪",
+    "badgeBasicSet": "基本工资为手动设定",
+    "mistakeTitle": "出错了吗？",
+    "mistakeBody": "您可以撤销这次薪资计算并重新计算。只能在银行付款给员工之前这样做。",
+    "undoRun": "撤销这次薪资计算",
+    "undoTitle": "撤销{{month}}薪资？",
+    "undoLose": "此操作无法恢复。您将失去：",
+    "undoLose1_one": "{{month}}的薪资计算及其 {{count}} 份工资单（实发工资总额 {{amount}}）。",
+    "undoLose1_other": "{{month}}的薪资计算及其 {{count}} 份工资单（实发工资总额 {{amount}}）。",
+    "undoLose2": "员工将无法再查看这些工资单，本月的银行、公积金、社险、就业保险和PCB文件也会被删除。",
+    "undoLose3": "这次已付的报销会恢复为“已批准”，并在下次计算时支付。",
+    "undoYtd": "年初至今的数字会根据剩余工资单重新计算。",
+    "keep": "不，保留",
+    "undoYes": "是的，撤销",
+    "startAgainTitle": "需要重新开始吗？",
+    "startAgainBody": "您可以用最新数字重新计算这个月，或删除这份草稿。目前还没有付款。",
+    "rerun": "重新计算这个月",
+    "discard": "删除这份草稿",
+    "rerunTitle": "重新计算{{month}}薪资？",
+    "rerunBody": "这份草稿中的每份工资单都会根据今天的员工、考勤和报销重新计算。用“修改”做的更改会消失。",
+    "rerunYes": "是的，重新计算",
+    "discardTitle": "删除{{month}}草稿？",
+    "discardBody_one": "草稿及其 {{count}} 份工资单会被删除。由于尚未付款，不会影响任何款项。",
+    "discardBody_other": "草稿及其 {{count}} 份工资单会被删除。由于尚未付款，不会影响任何款项。",
+    "discardYes": "是的，删除草稿",
+    "finalizeTitle": "批准{{month}}薪资？",
+    "finalizeBody1_one": "这会锁定 {{count}} 份工资单（实发工资总额 {{amount}}）。之后不能再修改个人工资。",
+    "finalizeBody1_other": "这会锁定 {{count}} 份工资单（实发工资总额 {{amount}}）。之后不能再修改个人工资。",
+    "finalizeBody2": "这次计算中已批准的报销会标记为已付，银行文件以及公积金、社险、就业保险和PCB文件也会准备好。之后如需修改数字，请撤销并重新开始。",
+    "finalizeYes": "是的，批准",
+    "cancel": "取消",
+    "toastFinalized": "{{month}}薪资已批准",
+    "toastFinalizedDesc": "工资单已锁定。银行文件以及公积金、社险、就业保险和PCB文件已准备好。",
+    "toastUndone": "{{month}}薪资已撤销",
+    "toastUndoFail": "无法撤销{{month}}薪资",
+    "toastDiscarded": "{{month}}草稿已删除",
+    "toastRerun": "{{month}}薪资已重新计算",
+    "toastDownload": "开始下载",
+    "colClaimsBack": "已退还的报销",
+    "claimsBackSub": "随工资一起退还的报销和其他款项"
+  },
+  "app": {
+    "hello": "你好，{{name}}",
+    "leave": "请假",
+    "attendance": "考勤",
+    "clock": "上下班打卡",
+    "claims": "报销",
+    "allPayslips": "全部工资单",
+    "myPayslips": "我的工资单",
+    "staff": "员工",
+    "runPayroll": "计算薪资",
+    "reports": "报表",
+    "holidays": "公共假期",
+    "company": "公司",
+    "approvals": "审批",
+    "reviews": "员工考评",
+    "more": "更多",
+    "allPages": "全部页面",
+    "waitingSuffix_one": "，有 {{count}} 项等待您处理",
+    "waitingSuffix_other": "，有 {{count}} 项等待您处理",
+    "helloAlone": "你好",
+    "goTo": "前往"
+  },
+  "claimsPage": {
+    "reviewN_one": "审核 {{count}} 项报销",
+    "reviewN_other": "审核 {{count}} 项报销",
+    "notLinked": "此账户未关联员工记录，因此没有自己的报销。员工的报销在\"审批\"中。",
+    "title": "报销",
+    "introApprover": "提交报销并审批员工的报销。已批准的报销通过工资发放。",
+    "introStaff": "提交报销时请附上收据照片。已批准的报销通过工资发放。",
+    "claimedIn": "{{month}}报销",
+    "decidedHint_one": "已处理 {{count}} 项；从提交到决定的平均时间",
+    "decidedHint_other": "已处理 {{count}} 项；从提交到决定的平均时间",
+    "waitingSentence_one": "有 {{count}} 项报销（{{amount}}）等待您决定。",
+    "waitingSentence_other": "有 {{count}} 项报销（{{amount}}）等待您决定。",
+    "byPersonTitle": "待处理报销（按员工）",
+    "byPersonName": "员工",
+    "byPersonCount": "报销",
+    "byPersonAmount": "金额",
+    "byPersonOldest": "等待自",
+    "byPersonNone": "没有等待决定的报销。",
+    "thisMonth": "本月",
+    "byPersonLine_one": "{{count}} 项报销 · {{amount}}",
+    "byPersonLine_other": "{{count}} 项报销 · {{amount}}",
+    "waitingSince": "自{{date}}起等待",
+    "review": "审核",
+    "reviewFor": "审核{{name}}的报销"
+  },
+  "staffList": {
+    "addStaff": "添加员工",
+    "addOneForm": "用一个表格添加",
+    "searchLabel": "查找员工",
+    "searchPlaceholder": "姓名、身份证号或员工编号"
+  },
+  "msg": {
+    "namesMore": "{{names}}等另外 {{count}} 人",
+    "leaveApproved_one": "已批准{{name}}的请假：{{from}}至{{to}}（{{count}}天）。假期余额已更新。",
+    "leaveApproved_other": "已批准{{name}}的请假：{{from}}至{{to}}（{{count}}天）。假期余额已更新。",
+    "leaveRejected": "已拒绝{{name}}的请假：{{from}}至{{to}}。假期余额不变。",
+    "leaveBulkApproved_one": "已批准{{names}}的请假。假期余额已更新。",
+    "leaveBulkApproved_other": "已批准 {{count}} 项请假：{{names}}。假期余额已更新。",
+    "claimApproved": "已批准{{name}}的报销：{{amount}}。现在等待通过工资发放。",
+    "claimsApproved_one": "已批准 {{count}} 项报销，共 {{amount}}。现在等待通过工资发放。",
+    "claimsApproved_other": "已批准 {{count}} 项报销，共 {{amount}}。现在等待通过工资发放。",
+    "claimRejected": "已拒绝{{name}}的报销：{{amount}}。该笔不会支付。",
+    "otApproved": "已批准{{name}}的加班：{{date}} {{hours}} 小时。将计入涵盖{{date}}的工资。",
+    "otRejected": "已拒绝{{name}}的加班：{{date}} {{hours}} 小时。不会支付。",
+    "otBulkApproved_one": "已批准 {{count}} 条加班记录。将计入涵盖其日期的工资。",
+    "otBulkApproved_other": "已批准 {{count}} 条加班记录。每条将计入涵盖其日期的工资。",
+    "claimToDraft": "报销已退回草稿。修改后可再次提交。"
+  },
+  "leaveCal": {
+    "nobody": "{{date}}没有人请假。"
+  },
+  "leavePage": {
+    "title": "请假",
+    "introApprover": "查看假期余额、申请请假，并审批员工的申请。",
+    "introStaff": "查看您剩余的假期并申请请假。"
+  },
+  "probation": {
+    "title": "待确认的试用期",
+    "count_one": "{{count}} 名员工",
+    "count_other": "{{count}} 名员工",
+    "colName": "员工",
+    "colEnds": "试用期结束",
+    "colStatus": "状态",
+    "colActions": "操作",
+    "overdue_one": "逾期 {{count}} 天",
+    "overdue_other": "逾期 {{count}} 天",
+    "left_one": "还剩 {{count}} 天",
+    "left_other": "还剩 {{count}} 天",
+    "extendedTo": "已延长至{{date}}",
+    "confirm": "确认",
+    "extend": "延长…",
+    "history": "记录",
+    "historyCount": "记录（{{count}}）"
+  },
+  "leaveBal": {
+    "colType": "假别",
+    "colEntitled": "应得",
+    "colUsed": "已用",
+    "colLeft": "剩余",
+    "colNote": "备注",
+    "annual": "年假",
+    "sick": "病假",
+    "hosp": "住院假",
+    "maternity": "产假",
+    "paternity": "陪产假",
+    "perConfinement": "每次 {{count}} 天"
+  },
+  "leaveQ": {
+    "pendingTitle": "待批准的请假",
+    "pendingIntro": "批准后会从员工的假期余额中扣除天数，批准前会再次核对余额。",
+    "ownDept": "只显示您的部门。",
+    "none": "没有等待决定的请假申请。",
+    "colName": "员工",
+    "colType": "假别",
+    "colDates": "日期",
+    "colDays": "天数",
+    "colReason": "原因",
+    "colActions": "操作",
+    "colDecision": "决定",
+    "range": "{{from}}至{{to}}",
+    "applied": "申请于{{date}}",
+    "halfDay": "半天",
+    "decidedBy": "{{name}}，{{date}}",
+    "remark": "备注：{{text}}",
+    "approve": "批准",
+    "reject": "拒绝",
+    "cancel": "取消请假",
+    "historyTitle": "最近的决定",
+    "historyIntro": "已批准的请假可在开始前取消，天数会退回余额。",
+    "historyNone": "还没有决定。",
+    "showAll": "显示全部（{{count}}）",
+    "showFewer": "收起",
+    "status_approved": "已批准",
+    "status_rejected": "已拒绝",
+    "status_cancelled": "已取消",
+    "status_pending": "等待中"
+  },
+  "approvals": {
+    "ownRequest": "您自己的申请须由他人批准"
+  }
+}

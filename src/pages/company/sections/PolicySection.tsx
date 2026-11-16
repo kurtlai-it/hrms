@@ -180,7 +180,7 @@ export default function PolicySection() {
         description="Weekend pattern and the monthly close for attendance, OT and claims."
         action={
           <div className="flex items-center gap-2">
-            {dirty ? <span className="text-xs font-medium text-amber-700">{UNSAVED_HINT}</span> : null}
+            {dirty ? <span className="text-xs font-medium text-primary">{UNSAVED_HINT}</span> : null}
             <SaveButton onSave={onSave} disabled={!valid} />
           </div>
         }
@@ -197,7 +197,7 @@ export default function PolicySection() {
             >
               <Label
                 htmlFor="ww-sat-sun"
-                className="flex cursor-pointer items-center gap-3 rounded-lg border p-3 font-normal has-[[data-state=checked]]:border-amber-500 has-[[data-state=checked]]:bg-amber-50/60"
+                className="flex cursor-pointer items-center gap-3 rounded-lg border p-3 font-normal has-[[data-state=checked]]:border-warning has-[[data-state=checked]]:bg-warning-soft"
               >
                 <RadioGroupItem value="sat-sun" id="ww-sat-sun" />
                 <span>
@@ -207,7 +207,7 @@ export default function PolicySection() {
               </Label>
               <Label
                 htmlFor="ww-fri-sat"
-                className="flex cursor-pointer items-center gap-3 rounded-lg border p-3 font-normal has-[[data-state=checked]]:border-amber-500 has-[[data-state=checked]]:bg-amber-50/60"
+                className="flex cursor-pointer items-center gap-3 rounded-lg border p-3 font-normal has-[[data-state=checked]]:border-warning has-[[data-state=checked]]:bg-warning-soft"
               >
                 <RadioGroupItem value="fri-sat" id="ww-fri-sat" />
                 <span>
@@ -369,7 +369,7 @@ export default function PolicySection() {
       >
         <p className="text-sm text-muted-foreground">
           Head to{' '}
-          <Link to="/settings" className="font-medium text-amber-700 hover:underline underline-offset-4">
+          <Link to="/settings" className="font-medium text-primary hover:underline underline-offset-4">
             Settings → Locations
           </Link>{' '}
           to add or edit geofenced clock-in sites for {company.name}.

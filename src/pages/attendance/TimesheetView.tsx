@@ -114,13 +114,13 @@ export default function TimesheetView() {
 
   const statusChip = (r: DayRow) => {
     if (r.status === 'Present')
-      return <Badge className="border-transparent bg-emerald-100 text-emerald-800">Present</Badge>;
+      return <Badge className="border-transparent bg-success-soft text-success">Present</Badge>;
     if (r.status === 'Absent')
-      return <Badge className="border-transparent bg-rose-100 text-rose-800">Absent</Badge>;
+      return <Badge className="border-transparent bg-danger-soft text-destructive">Absent</Badge>;
     if (r.status === 'Leave')
-      return <Badge className="border-transparent bg-stone-200 text-stone-700">Leave</Badge>;
+      return <Badge className="border-transparent bg-secondary text-foreground">Leave</Badge>;
     if (r.status.startsWith('Holiday'))
-      return <Badge className="border-transparent bg-amber-100 text-amber-800" title={r.status}>Holiday</Badge>;
+      return <Badge className="border-transparent bg-warning-soft text-warning" title={r.status}>Holiday</Badge>;
     if (r.status === 'Rest day') return <Badge variant="secondary">Rest day</Badge>;
     return <Badge variant="outline">—</Badge>;
   };
@@ -129,14 +129,14 @@ export default function TimesheetView() {
     <div className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="space-y-2">
-          <Label>Employee</Label>
+          <Label htmlFor="ts-employee">Employee</Label>
           {locked ? (
             <div className="flex h-9 items-center rounded-md border bg-muted/50 px-3 text-sm">
               {emp?.name ?? '—'}
             </div>
           ) : (
             <Select value={emp?.id ?? ''} onValueChange={setEmployeeId}>
-              <SelectTrigger><SelectValue placeholder="Select employee" /></SelectTrigger>
+              <SelectTrigger id="ts-employee"><SelectValue placeholder="Select employee" /></SelectTrigger>
               <SelectContent>
                 {active.map((e) => (
                   <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>
@@ -145,7 +145,7 @@ export default function TimesheetView() {
             </Select>
           )}
           {locked && !emp && (
-            <p className="text-xs text-amber-700">
+            <p className="text-xs text-primary">
               Your account is not linked to an employee record — contact HR.
             </p>
           )}
@@ -177,7 +177,7 @@ export default function TimesheetView() {
       <Card className="hidden rounded-xl md:block">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
-            <CalendarDays className="h-4 w-4 text-amber-600" />
+            <CalendarDays className="h-4 w-4 text-primary" />
             {emp?.name} — {month}
           </CardTitle>
         </CardHeader>
@@ -200,7 +200,7 @@ export default function TimesheetView() {
                     {r.date.slice(8)} {DAY_NAMES[r.dow]}
                   </TableCell>
                   <TableCell>{statusChip(r)}</TableCell>
-                  <TableCell className={r.late ? 'font-medium text-amber-700' : ''}>
+                  <TableCell className={r.late ? 'font-medium text-primary' : ''}>
                     {r.clockIn ?? '—'}{r.late && ' (late)'}
                   </TableCell>
                   <TableCell>{r.clockOut ?? '—'}</TableCell>
@@ -209,7 +209,7 @@ export default function TimesheetView() {
                     {r.otHours > 0 ? (
                       <span>
                         {r.otHours.toFixed(1)}h{' '}
-                        <span className={r.otApprovedHours > 0 ? 'text-emerald-700' : 'text-muted-foreground'}>
+                        <span className={r.otApprovedHours > 0 ? 'text-success' : 'text-muted-foreground'}>
                           {r.otApprovedHours > 0
                             ? r.otApprovedHours >= r.otHours
                               ? '✓'
@@ -232,11 +232,11 @@ export default function TimesheetView() {
           <Card key={r.date} className="rounded-xl">
             <CardContent className="flex items-center gap-3 py-3">
               <div className="w-12 text-center">
-                <div className="text-lg font-semibold leading-none">{r.date.slice(8)}</div>
-                <div className="text-[11px] text-muted-foreground">{DAY_NAMES[r.dow]}</div>
+                <div className="text-lg font-semibold leading-tight">{r.date.slice(8)}</div>
+                <div className="text-xs text-muted-foreground">{DAY_NAMES[r.dow]}</div>
               </div>
               <div className="min-w-0 flex-1 text-sm">
-                <div className={r.late ? 'font-medium text-amber-700' : ''}>
+                <div className={r.late ? 'font-medium text-primary' : ''}>
                   {r.clockIn ?? '—'} → {r.clockOut ?? '—'}{r.late && ' (late)'}
                 </div>
                 <div className="text-xs text-muted-foreground">

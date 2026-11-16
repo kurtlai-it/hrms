@@ -37,7 +37,7 @@ function row(label: string, value: string) {
 function detail(label: string, value: string) {
   return (
     <div>
-      <p className="text-[11px] uppercase tracking-wide text-muted-foreground print-text-muted">{label}</p>
+      <p className="text-xs text-muted-foreground print-text-muted font-bold">{label}</p>
       <p className="text-sm font-medium">{value || '—'}</p>
     </div>
   );
@@ -115,7 +115,7 @@ export default function EAFormDialog({
         <PrintAreaStyles areaClass={PRINT_AREA} />
         <DialogHeader className="print:hidden">
           <DialogTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-amber-600" /> EA form (CP8A)
+            <FileText className="h-5 w-5 text-primary" /> EA form (CP8A)
           </DialogTitle>
           <DialogDescription>
             Annual remuneration statement per Income Tax Act 1967 — issued to every employee by
@@ -180,7 +180,7 @@ export default function EAFormDialog({
         ) : (
           <div className={`${PRINT_AREA} rounded-xl border bg-card p-6`}>
             <div className="text-center">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground print-text-muted">
+              <p className="text-xs text-muted-foreground print-text-muted font-bold">
                 Borang EA · CP8A
               </p>
               <p className="text-base font-semibold">
@@ -233,7 +233,7 @@ export default function EAFormDialog({
                 {/* B7 — expense reimbursements are NOT remuneration on the EA
                     form; shown as a memo line only, never added to the total. */}
                 {t.claims > 0 && (
-                  <p className="mt-2 text-[11px] text-muted-foreground print-text-muted">
+                  <p className="mt-2 text-xs text-muted-foreground print-text-muted">
                     Memo: {fmtRM(t.claims)} of claim reimbursements (non-taxable) were paid
                     during {effYear} — for information only; not part of taxable remuneration.
                   </p>
@@ -270,7 +270,7 @@ export default function EAFormDialog({
             {bik.items.length > 0 && (
               <div className="mt-5">
                 <p className="text-sm font-semibold">Benefits in kind (s.13(1)(b))</p>
-                <p className="mt-0.5 text-[11px] text-muted-foreground print-text-muted">
+                <p className="mt-0.5 text-xs text-muted-foreground print-text-muted">
                   Non-cash perquisites taxable via TP2 — separate from cash remuneration above;
                   not EPF/SOCSO/EIS wages.
                 </p>
@@ -295,13 +295,13 @@ export default function EAFormDialog({
 
             <Separator className="my-4" />
             <div className="flex items-end justify-between">
-              <p className="max-w-sm text-[11px] text-muted-foreground print-text-muted">
+              <p className="max-w-sm text-xs text-muted-foreground print-text-muted">
                 Prepared from computerized payroll records (LHDN-compliant PCB calculation).
                 Reference: payslips {slips[0]?.monthKey} to {slips[slips.length - 1]?.monthKey}.
               </p>
               <div className="text-center">
                 <div className="h-10 w-44 border-b border-foreground/40" />
-                <p className="mt-1 text-[11px] text-muted-foreground print-text-muted">
+                <p className="mt-1 text-xs text-muted-foreground print-text-muted">
                   Employer / authorized officer
                 </p>
               </div>

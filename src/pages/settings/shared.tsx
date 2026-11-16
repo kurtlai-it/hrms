@@ -20,7 +20,7 @@ export function SectionCard(props: {
     <Card className="rounded-xl">
       <CardHeader>
         <div className="flex items-center gap-2">
-          <Icon className="h-4 w-4 text-amber-600" />
+          <Icon className="h-4 w-4 text-primary" />
           <CardTitle className="text-base">{title}</CardTitle>
         </div>
         {description ? <CardDescription>{description}</CardDescription> : null}

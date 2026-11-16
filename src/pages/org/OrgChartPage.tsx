@@ -63,15 +63,26 @@ import PositionDialog from './components/PositionDialog';
 import PositionForm from './components/PositionForm';
 import { EMPTY_POSITION_FORM, valuesFromPosition } from './components/positionFormShared';
 import JdSheet from './components/JdSheet';
+import OrgList from './components/OrgList';
+import { buildOrgList } from '@/lib/orgList';
+import { useMaxWidth } from '@/hooks/use-max-width';
 
 const nodeTypes = { orgNode: OrgNode };
+
+/** Root font size / 18px: 1 at Normal, about 1.17 at Big, 1.33 at Bigger (nodes are sized in rem). */
+function orgNodeScale(): number {
+  return (parseFloat(getComputedStyle(document.documentElement).fontSize) || 18) / 18;
+}
 
 /** dagre top-to-bottom layout over the visible graph. */
 function layoutGraph(ids: string[], edges: { source: string; target: string }[]): Map<string, { x: number; y: number }> {
   const g = new dagre.graphlib.Graph();
   g.setDefaultEdgeLabel(() => ({}));
+  const k = orgNodeScale();
+  const w = ORG_NODE_WIDTH * k;
+  const h = ORG_NODE_HEIGHT * k + 28;
   g.setGraph({ rankdir: 'TB', nodesep: 36, ranksep: 96, marginx: 24, marginy: 24 });
-  ids.forEach((id) => g.setNode(id, { width: ORG_NODE_WIDTH, height: ORG_NODE_HEIGHT + 28 }));
+  ids.forEach((id) => g.setNode(id, { width: w, height: h }));
   edges.forEach((e) => {
     if (e.source !== e.target && ids.includes(e.source) && ids.includes(e.target)) {
       g.setEdge(e.source, e.target);
@@ -81,14 +92,14 @@ function layoutGraph(ids: string[], edges: { source: string; target: string }[])
   const out = new Map<string, { x: number; y: number }>();
   ids.forEach((id) => {
     const n = g.node(id);
-    out.set(id, { x: n.x - ORG_NODE_WIDTH / 2, y: n.y - (ORG_NODE_HEIGHT + 28) / 2 });
+    out.set(id, { x: n.x - w / 2, y: n.y - h / 2 });
   });
   return out;
 }
 
 type Mode = 'positions' | 'people';
 
-function OrgChartInner() {
+function OrgChartInner({ embedded = false }: { embedded?: boolean }) {
   const auth = useAuthScope();
   const { activeCompany } = useTenant();
   const departments = useCollection<Department>('departments');
@@ -113,6 +124,13 @@ function OrgChartInner() {
   const [posDelete, setPosDelete] = useState<Position | null>(null);
   const [jdPosition, setJdPosition] = useState<Position | null>(null);
   const [exporting, setExporting] = useState(false);
+
+  // Phones (under 700px): an indented list instead of the zoomed chart.
+  const phone = useMaxWidth(699);
+  const listGroups = useMemo(
+    () => buildOrgList(departments.items, positions.items, employees.items),
+    [departments.items, positions.items, employees.items],
+  );
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   const { fitView, getIntersectingNodes, getNodes } = useReactFlow();
@@ -181,7 +199,7 @@ function OrgChartInner() {
             title: p.title,
             subtitle: dept?.name ?? 'Unassigned',
             deptName: dept?.name ?? 'Unassigned',
-            deptColor: dept ? deptColor(dept.id, deptProfiles.items) : '#a8a29e',
+            deptColor: dept ? deptColor(dept.id, deptProfiles.items) : 'hsl(var(--chart-4))',
             chip: String(effectiveGrade(p, profile)),
             occupant: holders[0]?.name,
             count: actual,
@@ -200,7 +218,7 @@ function OrgChartInner() {
         source: e.source,
         target: e.target,
         type: 'smoothstep',
-        style: { stroke: '#a8a29e', strokeWidth: 1.6 },
+        style: { stroke: 'hsl(var(--chart-4))', strokeWidth: 1.6 },
       }));
       if (showDotted) {
         const visibleIds = new Set(ids);
@@ -212,7 +230,7 @@ function OrgChartInner() {
               source: dotted,
               target: p.id,
               type: 'smoothstep',
-              style: { stroke: '#d97706', strokeWidth: 1.4, strokeDasharray: '6 5' },
+              style: { stroke: 'hsl(var(--chart-2))', strokeWidth: 1.4, strokeDasharray: '6 5' },
             });
           }
         });
@@ -240,7 +258,7 @@ function OrgChartInner() {
           title: e.name,
           subtitle: pos?.title ?? 'No position',
           deptName: dept?.name ?? 'Unassigned',
-          deptColor: dept ? deptColor(dept.id, deptProfiles.items) : '#a8a29e',
+          deptColor: dept ? deptColor(dept.id, deptProfiles.items) : 'hsl(var(--chart-4))',
           chip: e.employeeNo,
           count: 0,
           vacant: false,
@@ -256,7 +274,7 @@ function OrgChartInner() {
       source: e.source,
       target: e.target,
       type: 'smoothstep',
-      style: { stroke: '#a8a29e', strokeWidth: 1.6 },
+      style: { stroke: 'hsl(var(--chart-4))', strokeWidth: 1.6 },
     }));
     return { nodes, edges };
   }, [
@@ -424,9 +442,9 @@ function OrgChartInner() {
     const width = Math.min(4200, Math.ceil(bounds.width + 200));
     const height = Math.min(4200, Math.ceil(bounds.height + 200));
     const viewport = getViewportForBounds(bounds, width, height, 0.2, 2, 0.08);
-    const dark = document.documentElement.classList.contains('dark');
     return toPng(viewportEl, {
-      backgroundColor: dark ? '#171412' : '#faf9f7',
+      // The page background of the current theme, as a resolved color for the image.
+      backgroundColor: getComputedStyle(document.body).backgroundColor,
       width,
       height,
       pixelRatio,
@@ -488,18 +506,32 @@ function OrgChartInner() {
       {/* Header + toolbar */}
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Org Chart</h1>
+          {!embedded && <h1 className="text-2xl font-bold tracking-tight">Org Chart</h1>}
           <p className="mt-1 text-sm text-muted-foreground">
-            {companyName} — drag a card onto another to change its reporting line, or click a card to edit.
+            {phone
+              ? `${companyName}: departments, their positions and who holds them. Press a position to edit it.`
+              : `${companyName} — drag a card onto another to change its reporting line, or click a card to edit.`}
           </p>
         </div>
-        <Button asChild variant="outline">
-          <Link to="/org">
-            <LayoutGrid className="mr-1.5 h-4 w-4" /> Manage structure
-          </Link>
-        </Button>
+        {!embedded && (
+          <Button asChild variant="outline">
+            <Link to="/org">
+              <LayoutGrid className="mr-1.5 h-4 w-4" /> Manage structure
+            </Link>
+          </Button>
+        )}
       </div>
 
+      {phone ? (
+        <div className="flex flex-wrap gap-2">
+          <Button
+            onClick={() => setAddOpen(true)}
+            disabled={departments.items.length === 0} disabledReason="Add a department first."
+          >
+            <Plus className="mr-1.5 h-4 w-4" /> Add position
+          </Button>
+        </div>
+      ) : (
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border bg-card px-3 py-2">
         <ToggleGroup
           type="single"
@@ -525,7 +557,7 @@ function OrgChartInner() {
 
         <Separator orientation="vertical" className="hidden h-6 sm:block" />
 
-        <div className={cn('flex items-center gap-2', !dottedConfigured && 'opacity-60')}>
+        <div className={cn('flex items-center gap-2', !dottedConfigured && 'text-muted-foreground')}>
           <Switch
             id="dotted-toggle"
             checked={showDotted}
@@ -542,7 +574,7 @@ function OrgChartInner() {
             <Button
               size="sm"
               onClick={() => setAddOpen(true)}
-              disabled={departments.items.length === 0}
+              disabled={departments.items.length === 0} disabledReason="Add a department first."
             >
               <Plus className="mr-1.5 h-4 w-4" /> Add position
             </Button>
@@ -571,11 +603,22 @@ function OrgChartInner() {
           </Button>
         </div>
       </div>
+      )}
 
-      {/* Canvas */}
+      {/* Canvas (desktop) or list (phones) */}
+      {phone ? (
+        <OrgList
+          groups={listGroups}
+          onOpenPosition={(id) => {
+            setMode('positions');
+            setSelectedId(id);
+            setSheetOpen(true);
+          }}
+        />
+      ) : (
       <div
         ref={wrapperRef}
-        className="relative w-full overflow-hidden rounded-xl border bg-stone-50 dark:bg-stone-950"
+        className="relative w-full overflow-hidden rounded-xl border bg-muted"
         style={{ height: 'max(60vh, 480px)' }}
       >
         {empty ? (
@@ -607,27 +650,28 @@ function OrgChartInner() {
             maxZoom={2}
             proOptions={{ hideAttribution: false }}
           >
-            <Background gap={20} size={1} className="!stroke-stone-300 dark:!stroke-stone-700" />
-            <Controls showInteractive={false} />
+            <Background gap={20} size={1} className="!stroke-border" />
+            <Controls showInteractive={false} className="[&_button]:!size-12 [&_svg]:!size-5" />
+            {/* Phones: no minimap, it would cover a large part of the chart. */}
             <MiniMap
               pannable
               zoomable
-              className="!bg-card"
-              nodeColor={(n) => (n as OrgFlowNode).data?.deptColor ?? '#d6d3d1'}
-              maskColor="rgba(120, 113, 108, 0.25)"
+              className="!bg-card max-sm:!hidden"
+              nodeColor={(n) => (n as OrgFlowNode).data?.deptColor ?? 'hsl(var(--chart-4))'}
+              maskColor="hsl(var(--foreground) / 0.15)"
             />
             <Panel position="bottom-left">
-              <div className="flex flex-wrap items-center gap-3 rounded-md border bg-card/90 px-2.5 py-1.5 text-[11px] text-muted-foreground backdrop-blur">
+              <div className="flex flex-wrap items-center gap-3 rounded-md border bg-card/90 px-2.5 py-1.5 text-xs text-muted-foreground backdrop-blur">
                 <span className="flex items-center gap-1.5">
-                  <span className="inline-block h-0 w-6 border-t-2 border-stone-400" /> reports to
+                  <span className="inline-block h-0 w-6 border-t-2 border-input" /> reports to
                 </span>
                 {showDotted && (
                   <span className="flex items-center gap-1.5">
-                    <span className="inline-block h-0 w-6 border-t-2 border-dashed border-amber-600" /> secondary (dotted)
+                    <span className="inline-block h-0 w-6 border-t-2 border-dashed border-primary" /> secondary (dotted)
                   </span>
                 )}
                 <span className="flex items-center gap-1.5">
-                  <span className="inline-block h-3 w-6 rounded-sm border-2 border-dashed border-amber-500" /> vacancy
+                  <span className="inline-block h-3 w-6 rounded-sm border-2 border-dashed border-warning" /> vacancy
                 </span>
                 <span className="hidden items-center gap-1.5 sm:flex">
                   <Users className="h-3 w-3" /> actual / budget
@@ -637,6 +681,7 @@ function OrgChartInner() {
           </ReactFlow>
         )}
       </div>
+      )}
 
       {/* ── Position side sheet (edit incl. JD) ─────────────────────────── */}
       <Sheet open={sheetOpen && Boolean(selectedPosition)} onOpenChange={setSheetOpen}>
@@ -866,10 +911,11 @@ function OrgChartInner() {
   );
 }
 
-export default function OrgChartPage() {
+/** `embedded`: shown as the Departments page's "Org chart" tab (no own heading). */
+export default function OrgChartPage({ embedded = false }: { embedded?: boolean }) {
   return (
     <ReactFlowProvider>
-      <OrgChartInner />
+      <OrgChartInner embedded={embedded} />
     </ReactFlowProvider>
   );
 }

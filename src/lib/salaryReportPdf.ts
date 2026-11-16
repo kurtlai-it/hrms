@@ -84,10 +84,10 @@ export function salaryReportFileName(
 /** Register pagination target (~20 rows per landscape page). */
 export const SALARY_REGISTER_ROWS_PER_PAGE = 20;
 
-/** '#b45309' → [180, 83, 9]; invalid input falls back to the warm amber default. */
+/** '#2E2F70' → [46, 47, 112]; invalid input falls back to the ASM indigo default (#2E2F70). */
 function hexToRgb(hex: string): [number, number, number] {
   const m = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
-  if (!m) return [180, 83, 9];
+  if (!m) return [46, 47, 112];
   const v = parseInt(m[1]!, 16);
   return [(v >> 16) & 255, (v >> 8) & 255, v & 255];
 }

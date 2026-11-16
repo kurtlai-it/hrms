@@ -57,7 +57,7 @@ export default function MyPayslipsPage() {
     <div className="space-y-6">
       <div className="space-y-1">
         <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
-          <Wallet className="h-6 w-6 text-amber-600" /> My Payslips
+          <Wallet className="h-6 w-6 text-primary" /> My Payslips
         </h1>
         <p className="text-sm text-muted-foreground">
           Your itemized payslips — open any month to view or print the full breakdown.
@@ -71,7 +71,7 @@ export default function MyPayslipsPage() {
         <CardContent>
           {!employeeId ? (
             <div className="flex flex-col items-center gap-3 py-12 text-center">
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950/50">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-warning-soft text-warning">
                 <UserRound className="h-6 w-6" />
               </span>
               <div>
@@ -84,7 +84,7 @@ export default function MyPayslipsPage() {
             </div>
           ) : mine.length === 0 ? (
             <div className="flex flex-col items-center gap-3 py-12 text-center">
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950/50">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-warning-soft text-warning">
                 <Receipt className="h-6 w-6" />
               </span>
               <div>
@@ -105,7 +105,7 @@ export default function MyPayslipsPage() {
                       <TableHead>Pay date</TableHead>
                       <TableHead className="text-right">Gross pay</TableHead>
                       <TableHead className="text-right">Net pay</TableHead>
-                      <TableHead />
+                      <TableHead><span className="sr-only">Open</span></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -114,7 +114,7 @@ export default function MyPayslipsPage() {
                         <TableCell className="font-medium">
                           <Link
                             to={`/payroll/payslip/${p.id}`}
-                            className="text-amber-700 underline-offset-4 hover:underline dark:text-amber-500"
+                            className="text-primary underline-offset-4 hover:underline"
                           >
                             {monthLabel(p.monthKey)}
                           </Link>

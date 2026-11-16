@@ -3,76 +3,252 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    /* Warm neutral (stone) base + amber accent — MY HRMS design language */
-    --background: 36 33% 97%;
-    --foreground: 25 20% 14%;
-    --card: 0 0% 100%;
-    --card-foreground: 25 20% 14%;
+  /* ASM app style: indigo header band, white pages, amber for the one main
+     action, two-tone icons in soft circles (docs/design/DESIGN.md).
+     .theme-light: light tokens inside dark mode, for print paper (records
+     print sheet, contract document) so it prints dark-on-white.
+     Run `node scripts/check-contrast.mjs` after changing any of these. */
+  :root,
+  .theme-light {
+    --background: 0 0% 100%; /* #FFFFFF */
+    --foreground: 220 30.8% 15.3%; /* #1B2333 ink */
+    --card: 0 0% 100%; /* #FFFFFF */
+    --card-foreground: 220 30.8% 15.3%;
     --popover: 0 0% 100%;
-    --popover-foreground: 25 20% 14%;
-    --primary: 32 85% 38%;
-    --primary-foreground: 40 40% 98%;
-    --secondary: 32 16% 92%;
-    --secondary-foreground: 28 25% 20%;
-    --muted: 34 18% 93%;
-    --muted-foreground: 28 10% 42%;
-    --accent: 38 55% 90%;
-    --accent-foreground: 30 45% 24%;
-    --destructive: 8 72% 46%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 30 14% 87%;
-    --input: 30 14% 87%;
-    --ring: 32 85% 38%;
-    --radius: 0.75rem;
-    --sidebar-background: 38 24% 95%;
-    --sidebar-foreground: 28 12% 34%;
-    --sidebar-primary: 32 85% 38%;
-    --sidebar-primary-foreground: 40 40% 98%;
-    --sidebar-accent: 38 55% 90%;
-    --sidebar-accent-foreground: 30 45% 24%;
-    --sidebar-border: 30 14% 87%;
-    --sidebar-ring: 32 85% 38%;
+    --popover-foreground: 220 30.8% 15.3%;
+    --primary: 239.1 41.8% 31%; /* #2E2F70 ASM logo indigo (the tenant colour replaces it) */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 226.7 36% 95.1%; /* #EEF0F7 */
+    --secondary-foreground: 220 30.8% 15.3%;
+    --muted: 226.7 36% 95.1%; /* #EEF0F7 */
+    --muted-foreground: 220 16.9% 34.9%; /* #4A5468 ink-soft */
+    --accent: 228 51.7% 94.3%; /* #E9ECF8 selected / hover */
+    --accent-foreground: 220 30.8% 15.3%;
+    --destructive: 353.1 67.2% 38.2%; /* #A3202F */
+    --destructive-foreground: 0 0% 100%;
+    --border: 230.8 25.5% 90%; /* #DFE1EC decorative dividers only */
+    --input: 228.5 11.1% 54.1%; /* #7D8297 control borders (3:1) */
+    --ring: 39.8 75.7% 50%; /* #E09F1F amber focus ring (outer) */
+    --ring-inner: 220 30.8% 15.3%; /* #1B2333 ink focus ring (inner) */
+    --help: 39.9 88% 57.5%; /* #F2B233 amber Help button */
+    --help-foreground: 220 30.8% 15.3%;
+    --help-border: 27.5 74.7% 31%; /* #8A4A14: amber alone is 1.88:1 on white */
+    --success: 146.2 57.4% 26.7%; /* #1D6B3F */
+    --success-foreground: 0 0% 100%;
+    --success-soft: 153 45.5% 91.4%; /* #DFF3EA mint */
+    --warning: 27.5 74.7% 31%; /* #8A4A14 */
+    --warning-foreground: 0 0% 100%;
+    --warning-soft: 24 89.7% 92.4%; /* #FDE8DA peach */
+    --danger-soft: 352.5 75% 93.7%; /* #FBE3E6 rose */
+    /* Header band, two-tone icons, the main-action button, count badges. */
+    --bar: 239.1 41.8% 31%; /* #2E2F70 */
+    --bar-foreground: 0 0% 100%;
+    --bar-subtle: 237.6 49% 90%; /* #D9DAF2 company name, avatar */
+    --tile: 228 51.7% 94.3%; /* #E9ECF8 icon circle */
+    --icon-main: 239.1 41.8% 31%; /* #2E2F70 icon outline */
+    --icon-accent: 39.9 88% 57.5%; /* #F2B233 icon fill */
+    --cta: 39.9 88% 57.5%; /* #F2B233 */
+    --cta-foreground: 220 30.8% 15.3%;
+    --cta-border: 27.5 74.7% 31%; /* #8A4A14 */
+    --count: 4.2 76.5% 40%; /* #B42318 */
+    --count-foreground: 0 0% 100%;
+    /* Chart palette: indigo ramp, teal, green, slate, warm grey. Every one has
+       at least 3:1 on the card; charts also label series in words. */
+    /* Charts, in series order: indigo, amber, sky, slate, then green, brown.
+       Rose (chart-7) only for negative or warning meanings. Each is 3:1 or more
+       on the card. */
+    --chart-1: 239.1 41.8% 31%; /* #2E2F70 indigo */
+    --chart-2: 37.7 100% 32.2%; /* #A46700 amber */
+    --chart-3: 205.3 62.2% 32.2%; /* #1F5A85 sky */
+    --chart-4: 220 16.9% 34.9%; /* #4A5468 slate */
+    --chart-5: 146.2 57.4% 26.7%; /* #1D6B3F green (Net, Collected) */
+    --chart-6: 27.5 74.7% 31%; /* #8A4A14 brown */
+    --chart-7: 353.1 67.2% 38.2%; /* #A3202F rose: negative / warning only */
+    --chart-grid: 43.3 7.1% 50.6%; /* #8A8578 gridlines, 3:1 on the card */
+    --radius: 0.375rem;
+    --sidebar-background: 226.7 36% 95.1%;
+    --sidebar-foreground: 220 30.8% 15.3%;
+    --sidebar-primary: 239.1 41.8% 31%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 228 51.7% 94.3%;
+    --sidebar-accent-foreground: 220 30.8% 15.3%;
+    --sidebar-border: 230.8 25.5% 90%;
+    --sidebar-ring: 39.8 75.7% 50%;
   }
 
   .dark {
-    --background: 26 12% 9%;
-    --foreground: 36 20% 92%;
-    --card: 26 12% 12%;
-    --card-foreground: 36 20% 92%;
-    --popover: 26 12% 12%;
-    --popover-foreground: 36 20% 92%;
-    --primary: 38 80% 55%;
-    --primary-foreground: 28 30% 10%;
-    --secondary: 26 10% 18%;
-    --secondary-foreground: 36 20% 90%;
-    --muted: 26 10% 17%;
-    --muted-foreground: 32 10% 62%;
-    --accent: 30 20% 20%;
-    --accent-foreground: 40 60% 80%;
-    --destructive: 6 60% 42%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 26 10% 20%;
-    --input: 26 10% 20%;
-    --ring: 38 80% 55%;
-    --sidebar-background: 27 14% 11%;
-    --sidebar-foreground: 34 14% 78%;
-    --sidebar-primary: 38 80% 55%;
-    --sidebar-primary-foreground: 28 30% 10%;
-    --sidebar-accent: 30 20% 20%;
-    --sidebar-accent-foreground: 40 60% 80%;
-    --sidebar-border: 26 10% 20%;
-    --sidebar-ring: 38 80% 55%;
+    --background: 229.1 21.6% 10%; /* #14161F */
+    --foreground: 222.9 25.9% 94.7%; /* #EEF0F5 */
+    --card: 228 21.1% 13.9%; /* #1C1F2B */
+    --card-foreground: 222.9 25.9% 94.7%;
+    --popover: 228 21.1% 13.9%;
+    --popover-foreground: 222.9 25.9% 94.7%;
+    --primary: 238.4 73.7% 80.6%; /* #A9ABF2 light indigo, dark text on it */
+    --primary-foreground: 229.1 21.6% 10%;
+    --secondary: 228 19.2% 20.4%; /* #2A2E3E */
+    --secondary-foreground: 222.9 25.9% 94.7%;
+    --muted: 227.4 20.9% 17.8%; /* #242837 */
+    --muted-foreground: 222 15.4% 74.5%; /* #B4BAC8 */
+    --accent: 235.6 31.8% 25.3%; /* #2C2F55 */
+    --accent-foreground: 237.3 68.8% 87.5%; /* #C9CBF5 */
+    --destructive: 349.2 71.8% 83.3%; /* #F3B6C1 */
+    --destructive-foreground: 229.1 21.6% 10%;
+    --border: 228 17.9% 22%; /* #2E3242 */
+    --input: 226.2 10.8% 52.9%; /* #7A8094 */
+    --ring: 39.8 75.7% 50%;
+    --ring-inner: 220 30.8% 15.3%;
+    --help: 39.9 88% 57.5%; /* #F2B233 */
+    --help-foreground: 220 30.8% 15.3%;
+    --help-border: 27.5 74.7% 31%;
+    --success: 151 50% 77.3%; /* #A8E2C6 */
+    --success-foreground: 229.1 21.6% 10%;
+    --success-soft: 158.6 31.8% 17.3%; /* #1E3A30 */
+    --warning: 22.5 80% 82.4%; /* #F6C9AE */
+    --warning-foreground: 229.1 21.6% 10%;
+    --warning-soft: 21.3 33.3% 18.2%; /* #3E2A1F */
+    --danger-soft: 347.6 29.9% 19%; /* #3F2228 */
+    --bar: 238.6 38.6% 22.4%; /* #23244F */
+    --bar-foreground: 0 0% 100%;
+    --bar-subtle: 237.6 49% 90%; /* #D9DAF2 */
+    --tile: 235.6 31.8% 25.3%; /* #2C2F55 */
+    --icon-main: 237.3 68.8% 87.5%; /* #C9CBF5 */
+    --icon-accent: 39.9 88% 57.5%; /* #F2B233 */
+    --cta: 39.9 88% 57.5%; /* #F2B233 */
+    --cta-foreground: 220 30.8% 15.3%;
+    --cta-border: 27.5 74.7% 31%;
+    --count: 4.8 81.2% 72.9%; /* #F28B82 */
+    --count-foreground: 229.1 21.6% 10%;
+    --chart-1: 237.3 68.8% 87.5%; /* #C9CBF5 indigo */
+    --chart-2: 39.9 88% 57.5%; /* #F2B233 amber */
+    --chart-3: 206.8 79.2% 81.2%; /* #A9D3F5 sky */
+    --chart-4: 222 15.4% 74.5%; /* #B4BAC8 slate */
+    --chart-5: 151 50% 77.3%; /* #A8E2C6 green */
+    --chart-6: 22.5 80% 82.4%; /* #F6C9AE brown */
+    --chart-7: 349.2 71.8% 83.3%; /* #F3B6C1 rose: negative / warning only */
+    --chart-grid: 226.2 10.8% 52.9%; /* #7A8094 gridlines */
+    --sidebar-background: 230.8 21.3% 12%;
+    --sidebar-foreground: 222.9 25.9% 94.7%;
+    --sidebar-primary: 238.4 73.7% 80.6%;
+    --sidebar-primary-foreground: 229.1 21.6% 10%;
+    --sidebar-accent: 235.6 31.8% 25.3%;
+    --sidebar-accent-foreground: 237.3 68.8% 87.5%;
+    --sidebar-border: 228 17.9% 22%;
+    --sidebar-ring: 39.8 75.7% 50%;
   }
+}
+
+/* Two-tone icons (Phosphor duotone): the outline in --icon-main, the
+   duotone layer (opacity 0.2 in the icon) filled with --icon-accent. */
+.duo-icon {
+  color: hsl(var(--icon-main));
+}
+.duo-icon [opacity='0.2'] {
+  fill: hsl(var(--icon-accent));
+  opacity: 1;
+}
+/* Big / Bigger text on a phone: a word too long for its box breaks instead of
+   spilling out of it. Tables scroll sideways instead. */
+main,
+[role='dialog'],
+[role='alertdialog'] {
+  overflow-wrap: anywhere;
+}
+main table,
+[role='dialog'] table {
+  overflow-wrap: normal;
+}
+
+/* Bigger text on a phone: two-column grids (summary tiles, label/value pairs)
+   become one column, so words are not broken to fit half the screen. */
+@media (max-width: 639px) {
+  html[data-text-size='bigger'] main .grid-cols-2,
+  html[data-text-size='bigger'] [role='dialog'] .grid-cols-2 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* No cards inside cards: an inner card is a plain section under a divider. */
+[data-slot='card'] [data-slot='card'] {
+  border-width: 1px 0 0 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 @layer base {
   * {
     @apply border-border;
   }
+  html {
+    /* Normal text size; src/lib/textSize.ts switches it to 21px / 24px. */
+    font-size: 18px;
+  }
+  /* Checkbox, radio and switch marks are 24px; the label that wraps the mark,
+     or sits right next to it (htmlFor), is the click target: at least 48px. */
+  label:has(button:is([role='checkbox'], [role='radio'], [role='switch'])),
+  :has(> button:is([role='checkbox'], [role='radio'], [role='switch'])) > label[for] {
+    min-height: 3rem;
+    cursor: pointer;
+  }
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-    font-feature-settings: 'cv02', 'cv03', 'cv04', 'tnum';
+    font-family: 'Atkinson Hyperlegible', 'Noto Sans SC', system-ui, sans-serif;
+    font-feature-settings: 'tnum';
+    line-height: 1.5;
+  }
+}
+
+/* Two-tone focus ring for every focusable element: 3px ink right next to the
+   element (box-shadow), 3px amber outside it (outline). One of the two always
+   has 3:1 against white, paper and indigo. Amber is the real outline so it
+   survives forced-colors mode. Outside @layer and !important so component
+   `outline-none` / ring utilities cannot hide it. */
+:focus-visible {
+  outline: 3px solid hsl(var(--ring)) !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 3px hsl(var(--ring-inner)) !important;
+}
+
+/* React Flow's credit link (org chart corner): theme colours and readable size
+   instead of its 10px #999 on a see-through background. */
+.react-flow__panel.react-flow__attribution {
+  background: hsl(var(--card));
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+}
+.react-flow__panel.react-flow__attribution a {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.9rem;
+}
+
+/* Windows high contrast (forced colors): filled buttons lose their fill, so
+   give every button a system-colour border to keep its edge visible. */
+@media (forced-colors: active) {
+  button,
+  a[data-slot='button'] {
+    border: 2px solid ButtonText;
+  }
+  button:disabled {
+    border-color: GrayText;
+  }
+}
+
+/* React Flow controls and minimap (org chart) on theme tokens, so they are not
+   white panels in dark mode. */
+.react-flow {
+  --xy-controls-button-background-color: hsl(var(--card));
+  --xy-controls-button-background-color-hover: hsl(var(--accent));
+  --xy-controls-button-color: hsl(var(--foreground));
+  --xy-controls-button-color-hover: hsl(var(--accent-foreground));
+  --xy-controls-button-border-color: hsl(var(--input));
+  --xy-minimap-background-color: hsl(var(--card));
+}
+
+/* Print: black on white, no app chrome (the band and bottom bar are print:hidden). */
+@media print {
+  html,
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
   }
 }

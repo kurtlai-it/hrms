@@ -119,7 +119,7 @@ export default function PayrollSection() {
         {!valid ? <p className="text-xs text-destructive">Days must be whole numbers: cut-off / payday 1–31, working-days basis 20–31.</p> : null}
         <p className="text-xs text-muted-foreground">
           The cut-off day is also editable per company in{' '}
-          <Link to="/company?tab=policy" className="font-medium text-amber-700 hover:underline underline-offset-4">
+          <Link to="/company?tab=policy" className="font-medium text-primary hover:underline underline-offset-4">
             Company Setup → Work &amp; Payroll Policy
           </Link>{' '}
           — both write the same record, so they stay in sync.
@@ -169,7 +169,7 @@ export default function PayrollSection() {
       >
         <p className="text-sm text-muted-foreground">
           Claim policy editing moved to{' '}
-          <Link to="/company?tab=policy" className="font-medium text-amber-700 hover:underline underline-offset-4">
+          <Link to="/company?tab=policy" className="font-medium text-primary hover:underline underline-offset-4">
             Company Setup → Work &amp; Payroll Policy
           </Link>
           , which saves to the active company&apos;s <code className="rounded bg-muted px-1 py-0.5">config.claimPolicy</code>{' '}

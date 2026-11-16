@@ -35,11 +35,11 @@ export function AccountFields({ account, patchAccount, email, companyCode }: Acc
 
   return (
     <div className="space-y-4">
-      <div className="flex items-start justify-between gap-3 rounded-lg border border-border p-3">
+      <label htmlFor="f-account" className="flex items-start justify-between gap-3 rounded-lg border border-border p-3 cursor-pointer">
         <div>
-          <Label htmlFor="f-account" className="cursor-pointer">
+          <span className="cursor-pointer block font-medium">
             Create login account
-          </Label>
+          </span>
           <p className="mt-0.5 text-xs text-muted-foreground">
             Gives the employee sign-in access on day one. Credentials are shown once — share them securely.
           </p>
@@ -57,7 +57,7 @@ export function AccountFields({ account, patchAccount, email, companyCode }: Acc
             })
           }
         />
-      </div>
+      </label>
 
       {account.enabled && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -72,7 +72,7 @@ export function AccountFields({ account, patchAccount, email, companyCode }: Acc
               autoComplete="off"
             />
             {usernameError ? (
-              <p className="text-xs text-red-600">{usernameError}</p>
+              <p className="text-xs text-destructive">{usernameError}</p>
             ) : (
               <p className="text-xs text-muted-foreground">From the email prefix — editable; globally unique.</p>
             )}

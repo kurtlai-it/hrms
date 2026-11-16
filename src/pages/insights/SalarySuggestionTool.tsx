@@ -43,13 +43,13 @@ function driverIcon(driver: string) {
 }
 
 const DEMAND_STYLE: Record<DemandLevel, { badge: string; label: string }> = {
-  'very-high': { badge: 'border-transparent bg-green-100 text-green-800 hover:bg-green-100', label: 'Very high demand' },
-  high: { badge: 'border-transparent bg-lime-100 text-lime-800 hover:bg-lime-100', label: 'High demand' },
-  'moderate-high': { badge: 'border-transparent bg-amber-100 text-amber-800 hover:bg-amber-100', label: 'Moderate-high demand' },
-  'stable-high': { badge: 'border-transparent bg-yellow-100 text-yellow-800 hover:bg-yellow-100', label: 'Stable-high demand' },
-  stable: { badge: 'border-transparent bg-stone-200 text-stone-700 hover:bg-stone-200', label: 'Stable demand' },
-  moderate: { badge: 'border-transparent bg-stone-200 text-stone-700 hover:bg-stone-200', label: 'Moderate demand' },
-  'high-volume': { badge: 'border-transparent bg-orange-100 text-orange-800 hover:bg-orange-100', label: 'High-volume hiring' },
+  'very-high': { badge: 'border-transparent bg-success-soft text-success hover:bg-success-soft', label: 'Very high demand' },
+  high: { badge: 'border-transparent bg-success-soft text-success hover:bg-success-soft', label: 'High demand' },
+  'moderate-high': { badge: 'border-transparent bg-warning-soft text-warning hover:bg-warning-soft', label: 'Moderate-high demand' },
+  'stable-high': { badge: 'border-transparent bg-warning-soft text-warning hover:bg-warning-soft', label: 'Stable-high demand' },
+  stable: { badge: 'border-transparent bg-secondary text-foreground hover:bg-secondary', label: 'Stable demand' },
+  moderate: { badge: 'border-transparent bg-secondary text-foreground hover:bg-secondary', label: 'Moderate demand' },
+  'high-volume': { badge: 'border-transparent bg-warning-soft text-warning hover:bg-warning-soft', label: 'High-volume hiring' },
 };
 
 export default function SalarySuggestionTool() {
@@ -138,6 +138,7 @@ export default function SalarySuggestionTool() {
               <span className="text-sm font-medium tabular-nums">{years} yrs</span>
             </div>
             <Slider
+              aria-label="Seniority in years"
               value={[years]}
               min={0}
               max={20}
@@ -205,7 +206,7 @@ export default function SalarySuggestionTool() {
                     </Badge>
                   )}
                   {suggestion.variablePay && (
-                    <Badge variant="outline" className="border-amber-300 text-amber-800">
+                    <Badge variant="outline" className="border-warning/40 text-warning">
                       Variable pay significant
                     </Badge>
                   )}
@@ -234,14 +235,14 @@ export default function SalarySuggestionTool() {
                       const Icon = driverIcon(d);
                       return (
                         <li key={d} className="flex items-start gap-2 text-sm text-muted-foreground">
-                          <Icon className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+                          <Icon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                           <span>{d}</span>
                         </li>
                       );
                     })}
                   </ul>
                 </div>
-                <div className="flex items-start gap-2 rounded-lg bg-amber-50 px-3 py-2.5 text-xs text-amber-900">
+                <div className="flex items-start gap-2 rounded-lg bg-warning-soft px-3 py-2.5 text-xs text-warning">
                   <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                   <p>
                     Benchmarks are indicative market estimates for guidance only — researched
@@ -252,7 +253,7 @@ export default function SalarySuggestionTool() {
               </>
             ) : (
               <div className="flex flex-col items-center gap-2 py-10 text-center">
-                <Sparkles className="h-6 w-6 text-amber-500" />
+                <Sparkles className="h-6 w-6 text-primary" />
                 <p className="text-sm font-medium">Type a role to see its benchmark</p>
                 <p className="max-w-xs text-sm text-muted-foreground">
                   Free-text roles match against benchmark aliases (seniority prefixes are stripped);
@@ -272,28 +273,28 @@ export default function SalarySuggestionTool() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-start gap-3">
-                <ScrollText className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+                <ScrollText className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                 <div>
                   <p className="text-sm font-medium">What the role does</p>
                   <p className="text-sm text-muted-foreground">{suggestion.jobDescription}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <GraduationCap className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+                <GraduationCap className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                 <div>
                   <p className="text-sm font-medium">Typical qualifications</p>
                   <p className="text-sm text-muted-foreground">{suggestion.qualifications}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <TrendingUp className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+                <TrendingUp className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                 <div>
                   <p className="text-sm font-medium">Hiring demand 2025–2026</p>
                   <p className="text-sm text-muted-foreground">{suggestion.demandTrend}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                 <div>
                   <p className="text-sm font-medium">Cost of living — {col.stateName}</p>
                   <p className="text-sm text-muted-foreground">

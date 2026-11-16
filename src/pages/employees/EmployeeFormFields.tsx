@@ -32,7 +32,7 @@ interface SectionProps {
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
-  return <p className="text-xs text-red-600">{message}</p>;
+  return <p className="text-xs text-destructive">{message}</p>;
 }
 
 const inputCls = 'rounded-lg';
@@ -264,7 +264,7 @@ export function EmploymentFields({ form, patch, errors, departments, positions }
         />
         <FieldError message={errors.baseSalary} />
         {wageWarning && (
-          <p className="flex items-start gap-1.5 rounded-lg bg-amber-50 p-2 text-xs text-amber-800">
+          <p className="flex items-start gap-1.5 rounded-lg bg-warning-soft p-2 text-xs text-warning">
             <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
             {wageWarning}
           </p>
@@ -323,7 +323,7 @@ export function EmploymentFields({ form, patch, errors, departments, positions }
                 patch({ fixedAllowances: form.fixedAllowances.filter((_, j) => j !== i) })
               }
             >
-              <Trash2 className="h-4 w-4 text-stone-500" />
+              <Trash2 className="h-4 w-4 text-muted-foreground" />
             </Button>
           </div>
         ))}
@@ -437,9 +437,9 @@ export function StatutoryFields({ form, patch, errors, employeeId }: StatutoryFi
           placeholder="SG 12345678"
         />
       </div>
-      <div className="flex items-center justify-between gap-3 rounded-lg border border-border p-3">
+      <label htmlFor="f-foreign" className="flex items-center justify-between gap-3 rounded-lg border border-border p-3 cursor-pointer">
         <div>
-          <Label htmlFor="f-foreign" className="cursor-pointer">Foreign worker</Label>
+          <span className="cursor-pointer block font-medium">Foreign worker</span>
           <p className="mt-0.5 text-xs text-muted-foreground">
             EPF 2% employee + 2% employer, mandatory from 1 Oct 2025.
           </p>
@@ -449,7 +449,7 @@ export function StatutoryFields({ form, patch, errors, employeeId }: StatutoryFi
           checked={form.isForeignWorker}
           onCheckedChange={(v) => patch({ isForeignWorker: v })}
         />
-      </div>
+      </label>
       <ApplicabilitySelect
         id="f-epf-applicable"
         label="EPF (KWSP) applicability"
@@ -524,11 +524,11 @@ interface CarryInFieldsProps {
 export function CarryInFields({ carryIn, patchCarryIn, errors }: CarryInFieldsProps) {
   return (
     <div className="space-y-4">
-      <div className="flex items-start justify-between gap-3 rounded-lg border border-border p-3">
+      <label htmlFor="f-carryin" className="flex items-start justify-between gap-3 rounded-lg border border-border p-3 cursor-pointer">
         <div>
-          <Label htmlFor="f-carryin" className="cursor-pointer">
+          <span className="cursor-pointer block font-medium">
             Prior-employer income this year (TP3)
-          </Label>
+          </span>
           <p className="mt-0.5 text-xs text-muted-foreground">
             Capture year-to-date figures from the employee's previous employer so
             PCB/MTD is computed on the full-year picture from day one — no more
@@ -540,7 +540,7 @@ export function CarryInFields({ carryIn, patchCarryIn, errors }: CarryInFieldsPr
           checked={carryIn.enabled}
           onCheckedChange={(v) => patchCarryIn({ enabled: v })}
         />
-      </div>
+      </label>
       {carryIn.enabled && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {(

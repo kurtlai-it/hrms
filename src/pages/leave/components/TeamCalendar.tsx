@@ -3,6 +3,7 @@
  * colored by leave type. Approved = solid chip; pending = dashed outline.
  * Click a day for the full list below the grid.
  */
+import i18n from '@/i18n';
 import { useMemo, useState } from 'react';
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCollection } from '@/lib/db';
@@ -115,7 +116,7 @@ export default function TeamCalendar({ employees, leaves }: Props) {
       <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="space-y-1">
           <CardTitle className="flex items-center gap-2 text-base">
-            <CalendarDays className="h-4 w-4 text-amber-600" /> Team calendar
+            <CalendarDays className="h-4 w-4 text-primary" /> Team calendar
           </CardTitle>
           <CardDescription>
             {auth.role === 'Employee'
@@ -180,26 +181,34 @@ export default function TeamCalendar({ employees, leaves }: Props) {
                   className={cn(
                     'flex min-h-[64px] flex-col gap-0.5 border-b p-1 text-left transition-colors sm:min-h-[88px] sm:p-1.5',
                     (i + 1) % 7 !== 0 && 'border-r',
-                    !c.inMonth && 'bg-muted/30 text-muted-foreground/50',
+                    !c.inMonth && 'bg-muted/30 text-muted-foreground',
                     isSelected ? 'bg-accent' : 'hover:bg-accent/50',
                   )}
                 >
                   <span
                     className={cn(
-                      'flex h-5 w-5 items-center justify-center rounded-full text-xs',
+                      'flex h-6 min-w-6 items-center justify-center rounded-sm px-1 text-sm',
                       c.iso === today && 'bg-primary font-semibold text-primary-foreground',
                     )}
                   >
                     {c.day}
                   </span>
-                  <span className="flex flex-col gap-0.5">
+                  {/* Phones: a day is too narrow for names; show how many are away
+                      (pressing the day lists them under the calendar). */}
+                  {entries.length > 0 && (
+                    <span className="rounded-sm bg-accent px-1 text-sm font-bold text-accent-foreground sm:hidden">
+                      {entries.length}
+                      <span className="sr-only"> on leave</span>
+                    </span>
+                  )}
+                  <span className="hidden flex-col gap-0.5 sm:flex">
                     {entries.slice(0, 2).map((en) => (
                       <span
                         key={en.leave.id}
                         className={cn(
-                          'block truncate rounded px-1 py-0.5 text-[10px] leading-tight',
+                          'block break-words rounded px-1 py-0.5 text-xs leading-tight',
                           LEAVE_TYPE_META[en.leave.type].chip,
-                          en.leave.status === 'pending' && 'border border-dashed border-current opacity-75',
+                          en.leave.status === 'pending' && 'border border-dashed border-current',
                         )}
                         title={`${en.name} — ${LEAVE_TYPE_META[en.leave.type].label} (${en.leave.status})`}
                       >
@@ -207,7 +216,7 @@ export default function TeamCalendar({ employees, leaves }: Props) {
                       </span>
                     ))}
                     {entries.length > 2 && (
-                      <span className="px-1 text-[10px] text-muted-foreground">+{entries.length - 2} more</span>
+                      <span className="px-1 text-xs text-muted-foreground">+{entries.length - 2} more</span>
                     )}
                   </span>
                 </button>
@@ -220,7 +229,7 @@ export default function TeamCalendar({ employees, leaves }: Props) {
         <div className="rounded-xl border p-4">
           <p className="text-sm font-medium">{fmtDate(selectedISO)}</p>
           {selectedEntries.length === 0 ? (
-            <p className="mt-1 text-sm text-muted-foreground">No one is on leave this day.</p>
+            <p className="mt-1 text-sm text-muted-foreground">{i18n.t('leaveCal.nobody', { date: fmtDate(selectedISO) })}</p>
           ) : (
             <ul className="mt-2 space-y-2">
               {selectedEntries.map((en) => (
@@ -236,8 +245,8 @@ export default function TeamCalendar({ employees, leaves }: Props) {
                     variant="secondary"
                     className={cn(
                       en.leave.status === 'approved'
-                        ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200'
-                        : 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200',
+                        ? 'bg-success-soft text-success'
+                        : 'bg-warning-soft text-warning',
                     )}
                   >
                     {en.leave.status}

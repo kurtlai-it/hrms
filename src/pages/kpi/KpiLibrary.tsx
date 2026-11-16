@@ -237,9 +237,9 @@ export default function KpiLibrary({ employees, departments, positions, kpis }: 
 
   const weightBadge = (empId: string, period: string) => {
     const total = weightTotal(kpis.filter((k) => k.employeeId === empId && k.period === period && k.status !== 'archived'));
-    if (total === 100) return <Badge variant="secondary" className="border bg-lime-100 text-lime-800 border-lime-200">100%</Badge>;
+    if (total === 100) return <Badge variant="secondary" className="border bg-success-soft text-success border-success/40">100%</Badge>;
     return (
-      <Badge variant="secondary" className="border bg-orange-100 text-orange-800 border-orange-200">
+      <Badge variant="secondary" className="border bg-warning-soft text-warning border-warning/40">
         <AlertTriangle className="mr-1 h-3 w-3" /> {total}%
       </Badge>
     );
@@ -250,7 +250,7 @@ export default function KpiLibrary({ employees, departments, positions, kpis }: 
       {/* ── Template packs ─────────────────────────────────────────────── */}
       <section className="space-y-3">
         <div className="flex items-center gap-2">
-          <Wand2 className="h-4 w-4 text-amber-600" />
+          <Wand2 className="h-4 w-4 text-primary" />
           <h2 className="text-base font-semibold">Template packs by role</h2>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -299,7 +299,7 @@ export default function KpiLibrary({ employees, departments, positions, kpis }: 
       <section className="space-y-3">
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2">
-            <LibraryBig className="h-4 w-4 text-amber-600" />
+            <LibraryBig className="h-4 w-4 text-primary" />
             <h2 className="text-base font-semibold">KPI register</h2>
           </div>
           <div className="relative ml-auto w-full sm:w-64">
@@ -351,7 +351,7 @@ export default function KpiLibrary({ employees, departments, positions, kpis }: 
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b text-left text-xs uppercase tracking-wide text-muted-foreground">
+                    <tr className="border-b text-left text-xs text-muted-foreground font-bold">
                       <th className="px-4 py-3 font-medium">KPI</th>
                       <th className="px-4 py-3 font-medium">Employee</th>
                       <th className="px-4 py-3 font-medium">Category</th>
@@ -368,7 +368,7 @@ export default function KpiLibrary({ employees, departments, positions, kpis }: 
                         <td className="px-4 py-3">
                           <div className="font-medium">{k.title}</div>
                           {k.description && (
-                            <div className="max-w-xs truncate text-xs text-muted-foreground">{k.description}</div>
+                            <div className="max-w-xs break-words text-xs text-muted-foreground">{k.description}</div>
                           )}
                         </td>
                         <td className="px-4 py-3">
@@ -393,7 +393,7 @@ export default function KpiLibrary({ employees, departments, positions, kpis }: 
                                 <Pencil className="h-4 w-4" />
                               </Button>
                               <Button variant="ghost" size="icon" onClick={() => setDeleting(k)} aria-label="Delete KPI">
-                                <Trash2 className="h-4 w-4 text-red-600" />
+                                <Trash2 className="h-4 w-4 text-destructive" />
                               </Button>
                             </>
                           )}
@@ -430,7 +430,7 @@ export default function KpiLibrary({ employees, departments, positions, kpis }: 
                             <Pencil className="mr-1 h-3.5 w-3.5" /> Edit
                           </Button>
                           <Button variant="ghost" size="sm" onClick={() => setDeleting(k)}>
-                            <Trash2 className="mr-1 h-3.5 w-3.5 text-red-600" /> Delete
+                            <Trash2 className="mr-1 h-3.5 w-3.5 text-destructive" /> Delete
                           </Button>
                         </>
                       )}
@@ -473,7 +473,7 @@ export default function KpiLibrary({ employees, departments, positions, kpis }: 
               <Label htmlFor="kpi-title">Title</Label>
               <Input id="kpi-title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. Revenue vs target" />
               {duplicateTitle && (
-                <p className="text-xs text-orange-700">
+                <p className="text-xs text-primary">
                   A KPI with this title already exists for {empName(form.employeeId)} in {form.period}.
                 </p>
               )}
@@ -532,8 +532,8 @@ export default function KpiLibrary({ employees, departments, positions, kpis }: 
               <div
                 className={
                   formWeightTotal === 100
-                    ? 'rounded-lg border border-lime-200 bg-lime-50 px-3 py-2 text-xs text-lime-800'
-                    : 'rounded-lg border border-orange-200 bg-orange-50 px-3 py-2 text-xs text-orange-800'
+                    ? 'rounded-lg border border-success/40 bg-success-soft px-3 py-2 text-xs text-success'
+                    : 'rounded-lg border border-warning/40 bg-warning-soft px-3 py-2 text-xs text-warning'
                 }
               >
                 {formWeightTotal === 100
@@ -543,7 +543,7 @@ export default function KpiLibrary({ employees, departments, positions, kpis }: 
                   <Button
                     variant="link"
                     size="sm"
-                    className="ml-1 h-auto p-0 text-xs font-medium text-orange-900 underline"
+                    className="ml-1 h-auto p-0 text-xs font-medium text-warning underline"
                     onClick={() => {
                       const others = formWeightTotal - form.weight;
                       setForm({ ...form, weight: Math.max(0, Math.min(100, 100 - others)) });
@@ -616,8 +616,8 @@ export default function KpiLibrary({ employees, departments, positions, kpis }: 
               <div
                 className={
                   packProjection.projected === 100 && packProjection.fresh.length > 0
-                    ? 'rounded-lg border border-lime-200 bg-lime-50 px-3 py-2 text-xs text-lime-800'
-                    : 'rounded-lg border border-orange-200 bg-orange-50 px-3 py-2 text-xs text-orange-800'
+                    ? 'rounded-lg border border-success/40 bg-success-soft px-3 py-2 text-xs text-success'
+                    : 'rounded-lg border border-warning/40 bg-warning-soft px-3 py-2 text-xs text-warning'
                 }
               >
                 {packProjection.fresh.length === 0

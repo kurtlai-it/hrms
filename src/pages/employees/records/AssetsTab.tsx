@@ -113,8 +113,8 @@ export default function AssetsTab({ employee, file, readOnly, actorName }: TabPr
                       className={cn(
                         'border-transparent',
                         a.returnedAt
-                          ? 'bg-stone-100 text-stone-600'
-                          : 'bg-amber-100 text-amber-800',
+                          ? 'bg-muted text-muted-foreground'
+                          : 'bg-warning-soft text-warning',
                       )}
                     >
                       {a.returnedAt ? `Returned ${fmtDate(a.returnedAt)}` : 'In custody'}
@@ -204,8 +204,8 @@ export default function AssetsTab({ employee, file, readOnly, actorName }: TabPr
               Cancel
             </Button>
             <Button
-              className="bg-amber-600 text-white hover:bg-amber-700"
-              disabled={!form.item.trim() || !form.issuedAt}
+              className="bg-primary text-primary-foreground hover:bg-primary"
+              disabled={!form.item.trim() || !form.issuedAt} disabledReason="Fill in the required fields first."
               onClick={submit}
             >
               {editing ? 'Save changes' : 'Issue asset'}

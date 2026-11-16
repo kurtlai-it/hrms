@@ -116,7 +116,7 @@ export default function ApproveSubmissionDialog({
 
         {createdInfo ? (
           <div className="flex flex-col items-center gap-2 py-6 text-center">
-            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-lime-100 text-lime-700 dark:bg-lime-950/60 dark:text-lime-400">
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-success-soft text-success">
               <CheckCircle2 className="h-6 w-6" />
             </span>
             <p className="text-sm">
@@ -228,7 +228,7 @@ export default function ApproveSubmissionDialog({
               />
             </div>
             {error && (
-              <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300">
+              <p className="rounded-lg border border-destructive/40 bg-danger-soft px-3 py-2 text-sm text-destructive">
                 {error}
               </p>
             )}
@@ -245,8 +245,8 @@ export default function ApproveSubmissionDialog({
               </Button>
               <Button
                 onClick={confirm}
-                disabled={!baseSalary || !joinDate || !departmentId || !positionId}
-                className="bg-amber-600 text-white hover:bg-amber-700"
+                disabled={!baseSalary || !joinDate || !departmentId || !positionId} disabledReason="Fill in the required fields first."
+                className="bg-primary text-primary-foreground hover:bg-primary"
               >
                 Approve &amp; create employee
               </Button>

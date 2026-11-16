@@ -58,7 +58,7 @@ export function SectionCard({
       <CardHeader className="flex flex-row items-start justify-between gap-3 space-y-0 pb-3">
         <div className="space-y-1">
           <CardTitle className="flex items-center gap-2 text-base">
-            <Icon className="h-4 w-4 text-amber-600" />
+            <Icon className="h-4 w-4 text-primary" />
             {title}
           </CardTitle>
           {description && <p className="text-xs text-muted-foreground">{description}</p>}
@@ -140,7 +140,7 @@ export function RemoveButton({
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 text-muted-foreground hover:text-red-600"
+          className="h-8 w-8 text-muted-foreground hover:text-destructive"
           aria-label={`Remove ${label}`}
         >
           <Trash2 className="h-4 w-4" />
@@ -157,7 +157,7 @@ export function RemoveButton({
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            className="bg-red-600 text-white hover:bg-red-700"
+            className="bg-destructive text-destructive-foreground hover:bg-destructive"
             onClick={() => {
               onConfirm();
               setOpen(false);

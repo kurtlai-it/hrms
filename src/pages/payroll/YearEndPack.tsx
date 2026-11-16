@@ -53,7 +53,7 @@ const PRINT_AREA = 'form-e-print-area';
 function detail(label: string, value: string) {
   return (
     <div>
-      <p className="text-[11px] uppercase tracking-wide text-muted-foreground print-text-muted">{label}</p>
+      <p className="text-xs text-muted-foreground print-text-muted font-bold">{label}</p>
       <p className="text-sm font-medium">{value || '—'}</p>
     </div>
   );
@@ -74,7 +74,7 @@ function WarningsBadge({ warnings }: { warnings: string[] }) {
   return (
     <Badge
       variant="outline"
-      className="ml-2 border-amber-400 text-amber-700 dark:text-amber-500"
+      className="ml-2 border-warning text-warning"
       title={warnings.join('\n')}
     >
       <AlertTriangle className="mr-1 h-3 w-3" />
@@ -174,7 +174,7 @@ export default function YearEndPack() {
       <div className="flex flex-wrap items-start justify-between gap-3 print:hidden">
         <div className="space-y-1">
           <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
-            <FileText className="h-6 w-6 text-amber-600" /> Year-end statutory pack
+            <FileText className="h-6 w-6 text-primary" /> Year-end statutory pack
           </h1>
           <p className="text-sm text-muted-foreground">
             Form E, CP8D and CP21 aggregated from finalized payslips — the employer's
@@ -204,20 +204,20 @@ export default function YearEndPack() {
       <Alert
         className={
           banner.tone === 'overdue'
-            ? 'border-red-300 bg-red-50 dark:border-red-900/40 dark:bg-red-950/30 print:hidden'
+            ? 'border-destructive/40 bg-danger-soft print:hidden'
             : banner.tone === 'grace'
-              ? 'border-amber-400 bg-amber-50 dark:border-amber-900/40 dark:bg-amber-950/30 print:hidden'
-              : 'border-amber-200 bg-amber-50/60 dark:border-amber-900/30 dark:bg-amber-950/20 print:hidden'
+              ? 'border-warning/40 bg-warning-soft print:hidden'
+              : 'border-warning/40 bg-warning-soft print:hidden'
         }
       >
         <CalendarClock
-          className={`h-4 w-4 ${banner.tone === 'overdue' ? 'text-red-600' : 'text-amber-600'}`}
+          className={`h-4 w-4 ${banner.tone === 'overdue' ? 'text-destructive' : 'text-primary'}`}
         />
         <AlertTitle
           className={
             banner.tone === 'overdue'
-              ? 'text-red-800 dark:text-red-400'
-              : 'text-amber-800 dark:text-amber-500'
+              ? 'text-destructive'
+              : 'text-warning'
           }
         >
           {banner.title}
@@ -237,9 +237,9 @@ export default function YearEndPack() {
             {readiness.map((item) => (
               <li key={item.key} className="flex items-start gap-2.5 rounded-lg border p-3">
                 {item.ok ? (
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" />
                 ) : (
-                  <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+                  <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                 )}
                 <div>
                   <p className="text-sm font-medium">{item.label}</p>
@@ -255,7 +255,7 @@ export default function YearEndPack() {
         <Card className="rounded-xl print:hidden">
           <CardContent>
             <div className="flex flex-col items-center gap-3 py-12 text-center">
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950/50">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-warning-soft text-warning">
                 <Wallet className="h-6 w-6" />
               </span>
               <div>
@@ -309,9 +309,9 @@ export default function YearEndPack() {
             </div>
 
             {formE.monthsMissingFinalized.length > 0 && (
-              <Alert className="border-amber-300 bg-amber-50 dark:border-amber-900/40 dark:bg-amber-950/30">
-                <AlertTriangle className="h-4 w-4 text-amber-600" />
-                <AlertTitle className="text-amber-800 dark:text-amber-500">
+              <Alert className="border-warning/40 bg-warning-soft">
+                <AlertTriangle className="h-4 w-4 text-warning" />
+                <AlertTitle className="text-warning">
                   {formE.monthsMissingFinalized.length} month(s) not finalized
                 </AlertTitle>
                 <AlertDescription className="text-xs text-muted-foreground">
@@ -324,13 +324,13 @@ export default function YearEndPack() {
 
             <div className={`${PRINT_AREA} rounded-xl border bg-card p-6`}>
               <div className="text-center">
-                <p className="text-xs uppercase tracking-wide text-muted-foreground print-text-muted">
+                <p className="text-xs text-muted-foreground print-text-muted font-bold">
                   Borang E · Employer return
                 </p>
                 <p className="text-base font-semibold">
                   Return of Remuneration by an Employer — Year of Assessment {effYear}
                 </p>
-                <p className="mt-1 text-[11px] text-muted-foreground print-text-muted">
+                <p className="mt-1 text-xs text-muted-foreground print-text-muted">
                   Income Tax Act 1967 s.83 · due 31 March {Number(effYear) + 1} · e-Filing grace
                   to 30 April {Number(effYear) + 1} · filed together with CP8D
                 </p>
@@ -373,7 +373,7 @@ export default function YearEndPack() {
                     </tfoot>
                   </table>
                   {formE.remuneration.claims > 0 && (
-                    <p className="mt-2 text-[11px] text-muted-foreground print-text-muted">
+                    <p className="mt-2 text-xs text-muted-foreground print-text-muted">
                       Memo: {fmtRM(formE.remuneration.claims)} of non-taxable claim reimbursements
                       were paid during {effYear} — excluded from remuneration.
                     </p>
@@ -399,13 +399,13 @@ export default function YearEndPack() {
 
               <Separator className="my-4" />
               <div className="flex items-end justify-between">
-                <p className="max-w-sm text-[11px] text-muted-foreground print-text-muted">
+                <p className="max-w-sm text-xs text-muted-foreground print-text-muted">
                   Prepared from computerized payroll records (finalized runs only). Cross-checked
                   against EA forms and CP39 remittances before submission via MyTax e-Filing.
                 </p>
                 <div className="text-center">
                   <div className="h-10 w-44 border-b border-foreground/40" />
-                  <p className="mt-1 text-[11px] text-muted-foreground print-text-muted">
+                  <p className="mt-1 text-xs text-muted-foreground print-text-muted">
                     Employer / authorized officer
                   </p>
                 </div>
@@ -508,7 +508,7 @@ export default function YearEndPack() {
               <CardContent className="pt-6">
                 {cp21Rows.length === 0 ? (
                   <div className="flex flex-col items-center gap-2 py-10 text-center">
-                    <CheckCircle2 className="h-8 w-8 text-emerald-600" />
+                    <CheckCircle2 className="h-8 w-8 text-success" />
                     <p className="font-medium">No leavers in {effYear}</p>
                     <p className="text-sm text-muted-foreground">
                       Nobody has a resignation date falling inside {effYear} — nothing to notify.

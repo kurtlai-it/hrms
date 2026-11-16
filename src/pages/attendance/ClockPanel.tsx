@@ -47,7 +47,7 @@ function GeoBadge({ record }: { record: AttendanceX | undefined }) {
   }
   if (record.geoStatus === 'inside') {
     return (
-      <Badge className="gap-1 bg-emerald-100 text-emerald-800 hover:bg-emerald-100">
+      <Badge className="gap-1 bg-success-soft text-success hover:bg-success-soft">
         <MapPin className="h-3 w-3" /> Inside geofence
         {record.geoDistanceM !== undefined ? ` · ${Math.round(record.geoDistanceM)} m` : ''}
       </Badge>
@@ -55,14 +55,14 @@ function GeoBadge({ record }: { record: AttendanceX | undefined }) {
   }
   if (record.geoStatus === 'outside') {
     return (
-      <Badge className="gap-1 bg-amber-100 text-amber-800 hover:bg-amber-100">
+      <Badge className="gap-1 bg-warning-soft text-warning hover:bg-warning-soft">
         <MapPin className="h-3 w-3" /> Outside geofence
         {record.geoDistanceM !== undefined ? ` · ${Math.round(record.geoDistanceM)} m from ${record.geoPlace}` : ''}
       </Badge>
     );
   }
   return (
-    <Badge variant="outline" className="gap-1 border-amber-300 text-amber-700">
+    <Badge variant="outline" className="gap-1 border-warning/40 text-warning">
       <AlertTriangle className="h-3 w-3" /> Flagged · location unavailable
     </Badge>
   );
@@ -241,16 +241,16 @@ export default function ClockPanel() {
       <Card className="rounded-xl lg:col-span-3">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
-            <Clock3 className="h-4 w-4 text-amber-600" /> Time clock
+            <Clock3 className="h-4 w-4 text-primary" /> Time clock
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-5">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label>Employee</Label>
+              <Label htmlFor="clock-employee">Employee</Label>
               {kiosk ? (
                 <Select value={emp?.id ?? ''} onValueChange={setEmployeeId}>
-                  <SelectTrigger><SelectValue placeholder="Select employee" /></SelectTrigger>
+                  <SelectTrigger id="clock-employee"><SelectValue placeholder="Select employee" /></SelectTrigger>
                   <SelectContent>
                     {active.map((e) => (
                       <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>
@@ -269,9 +269,9 @@ export default function ClockPanel() {
               )}
             </div>
             <div className="space-y-2">
-              <Label>Work mode</Label>
+              <Label htmlFor="clock-mode">Work mode</Label>
               <Select value={workMode} onValueChange={(v) => setWorkMode(v as 'office' | 'job-site')}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger id="clock-mode"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="office">Office / geofenced site</SelectItem>
                   <SelectItem value="job-site">Field staff — job site</SelectItem>
@@ -296,7 +296,7 @@ export default function ClockPanel() {
           )}
 
           {!emp && (
-            <p className="flex items-start gap-2 rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800">
+            <p className="flex items-start gap-2 rounded-xl border border-warning/40 bg-warning-soft p-3 text-sm text-warning">
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
               Your account is not linked to an employee record — contact HR before clocking in.
             </p>
@@ -305,9 +305,11 @@ export default function ClockPanel() {
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button
               size="lg"
-              className="h-16 flex-1 gap-2 rounded-xl text-lg"
+              className="h-auto min-h-16 flex-1 gap-2 whitespace-normal rounded-xl text-lg"
               onClick={doClockIn}
               disabled={!emp || !!record?.clockIn || geo.kind === 'requesting'}
+              // "Clocked in 08:55" already says why; a missing employee link is explained above.
+              disabledReason={false}
             >
               {geo.kind === 'requesting' ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogIn className="h-5 w-5" />}
               {record?.clockIn ? `Clocked in ${record.clockIn}` : 'Clock In'}
@@ -315,9 +317,10 @@ export default function ClockPanel() {
             <Button
               size="lg"
               variant="outline"
-              className="h-16 flex-1 gap-2 rounded-xl text-lg"
+              className="h-auto min-h-16 flex-1 gap-2 whitespace-normal rounded-xl text-lg"
               onClick={doClockOut}
               disabled={!record?.clockIn || !!record.clockOut}
+              disabledReason={record?.clockOut ? false : 'Clock in first.'}
             >
               <LogOut className="h-5 w-5" />
               {record?.clockOut ? `Clocked out ${record.clockOut}` : 'Clock Out'}
@@ -326,7 +329,7 @@ export default function ClockPanel() {
 
           {message && <p className="text-sm text-muted-foreground">{message}</p>}
           {geo.kind === 'failed' && workMode === 'office' && (
-            <p className="flex items-start gap-2 text-xs text-amber-700">
+            <p className="flex items-start gap-2 text-xs text-primary">
               <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
               {geo.reason}. You can still clock in — the record is flagged as “location unavailable” for HR review.
             </p>
@@ -334,7 +337,7 @@ export default function ClockPanel() {
 
           <div className="rounded-xl bg-muted/60 p-3 text-xs text-muted-foreground">
             <p className="flex items-start gap-2">
-              <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-700" />
+              <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
               Location is used only to verify presence within an office geofence at clock time. Spoofed or mock
               locations violate company policy and may be flagged for disciplinary review.
             </p>
@@ -355,7 +358,7 @@ export default function ClockPanel() {
           </div>
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground">Clock in</span>
-            <span className={cn('font-medium', lateNow && 'text-amber-700')}>
+            <span className={cn('font-medium', lateNow && 'text-primary')}>
               {record?.clockIn ?? '—'} {lateNow && '(late)'}
             </span>
           </div>
@@ -372,14 +375,14 @@ export default function ClockPanel() {
             <ul className="space-y-1.5">
               {locations.map((l) => (
                 <li key={l.id} className="flex items-center gap-2 text-xs">
-                  <MapPin className="h-3 w-3 text-amber-600" />
+                  <MapPin className="h-3 w-3 text-primary" />
                   <span>{l.name}</span>
                   <span className="ml-auto text-muted-foreground">{l.radiusM} m</span>
                 </li>
               ))}
             </ul>
             {isDefault && (
-              <p className="mt-2 text-[11px] text-muted-foreground">
+              <p className="mt-2 text-xs text-muted-foreground">
                 Office coordinates are demo defaults — the Settings module can override them via the settings collection.
               </p>
             )}

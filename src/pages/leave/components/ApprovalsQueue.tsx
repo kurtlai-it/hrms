@@ -1,6 +1,7 @@
 /**
- * Approval workflow — pending queue with approve/reject + remarks, plus a
- * cancel flow for approved leave.
+ * Approval workflow — the leave waiting for a decision as a table (staff
+ * member, leave, dates, days, reason, Approve / Reject), then the recent
+ * decisions (first five, "Show all"), with a cancel flow for approved leave.
  *
  * Access (QA B2): Admin/HR decide everything; Managers decide their own
  * department (rows are scoped via mock auth); Employees have no approval
@@ -13,17 +14,20 @@
  * QA B6: approved leave can be cancelled before its start date; the tracked
  * days are returned to the balance and the cancel is audited.
  */
+import { OwnRequestNote } from '@/components/OwnRequestNote';
+import { useTranslation } from 'react-i18next';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { leaveDecidedMessage } from '@/lib/decisionMessages';
 import { useMemo, useState } from 'react';
-import { Ban, CalendarOff, Check, ClipboardCheck, ShieldAlert, X } from 'lucide-react';
+import { Ban, Check, ShieldAlert, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { logAudit, type CollectionApi } from '@/lib/db';
-import { avatarTone, fmtDate, initialsOf } from '@/lib/utils';
+import { fmtDate } from '@/lib/utils';
 import type { Employee, LeaveBalance, LeaveStatus } from '@/lib/types';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
@@ -44,15 +48,16 @@ interface Props {
 }
 
 function StatusBadge({ status }: { status: LeaveStatus }) {
+  const { t } = useTranslation();
   const cls: Record<LeaveStatus, string> = {
-    pending: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200',
-    approved: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200',
-    rejected: 'bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-200',
-    cancelled: 'bg-stone-200 text-stone-600 dark:bg-stone-700/50 dark:text-stone-300',
+    pending: 'bg-warning-soft text-warning',
+    approved: 'bg-success-soft text-success',
+    rejected: 'bg-danger-soft text-destructive',
+    cancelled: 'bg-secondary text-muted-foreground',
   };
   return (
-    <Badge variant="secondary" className={cn('capitalize', cls[status])}>
-      {status}
+    <Badge variant="secondary" className={cls[status]}>
+      {t(`leaveQ.status_${status}`)}
     </Badge>
   );
 }
@@ -67,6 +72,8 @@ export default function ApprovalsQueue({ employees, leavesApi, balancesApi }: Pr
   const [decision, setDecision] = useState<Decision | null>(null);
   const [cancelReq, setCancelReq] = useState<LeaveRequestEx | null>(null);
   const [remarks, setRemarks] = useState('');
+  const [showAllHistory, setShowAllHistory] = useState(false);
+  const { t } = useTranslation();
 
   const todayISO = toISO(new Date());
 
@@ -169,11 +176,7 @@ export default function ApprovalsQueue({ employees, leavesApi, balancesApi }: Pr
       entityId: request.id,
       detail: `${name} — ${LEAVE_TYPE_META[request.type].label} ${request.days}d (${request.startDate} → ${request.endDate})${remarks.trim() ? ` · ${remarks.trim()}` : ''}`,
     });
-    toast.success(
-      action === 'approved'
-        ? `Leave approved for ${name}`
-        : `Leave rejected for ${name}`,
-    );
+    toast.success(leaveDecidedMessage(name, action === 'approved', request.startDate, request.endDate, request.days));
     setDecision(null);
     setRemarks('');
   };
@@ -206,128 +209,141 @@ export default function ApprovalsQueue({ employees, leavesApi, balancesApi }: Pr
     setRemarks('');
   };
 
-  const renderRequest = (l: LeaveRequestEx, actionable: boolean) => {
-    const emp = empName(l.employeeId);
-    const self = isSelf(l);
-    const cancellable = !actionable && l.status === 'approved' && l.startDate > todayISO;
-    return (
-      <div key={l.id} className="flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center">
-        <div className="flex min-w-0 flex-1 items-start gap-3">
-          <Avatar className="h-9 w-9 shrink-0">
-            <AvatarFallback className={cn('text-xs font-semibold', avatarTone(emp?.name ?? '?'))}>
-              {initialsOf(emp?.name ?? '?')}
-            </AvatarFallback>
-          </Avatar>
-          <div className="min-w-0 space-y-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-sm font-medium">{emp?.name ?? l.employeeId}</span>
-              <Badge variant="secondary" className={cn(LEAVE_TYPE_META[l.type].chip)}>
-                {LEAVE_TYPE_META[l.type].label}
-              </Badge>
-              {l.halfDay && <Badge variant="outline">½ day</Badge>}
-              {!actionable && <StatusBadge status={l.status} />}
-            </div>
-            <p className="text-sm text-muted-foreground">
-              {fmtDate(l.startDate)} → {fmtDate(l.endDate)} · {l.days} day(s)
-            </p>
-            {l.reason && <p className="text-xs text-muted-foreground">“{l.reason}”</p>}
-            <p className="text-xs text-muted-foreground">
-              Applied {fmtDate(l.appliedAt)}
-              {!actionable && l.decidedAt
-                ? ` · decided ${fmtDate(l.decidedAt)} by ${l.decidedBy ?? '—'}`
-                : ''}
-            </p>
-            {!actionable && l.decisionRemarks && (
-              <p className="text-xs italic text-muted-foreground">Remark: {l.decisionRemarks}</p>
-            )}
-          </div>
-        </div>
-        {actionable && (
-          self ? (
-            <p className="shrink-0 text-xs italic text-muted-foreground sm:max-w-[140px]">
-              You cannot decide your own request.
-            </p>
-          ) : (
-            <div className="flex shrink-0 gap-2 sm:flex-col lg:flex-row">
-              <Button size="sm" className="gap-1" onClick={() => setDecision({ request: l, action: 'approved' })}>
-                <Check className="h-4 w-4" /> Approve
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="gap-1"
-                onClick={() => setDecision({ request: l, action: 'rejected' })}
-              >
-                <X className="h-4 w-4" /> Reject
-              </Button>
-            </div>
-          )
-        )}
-        {cancellable && (
-          self ? null : (
-            <div className="flex shrink-0 gap-2">
-              <Button
-                size="sm"
-                variant="outline"
-                className="gap-1"
-                onClick={() => { setCancelReq(l); setRemarks(''); }}
-              >
-                <Ban className="h-4 w-4" /> Cancel leave
-              </Button>
-            </div>
-          )
-        )}
-      </div>
-    );
-  };
+  // Who decided: the staff member's name when the id is a staff record.
+  const deciderName = (id?: string) => (id ? employees.find((e) => e.id === id)?.name ?? id : '—');
+  const range = (l: LeaveRequestEx) =>
+    l.startDate === l.endDate ? fmtDate(l.startDate) : t('leaveQ.range', { from: fmtDate(l.startDate), to: fmtDate(l.endDate) });
+  const typeBadge = (l: LeaveRequestEx) => (
+    <Badge variant="secondary" className={cn(LEAVE_TYPE_META[l.type].chip)}>
+      {LEAVE_TYPE_META[l.type].label}
+    </Badge>
+  );
+  const shownHistory = showAllHistory ? history : history.slice(0, 5);
 
   return (
-    <div className="space-y-6">
-      <Card className="rounded-xl">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <ClipboardCheck className="h-4 w-4 text-amber-600" /> Pending requests
-            {pending.length > 0 && <Badge variant="secondary">{pending.length}</Badge>}
-          </CardTitle>
-          <CardDescription>
-            Approving deducts from the employee&apos;s tracked balance (annual / sick /
-            hospitalization) after a live balance re-check.
-            {auth.role === 'Manager' ? ' Showing your department only.' : ''}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {pending.length === 0 ? (
-            <Empty>
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <CalendarOff className="h-5 w-5" />
-                </EmptyMedia>
-                <EmptyTitle>All clear</EmptyTitle>
-                <EmptyDescription>No leave requests waiting for a decision.</EmptyDescription>
-              </EmptyHeader>
-            </Empty>
-          ) : (
-            pending.map((l) => renderRequest(l, true))
-          )}
-        </CardContent>
-      </Card>
+    <div className="space-y-8">
+      <section aria-labelledby="leave-pending" className="space-y-2">
+        <h2 id="leave-pending" className="text-[1.2rem] font-bold">
+          {t('leaveQ.pendingTitle')} <span className="font-normal text-muted-foreground">({pending.length})</span>
+        </h2>
+        <p className="text-muted-foreground">
+          {t('leaveQ.pendingIntro')}
+          {auth.role === 'Manager' ? ` ${t('leaveQ.ownDept')}` : ''}
+        </p>
+        {pending.length === 0 ? (
+          <p className="border-y py-3">{t('leaveQ.none')}</p>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t('leaveQ.colName')}</TableHead>
+                <TableHead>{t('leaveQ.colType')}</TableHead>
+                <TableHead>{t('leaveQ.colDates')}</TableHead>
+                <TableHead className="text-right">{t('leaveQ.colDays')}</TableHead>
+                <TableHead>{t('leaveQ.colReason')}</TableHead>
+                <TableHead><span className="sr-only">{t('leaveQ.colActions')}</span></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {pending.map((l) => (
+                <TableRow key={l.id}>
+                  <TableCell className="font-bold">{empName(l.employeeId)?.name ?? l.employeeId}</TableCell>
+                  <TableCell>{typeBadge(l)}</TableCell>
+                  <TableCell>
+                    {range(l)}
+                    <p className="text-muted-foreground">{t('leaveQ.applied', { date: fmtDate(l.appliedAt) })}</p>
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {l.days}
+                    {l.halfDay && <p className="text-muted-foreground">{t('leaveQ.halfDay')}</p>}
+                  </TableCell>
+                  <TableCell className="whitespace-normal">{l.reason}</TableCell>
+                  <TableCell>
+                    {isSelf(l) ? (
+                      <OwnRequestNote />
+                    ) : (
+                      <div className="flex flex-wrap justify-end gap-2">
+                        <Button size="sm" onClick={() => setDecision({ request: l, action: 'approved' })}>
+                          <Check className="h-4 w-4" aria-hidden /> {t('leaveQ.approve')}
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => setDecision({ request: l, action: 'rejected' })}>
+                          <X className="h-4 w-4" aria-hidden /> {t('leaveQ.reject')}
+                        </Button>
+                      </div>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </section>
 
-      <Card className="rounded-xl">
-        <CardHeader>
-          <CardTitle className="text-base">Decision history</CardTitle>
-          <CardDescription>
-            Approved, rejected and cancelled requests, most recent first. Approved leave can be
-            cancelled until its start date — the days return to the balance.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {history.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No decisions recorded yet.</p>
-          ) : (
-            history.map((l) => renderRequest(l, false))
-          )}
-        </CardContent>
-      </Card>
+      <section aria-labelledby="leave-history" className="space-y-2">
+        <h2 id="leave-history" className="text-[1.2rem] font-bold">{t('leaveQ.historyTitle')}</h2>
+        <p className="text-muted-foreground">{t('leaveQ.historyIntro')}</p>
+        {history.length === 0 ? (
+          <p className="border-y py-3">{t('leaveQ.historyNone')}</p>
+        ) : (
+          <>
+            <Table id="leave-history-table">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t('leaveQ.colName')}</TableHead>
+                  <TableHead>{t('leaveQ.colType')}</TableHead>
+                  <TableHead>{t('leaveQ.colDates')}</TableHead>
+                  <TableHead className="text-right">{t('leaveQ.colDays')}</TableHead>
+                  <TableHead>{t('leaveQ.colDecision')}</TableHead>
+                  <TableHead><span className="sr-only">{t('leaveQ.colActions')}</span></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {shownHistory.map((l) => {
+                  const cancellable = l.status === 'approved' && l.startDate > todayISO && !isSelf(l);
+                  return (
+                    <TableRow key={l.id}>
+                      <TableCell className="font-bold">{empName(l.employeeId)?.name ?? l.employeeId}</TableCell>
+                      <TableCell>{typeBadge(l)}</TableCell>
+                      <TableCell>{range(l)}</TableCell>
+                      <TableCell className="text-right tabular-nums">{l.days}</TableCell>
+                      <TableCell className="whitespace-normal">
+                        <StatusBadge status={l.status} />
+                        {l.decidedAt && (
+                          <p className="text-muted-foreground">
+                            {t('leaveQ.decidedBy', { name: deciderName(l.decidedBy), date: fmtDate(l.decidedAt) })}
+                          </p>
+                        )}
+                        {l.decisionRemarks && (
+                          <p className="text-muted-foreground">{t('leaveQ.remark', { text: l.decisionRemarks })}</p>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {cancellable && (
+                          <div className="flex justify-end">
+                            <Button size="sm" variant="outline" onClick={() => { setCancelReq(l); setRemarks(''); }}>
+                              <Ban className="h-4 w-4" aria-hidden /> {t('leaveQ.cancel')}
+                            </Button>
+                          </div>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+            {history.length > 5 && (
+              <Button
+                variant="outline"
+                aria-expanded={showAllHistory}
+                aria-controls="leave-history-table"
+                onClick={() => setShowAllHistory((v) => !v)}
+              >
+                {showAllHistory ? t('leaveQ.showFewer') : t('leaveQ.showAll', { count: history.length })}
+              </Button>
+            )}
+          </>
+        )}
+      </section>
 
       {/* Approve / reject dialog */}
       <Dialog open={decision !== null} onOpenChange={(open) => { if (!open) { setDecision(null); setRemarks(''); } }}>

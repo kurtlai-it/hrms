@@ -1,7 +1,7 @@
 /**
  * Shared pending-approvals hook — the single counting source for BOTH the
- * /approvals inbox and the NotificationBell badge (audit-business-value.md
- * quick win: bell counts must equal inbox counts). All queue/scoping rules
+ * /approvals inbox and Home's "Things to do today" (audit-business-value.md
+ * quick win: Home counts must equal inbox counts). All queue/scoping rules
  * live in ./model (pure functions); this hook only wires the live collections
  * and the session/legacy role into them.
  *
@@ -64,7 +64,7 @@ export function usePendingApprovals(): PendingApprovals {
 
   // Mount-time "now" keeps render pure (react-hooks/purity); the 7-day
   // decision window doesn't need to tick live within a session — same
-  // pattern as NotificationBell.
+  // pattern as the old notification bell.
   const [nowMs] = useState(() => Date.now());
 
   const scope: ApprovalScope = useMemo(

@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import type { Employee, PayrollRun, Payslip, Settings } from '@/lib/types';
 import { fmtRM, round2 } from '@/lib/utils';
 import { downloadTextFile, rowsToCsv } from '@/lib/csv';
+import { giroCsvRows, giroTxt, missingBankDetails } from './bankGiro';
 import { monthLabel, num2 } from './helpers';
 import { FormHeader, Money } from './components';
 import GLExportPanel from './GLExportPanel';
@@ -60,10 +61,7 @@ export default function StatutoryOutputs({ run, slips, empMap, settings }: Props
       .join(', ')}.`;
 
   // B6 — employees without bank details would ship blank giro fields.
-  const missingBank = slips.filter((p) => {
-    const e = empMap.get(p.employeeId);
-    return !e?.bankName || !e?.bankAccount;
-  });
+  const missingBank = missingBankDetails(slips, empMap);
 
   const dl = (file: string, rows: (string | number)[][]) => {
     const filename = `${file}-${mk}.csv`;
@@ -104,7 +102,7 @@ export default function StatutoryOutputs({ run, slips, empMap, settings }: Props
         </CardHeader>
         <CardContent>
           {epfExcluded.length > 0 && (
-            <p className="mb-3 flex items-start gap-1.5 rounded-lg bg-stone-50 p-2 text-xs text-muted-foreground dark:bg-stone-900/40">
+            <p className="mb-3 flex items-start gap-1.5 rounded-lg bg-muted p-2 text-xs text-muted-foreground">
               <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
               {exclusionNote('EPF', epfExcluded)}
             </p>
@@ -175,7 +173,7 @@ export default function StatutoryOutputs({ run, slips, empMap, settings }: Props
         </CardHeader>
         <CardContent>
           {socsoExcluded.length > 0 && (
-            <p className="mb-3 flex items-start gap-1.5 rounded-lg bg-stone-50 p-2 text-xs text-muted-foreground dark:bg-stone-900/40">
+            <p className="mb-3 flex items-start gap-1.5 rounded-lg bg-muted p-2 text-xs text-muted-foreground">
               <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
               {exclusionNote('SOCSO', socsoExcluded)}
             </p>
@@ -248,7 +246,7 @@ export default function StatutoryOutputs({ run, slips, empMap, settings }: Props
         </CardHeader>
         <CardContent>
           {eisExcluded.length > 0 && (
-            <p className="mb-3 flex items-start gap-1.5 rounded-lg bg-stone-50 p-2 text-xs text-muted-foreground dark:bg-stone-900/40">
+            <p className="mb-3 flex items-start gap-1.5 rounded-lg bg-muted p-2 text-xs text-muted-foreground">
               <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
               {exclusionNote('EIS', eisExcluded)}
             </p>
@@ -412,16 +410,7 @@ export default function StatutoryOutputs({ run, slips, empMap, settings }: Props
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() =>
-                    dl('bank-giro', [
-                      ['Bank Name', 'Account Number', 'Employee Name', 'NRIC', 'Amount (RM)', 'Reference'],
-                      ...slips.map((p) => {
-                        const e = empMap.get(p.employeeId);
-                        return [e?.bankName ?? '', e?.bankAccount ?? '', name(p), ic(p), num2(p.netPay), `SALARY ${mk}`];
-                      }),
-                      ['', '', 'TOTAL', '', num2(sum((p) => p.netPay)), ''],
-                    ])
-                  }
+                  onClick={() => dl('bank-giro', giroCsvRows(slips, empMap, mk))}
                 >
                   <Download className="h-4 w-4" /> CSV
                 </Button>
@@ -429,15 +418,7 @@ export default function StatutoryOutputs({ run, slips, empMap, settings }: Props
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    const lines = [
-                      `H|${settings?.companyName ?? 'EMPLOYER'}|${settings?.companyRegNo ?? ''}|${mk}|${num2(sum((p) => p.netPay))}`,
-                      ...slips.map((p, i) => {
-                        const e = empMap.get(p.employeeId);
-                        return `D|${i + 1}|${e?.bankName ?? ''}|${e?.bankAccount ?? ''}|${name(p)}|${ic(p)}|${num2(p.netPay)}`;
-                      }),
-                      `T|${slips.length}|${num2(sum((p) => p.netPay))}`,
-                    ];
-                    downloadTextFile(`bank-giro-${mk}.txt`, lines.join('\r\n'), 'text/plain');
+                    downloadTextFile(`bank-giro-${mk}.txt`, giroTxt(slips, empMap, settings, mk), 'text/plain');
                     toast.success('Download started', { description: `bank-giro-${mk}.txt` });
                   }}
                 >
@@ -449,9 +430,9 @@ export default function StatutoryOutputs({ run, slips, empMap, settings }: Props
         </CardHeader>
         <CardContent>
           {missingBank.length > 0 && (
-            <Alert className="mb-4 border-amber-300 bg-amber-50 dark:border-amber-900/40 dark:bg-amber-950/30">
-              <AlertTriangle className="h-4 w-4 text-amber-600" />
-              <AlertTitle className="text-amber-800 dark:text-amber-500">
+            <Alert className="mb-4 border-warning/40 bg-warning-soft">
+              <AlertTriangle className="h-4 w-4 text-warning" />
+              <AlertTitle className="text-warning">
                 {missingBank.length} employee(s) missing bank details
               </AlertTitle>
               <AlertDescription className="text-xs text-muted-foreground">
@@ -481,7 +462,7 @@ export default function StatutoryOutputs({ run, slips, empMap, settings }: Props
                     <TableCell className="font-medium">
                       {name(p)}
                       {bankMissing && (
-                        <Badge variant="outline" className="ml-2 border-amber-400 text-amber-700 dark:text-amber-500">
+                        <Badge variant="outline" className="ml-2 border-warning text-warning">
                           Missing bank details
                         </Badge>
                       )}

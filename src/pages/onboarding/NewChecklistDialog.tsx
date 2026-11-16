@@ -178,7 +178,7 @@ export default function NewChecklistDialog({
             </Select>
           </div>
 
-          <div className="rounded-xl border border-amber-200/70 bg-amber-50/60 p-3 text-xs text-muted-foreground dark:border-amber-900/40 dark:bg-amber-950/20">
+          <div className="rounded-xl border border-warning/40 bg-warning-soft p-3 text-xs text-muted-foreground">
             <span className="font-medium text-foreground">{template.label}</span> —{' '}
             {template.description} Includes {template.items.length} items across documents, IT &amp;
             assets, access, orientation and compliance.
@@ -191,8 +191,8 @@ export default function NewChecklistDialog({
           </Button>
           <Button
             onClick={submit}
-            disabled={!employeeId || !startDate}
-            className="bg-amber-600 text-white hover:bg-amber-700"
+            disabled={!employeeId || !startDate} disabledReason="Fill in the required fields first."
+            className="bg-primary text-primary-foreground hover:bg-primary"
           >
             Create checklist
           </Button>

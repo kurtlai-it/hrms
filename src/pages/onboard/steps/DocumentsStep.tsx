@@ -168,7 +168,7 @@ export default function DocumentsStep({ form, patch, errors, companyId }: Props)
       {fileError && (
         <div
           role="alert"
-          className="rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300"
+          className="rounded-lg border border-destructive/40 bg-danger-soft px-3 py-2.5 text-sm text-destructive"
         >
           {fileError}
         </div>
@@ -184,14 +184,14 @@ export default function DocumentsStep({ form, patch, errors, companyId }: Props)
               key={kind}
               className={cn(
                 'rounded-xl border p-4',
-                missing && errors[`doc-${kind}`] && 'border-red-300 dark:border-red-900/60',
+                missing && errors[`doc-${kind}`] && 'border-destructive/40',
               )}
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <p className="text-sm font-medium">
                     {KIND_LABELS[kind]}
-                    {required && <span className="ml-0.5 text-red-500">*</span>}
+                    {required && <span className="ml-0.5 text-destructive">*</span>}
                   </p>
                   <p className="text-xs text-muted-foreground">{KIND_HINTS[kind]}</p>
                 </div>
@@ -199,7 +199,7 @@ export default function DocumentsStep({ form, patch, errors, companyId }: Props)
                   type="button"
                   variant="outline"
                   size="sm"
-                  disabled={busy}
+                  disabled={busy} disabledReason={false}
                   onClick={() => pick(kind)}
                 >
                   <Upload className="mr-1.5 h-3.5 w-3.5" />
@@ -214,7 +214,7 @@ export default function DocumentsStep({ form, patch, errors, companyId }: Props)
                     return (
                       <li
                         key={d.docId ?? `${d.fileName}-${i}`}
-                        className="flex items-center gap-2 rounded-full border bg-stone-50 py-1 pl-1.5 pr-1 text-xs dark:bg-stone-900/40"
+                        className="flex items-center gap-2 rounded-full border bg-muted py-1 pl-1.5 pr-1 text-xs"
                       >
                         {url?.startsWith('data:image') ? (
                           <img
@@ -223,7 +223,7 @@ export default function DocumentsStep({ form, patch, errors, companyId }: Props)
                             className="h-7 w-7 rounded-full object-cover"
                           />
                         ) : (
-                          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-stone-200 dark:bg-stone-800">
+                          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-secondary">
                             {d.fileName.toLowerCase().endsWith('.pdf') ? (
                               <FileText className="h-3.5 w-3.5" />
                             ) : (
@@ -231,13 +231,13 @@ export default function DocumentsStep({ form, patch, errors, companyId }: Props)
                             )}
                           </span>
                         )}
-                        <span className="max-w-[140px] truncate font-medium">{d.fileName}</span>
+                        <span className="max-w-[140px] break-words font-medium">{d.fileName}</span>
                         <span className="text-muted-foreground">{fmtSize(d.sizeBytes)}</span>
                         <button
                           type="button"
                           onClick={() => remove(d)}
                           aria-label={`Remove ${d.fileName}`}
-                          className="rounded-full p-1 text-muted-foreground hover:bg-stone-200 hover:text-foreground dark:hover:bg-stone-800"
+                          className="rounded-full p-1 text-muted-foreground hover:bg-secondary hover:text-foreground"
                         >
                           <X className="h-3.5 w-3.5" />
                         </button>
@@ -247,7 +247,7 @@ export default function DocumentsStep({ form, patch, errors, companyId }: Props)
                 </ul>
               )}
               {missing && errors[`doc-${kind}`] && (
-                <p className="mt-2 text-xs text-red-600 dark:text-red-400">
+                <p className="mt-2 text-xs text-destructive">
                   {KIND_LABELS[kind]} is required
                 </p>
               )}

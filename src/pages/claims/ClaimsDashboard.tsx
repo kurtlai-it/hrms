@@ -5,11 +5,19 @@
  * Manager, own claims only for Employee). Drafts never count toward KPIs,
  * the donut or the leaderboard — they are private work-in-progress.
  */
+import { useMaxWidth } from '@/hooks/use-max-width';
+import { Button } from '@/components/ui/button';
+import { fmtDate } from '@/lib/utils';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { SummaryLine } from '@/components/ui/summary-line';
+import { formatDate } from '@/i18n';
+import { useTranslation } from 'react-i18next';
 import { useMemo } from 'react';
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
-import { CircleDollarSign, Clock3, Hourglass, Wallet } from 'lucide-react';
+import { pieValueLabel } from '@/lib/chartText';
+import { CircleDollarSign } from 'lucide-react';
 import type { ClaimCategory, Employee } from '@/lib/types';
-import { avatarTone, cn, daysBetween, fmtRM, initialsOf, monthKey, round2 } from '@/lib/utils';
+import { daysBetween, fmtRM, monthKey, round2 } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CATEGORY_COLOR, CATEGORY_LABEL, type ClaimRecord } from './claimPolicy';
 
@@ -38,13 +46,19 @@ export default function ClaimsDashboard({
   claims,
   employees,
   hideLeaderboard = false,
+  onReview,
 }: {
   /** Already role-scoped by the page (Employee → own claims only, etc.). */
   claims: ClaimRecord[];
   employees: Employee[];
-  /** Employee role: personal stats only — the cross-employee leaderboard is hidden. */
+  /** Employee role: personal stats only — the claims-waiting-by-person table is hidden. */
   hideLeaderboard?: boolean;
+  /** Opens the approval queue (the "Review" button on phones). */
+  onReview?: () => void;
 }) {
+  const { t } = useTranslation();
+  // Phones: one entry per person instead of a table that scrolls sideways.
+  const phone = useMaxWidth(699);
   const stats = useMemo(() => {
     const mk = monthKey();
     // Drafts are private work-in-progress, not claimed spend (B9).
@@ -74,106 +88,98 @@ export default function ClaimsDashboard({
       .map(([key, value]) => ({ key, label: CATEGORY_LABEL[key], value, color: CATEGORY_COLOR[key] }))
       .sort((a, b) => b.value - a.value);
 
-    // Top claimants (all-time, excluding rejected).
-    const byEmp = new Map<string, number>();
-    for (const c of countable) byEmp.set(c.employeeId, round2((byEmp.get(c.employeeId) ?? 0) + c.amount));
-    const top = [...byEmp.entries()]
-      .map(([employeeId, total]) => ({ employeeId, total }))
-      .sort((a, b) => b.total - a.total)
-      .slice(0, 5);
+    // Claims waiting for a decision, per person, the longest-waiting first.
+    const byEmp = new Map<string, { employeeId: string; count: number; total: number; since: string }>();
+    for (const c of pending) {
+      const since = (c.submittedAt ?? c.claimDate).slice(0, 10);
+      const row = byEmp.get(c.employeeId) ?? { employeeId: c.employeeId, count: 0, total: 0, since };
+      row.count += 1;
+      row.total = round2(row.total + c.amount);
+      if (since < row.since) row.since = since;
+      byEmp.set(c.employeeId, row);
+    }
+    const waiting = [...byEmp.values()].sort((a, b) => a.since.localeCompare(b.since));
 
-    return { monthClaims, monthTotal, pending, pendingTotal, approved, approvedTotal, decided, avgDays, donut, top };
+    return { monthClaims, monthTotal, pending, pendingTotal, approved, approvedTotal, decided, avgDays, donut, waiting };
   }, [claims]);
 
   const empName = (id: string) => employees.find((e) => e.id === id)?.name ?? 'Unknown';
-  const maxTop = stats.top[0]?.total ?? 0;
 
   const cards = [
     {
-      title: `Claimed in ${monthKey()}`,
+      title: t('claimsPage.claimedIn', { month: formatDate(new Date(), { month: 'long', year: 'numeric' }) }),
       value: fmtRM(stats.monthTotal),
-      icon: CircleDollarSign,
       hint: `${stats.monthClaims.length} claim${stats.monthClaims.length === 1 ? '' : 's'} this month`,
     },
     {
       title: 'Pending approval',
       value: fmtRM(stats.pendingTotal),
-      icon: Hourglass,
       hint: `${stats.pending.length} awaiting a decision`,
     },
     {
       title: 'Approved · awaiting payroll',
       value: fmtRM(stats.approvedTotal),
-      icon: Wallet,
       hint: `${stats.approved.length} to be reimbursed in the next run`,
     },
     {
       title: 'Avg processing time',
       value: stats.decided.length === 0 ? '—' : stats.avgDays < 1 ? '< 1 day' : `${stats.avgDays.toFixed(1)} days`,
-      icon: Clock3,
-      hint: `${stats.decided.length} claim${stats.decided.length === 1 ? '' : 's'} decided (submit → decision)`,
+      hint: t('claimsPage.decidedHint', { count: stats.decided.length }),
     },
   ];
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {cards.map((s) => (
-          <Card key={s.title} className="rounded-xl">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">{s.title}</CardTitle>
-              <s.icon className="h-4 w-4 text-amber-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-semibold">{s.value}</div>
-              <p className="mt-1 text-xs text-muted-foreground">{s.hint}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <SummaryLine items={cards.map((c) => ({ label: c.title, value: c.value, hint: c.hint }))} />
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
-        <Card className={cn('rounded-xl', hideLeaderboard ? 'lg:col-span-5' : 'lg:col-span-3')}>
+      <div className="grid grid-cols-1 gap-4">
+        <Card className="rounded-xl">
           <CardHeader>
             <CardTitle className="text-base">This month by category</CardTitle>
           </CardHeader>
           <CardContent>
             {stats.donut.length === 0 ? (
               <div className="flex h-56 flex-col items-center justify-center gap-2 text-center">
-                <CircleDollarSign className="h-8 w-8 text-muted-foreground/40" />
+                <CircleDollarSign className="h-8 w-8 text-muted-foreground" />
                 <p className="text-sm text-muted-foreground">No claims recorded this month yet.</p>
               </div>
             ) : (
               <div className="flex flex-col items-center gap-4 sm:flex-row">
-                <div className="relative h-56 w-56 shrink-0">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={stats.donut}
-                        dataKey="value"
-                        nameKey="label"
-                        innerRadius={62}
-                        outerRadius={92}
-                        paddingAngle={2}
-                        strokeWidth={0}
-                      >
-                        {stats.donut.map((d) => (
-                          <Cell key={d.key} fill={d.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip content={<DonutTooltip />} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                  <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-[11px] uppercase tracking-wide text-muted-foreground">Total</span>
+                {/* The total sits above the ring, not in the hole: at Bigger text it would run onto the ring. */}
+                <div className="shrink-0 text-center">
+                  <p>
+                    <span className="text-xs font-bold text-muted-foreground">Total</span>{' '}
                     <span className="text-lg font-semibold">{fmtRM(stats.monthTotal)}</span>
+                  </p>
+                  <div className="relative h-56 w-56">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={stats.donut}
+                          dataKey="value"
+                          nameKey="label"
+                          innerRadius={62}
+                          outerRadius={92}
+                          paddingAngle={2}
+                          strokeWidth={0}
+                          label={pieValueLabel}
+                          labelLine={false}
+                          isAnimationActive={false}
+                        >
+                          {stats.donut.map((d) => (
+                            <Cell key={d.key} fill={d.color} aria-label={`${d.label}: ${fmtRM(d.value)}`} />
+                          ))}
+                        </Pie>
+                        <Tooltip content={<DonutTooltip />} />
+                      </PieChart>
+                    </ResponsiveContainer>
                   </div>
                 </div>
                 <ul className="w-full space-y-2">
                   {stats.donut.map((d) => (
                     <li key={d.key} className="flex items-center gap-2 text-sm">
                       <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: d.color }} />
-                      <span className="min-w-0 flex-1 truncate text-muted-foreground">{d.label}</span>
+                      <span className="min-w-0 flex-1 break-words text-muted-foreground">{d.label}</span>
                       <span className="font-medium tabular-nums">{fmtRM(d.value)}</span>
                     </li>
                   ))}
@@ -184,44 +190,56 @@ export default function ClaimsDashboard({
         </Card>
 
         {!hideLeaderboard && (
-          <Card className="rounded-xl lg:col-span-2">
+          <Card className="rounded-xl">
             <CardHeader>
-              <CardTitle className="text-base">Top claimants</CardTitle>
+              <CardTitle className="text-base">{t('claimsPage.byPersonTitle')}</CardTitle>
             </CardHeader>
             <CardContent>
-              {stats.top.length === 0 ? (
-                <div className="flex h-56 flex-col items-center justify-center gap-2 text-center">
-                  <CircleDollarSign className="h-8 w-8 text-muted-foreground/40" />
-                  <p className="text-sm text-muted-foreground">Nothing claimed yet.</p>
-                </div>
+              {stats.waiting.length === 0 ? (
+                <p className="text-muted-foreground">{t('claimsPage.byPersonNone')}</p>
               ) : (
-                <ul className="space-y-4">
-                  {stats.top.map((t, i) => {
-                    const name = empName(t.employeeId);
+                phone ? (
+                <ul className="divide-y border-y">
+                  {stats.waiting.map((w) => {
+                    const name = empName(w.employeeId);
                     return (
-                      <li key={t.employeeId} className="space-y-1.5">
-                        <div className="flex items-center gap-2.5">
-                          <span
-                            className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${avatarTone(name)}`}
-                          >
-                            {initialsOf(name)}
-                          </span>
-                          <span className="min-w-0 flex-1 truncate text-sm">
-                            <span className="mr-1 text-xs text-muted-foreground">#{i + 1}</span>
-                            {name}
-                          </span>
-                          <span className="text-sm font-medium tabular-nums">{fmtRM(t.total)}</span>
+                      <li key={w.employeeId} className="flex flex-wrap items-center justify-between gap-3 py-3">
+                        <div className="min-w-[min(12rem,100%)] flex-1">
+                          <p className="font-bold">{name}</p>
+                          <p className="tabular-nums">{t('claimsPage.byPersonLine', { count: w.count, amount: fmtRM(w.total) })}</p>
+                          <p className="text-muted-foreground">{t('claimsPage.waitingSince', { date: fmtDate(w.since) })}</p>
                         </div>
-                        <div className="h-1.5 overflow-hidden rounded-full bg-muted">
-                          <div
-                            className="h-full rounded-full bg-amber-600/80"
-                            style={{ width: `${maxTop > 0 ? Math.max(4, (t.total / maxTop) * 100) : 0}%` }}
-                          />
-                        </div>
+                        {onReview && (
+                          <Button variant="outline" aria-label={t('claimsPage.reviewFor', { name })} onClick={onReview}>
+                            {t('claimsPage.review')}
+                          </Button>
+                        )}
                       </li>
                     );
                   })}
                 </ul>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t('claimsPage.byPersonName')}</TableHead>
+                      <TableHead className="text-right">{t('claimsPage.byPersonCount')}</TableHead>
+                      <TableHead className="text-right">{t('claimsPage.byPersonAmount')}</TableHead>
+                      <TableHead>{t('claimsPage.byPersonOldest')}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {stats.waiting.map((w) => (
+                      <TableRow key={w.employeeId}>
+                        <TableCell className="font-medium">{empName(w.employeeId)}</TableCell>
+                        <TableCell className="text-right tabular-nums">{w.count}</TableCell>
+                        <TableCell className="text-right tabular-nums">{fmtRM(w.total)}</TableCell>
+                        <TableCell>{fmtDate(w.since)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )
               )}
             </CardContent>
           </Card>

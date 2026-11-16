@@ -12,6 +12,7 @@
  *    pixel-wise).
  */
 import '@testing-library/jest-dom/vitest';
+import '@/i18n';
 import { createElement, type ReactNode } from 'react';
 import { vi } from 'vitest';
 

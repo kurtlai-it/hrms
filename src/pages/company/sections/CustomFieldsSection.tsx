@@ -148,13 +148,13 @@ export default function CustomFieldsSection() {
                     <p className="text-sm font-medium">{f.label}</p>
                     <Badge variant="secondary">{TYPE_LABEL[f.type]}</Badge>
                     {f.required ? (
-                      <Badge variant="outline" className="border-transparent bg-amber-100 text-amber-800">
+                      <Badge variant="outline" className="border-transparent bg-warning-soft text-warning">
                         Required
                       </Badge>
                     ) : null}
                   </div>
                   {f.type === 'select' && f.options ? (
-                    <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                    <p className="mt-0.5 break-words text-xs text-muted-foreground">
                       Options: {f.options.join(' · ')}
                     </p>
                   ) : null}
@@ -229,7 +229,7 @@ export default function CustomFieldsSection() {
                 <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
                   Cancel
                 </Button>
-                <Button type="submit" disabled={!valid}>
+                <Button type="submit" disabled={!valid} disabledReason="Fill in the required fields first.">
                   {editing ? 'Save changes' : 'Add field'}
                 </Button>
               </DialogFooter>

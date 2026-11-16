@@ -3,6 +3,7 @@
  * statutory numbers (EPF / SOCSO / tax from the core Settings singleton;
  * HRD Corp reg no from the extended settings record).
  */
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Building2, Landmark } from 'lucide-react';
@@ -25,9 +26,11 @@ interface Draft {
   socsoEmployerNo: string;
   taxEmployerNo: string;
   hrdCorpRegNo: string;
+  hrSupportPhone: string;
 }
 
 export default function CompanySection() {
+  const { t } = useTranslation();
   const { company, companyExtras, saveCompany, saveCompanyExtras } = useSettingsData();
   const [draft, setDraft] = useState<Draft | null>(null);
 
@@ -44,6 +47,7 @@ export default function CompanySection() {
       socsoEmployerNo: company.socsoEmployerNo,
       taxEmployerNo: company.taxEmployerNo,
       hrdCorpRegNo: companyExtras.hrdCorpRegNo,
+      hrSupportPhone: company.hrSupportPhone ?? '',
     });
   }
 
@@ -74,6 +78,7 @@ export default function CompanySection() {
       epfEmployerNo: draft.epfEmployerNo.trim(),
       socsoEmployerNo: draft.socsoEmployerNo.trim(),
       taxEmployerNo: draft.taxEmployerNo.trim(),
+      hrSupportPhone: draft.hrSupportPhone.trim() || undefined,
     };
     saveCompany(core);
     saveCompanyExtras({ hrdCorpRegNo: draft.hrdCorpRegNo.trim() });
@@ -88,9 +93,9 @@ export default function CompanySection() {
 
   return (
     <div className="space-y-6">
-      <p className="rounded-lg border border-amber-200 bg-amber-50/60 px-4 py-3 text-sm text-amber-900">
+      <p className="rounded-lg border border-warning/40 bg-warning-soft px-4 py-3 text-sm text-warning">
         These particulars are scoped to the active company and are also editable in{' '}
-        <Link to="/company" className="font-medium text-amber-700 hover:underline underline-offset-4">
+        <Link to="/company" className="font-medium text-primary hover:underline underline-offset-4">
           Company Setup → Profile
         </Link>{' '}
         — both editors write the same records. Branding, number formats, modules and custom fields live in Company
@@ -109,6 +114,13 @@ export default function CompanySection() {
           </Field>
           <Field label="Registration no. (SSM)">
             <Input value={draft.companyRegNo} onChange={(e) => set('companyRegNo', e.target.value)} />
+          </Field>
+          <Field label={t('settings.hrPhone')} hint={t('settings.hrPhoneHint')}>
+            <Input
+              value={draft.hrSupportPhone}
+              onChange={(e) => set('hrSupportPhone', e.target.value)}
+              placeholder={t('settings.hrPhonePlaceholder')}
+            />
           </Field>
           <div className="sm:col-span-2">
             <Field label="Registered address">

@@ -14,6 +14,7 @@
  * All heavy lifting (storage, token resolution, mapping) lives in
  * @/lib/onboardLinks; step validation lives in ./formState.
  */
+import { StepList } from '@/components/ui/step-list';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useParams } from 'react-router-dom';
 import {
@@ -21,7 +22,6 @@ import {
   ArrowLeft,
   ArrowRight,
   CalendarClock,
-  Check,
   CheckCircle2,
   FileWarning,
   Hourglass,
@@ -37,7 +37,6 @@ import {
   type ResolvedPublicLink,
 } from '@/lib/onboardLinks';
 import type { Department, Position } from '@/lib/types';
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { BrandingHeader } from './fields';
@@ -71,12 +70,12 @@ function StatusCard({
   children: ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-stone-50 text-foreground dark:bg-stone-950">
+    <div className="min-h-screen bg-background text-foreground">
       <BrandingHeader company={resolved.company} />
       <main className="mx-auto max-w-md px-4 py-12">
         <Card className="rounded-xl">
           <CardContent className="flex flex-col items-center gap-3 py-10 text-center">
-            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-stone-100 text-stone-500 dark:bg-stone-800 dark:text-stone-300">
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
               <Icon className="h-6 w-6" />
             </span>
             <h1 className="text-lg font-semibold">{title}</h1>
@@ -182,12 +181,12 @@ export default function OnboardFormPage() {
   /* ── Success screen ── */
   if (done) {
     return (
-      <div className="min-h-screen bg-stone-50 text-foreground dark:bg-stone-950">
+      <div className="min-h-screen bg-background text-foreground">
         <BrandingHeader company={company} />
         <main className="mx-auto max-w-md px-4 py-12">
           <Card className="rounded-xl">
             <CardContent className="flex flex-col items-center gap-3 py-10 text-center">
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-lime-100 text-lime-700 dark:bg-lime-950/60 dark:text-lime-400">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-success-soft text-success">
                 <CheckCircle2 className="h-6 w-6" />
               </span>
               <h1 className="text-lg font-semibold">Submission received — thank you!</h1>
@@ -195,7 +194,7 @@ export default function OnboardFormPage() {
                 Your details have been sent to {company?.name ?? 'HR'}. They will review your
                 information and reach out if anything else is needed before your first day.
               </p>
-              <p className="mt-2 rounded-lg bg-stone-100 px-3 py-1.5 text-xs text-muted-foreground dark:bg-stone-800">
+              <p className="mt-2 rounded-lg bg-muted px-3 py-1.5 text-xs text-muted-foreground">
                 Reference: {done.id.slice(0, 8).toUpperCase()} · keep this for your records
               </p>
             </CardContent>
@@ -242,12 +241,12 @@ export default function OnboardFormPage() {
   };
 
   return (
-    <div className="min-h-screen bg-stone-50 text-foreground dark:bg-stone-950">
+    <div className="min-h-screen bg-background text-foreground">
       <BrandingHeader company={company} subtitle={`Onboarding for ${link.label}`} />
 
       <main className="mx-auto max-w-3xl px-4 py-6 sm:py-10">
         {resolved.resubmission && (
-          <div className="mb-5 flex items-start gap-2 rounded-xl border border-amber-300/70 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200">
+          <div className="mb-5 flex items-start gap-2 rounded-xl border border-warning/40 bg-warning-soft px-4 py-3 text-sm text-warning">
             <FileWarning className="mt-0.5 h-4 w-4 shrink-0" />
             <p>
               HR returned your previous submission
@@ -259,31 +258,10 @@ export default function OnboardFormPage() {
           </div>
         )}
 
-        {/* Stepper */}
-        <ol className="mb-6 flex items-center gap-1 overflow-x-auto pb-1">
-          {STEP_ORDER.map((key, i) => {
-            const doneStep = i < stepIdx;
-            const current = i === stepIdx;
-            return (
-              <li key={key} className="flex shrink-0 items-center gap-1">
-                <div
-                  className={cn(
-                    'flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium',
-                    current && 'bg-amber-100 text-amber-900 dark:bg-amber-950/60 dark:text-amber-300',
-                    doneStep && 'bg-lime-100 text-lime-800 dark:bg-lime-950/60 dark:text-lime-300',
-                    !current && !doneStep && 'bg-stone-100 text-stone-500 dark:bg-stone-800',
-                  )}
-                >
-                  {doneStep ? <Check className="h-3 w-3" /> : <span>{i + 1}</span>}
-                  <span className="hidden sm:inline">{STEP_TITLES[key]}</span>
-                </div>
-                {i < STEP_ORDER.length - 1 && <span className="h-px w-3 bg-border" />}
-              </li>
-            );
-          })}
-        </ol>
-        <p className="mb-4 text-xs text-muted-foreground sm:hidden">
-          Step {stepIdx + 1} of {STEP_ORDER.length} — {STEP_TITLES[stepKey]}
+        <h1 className="mb-4 text-[1.6rem] font-bold leading-tight">New-hire form</h1>
+        <StepList steps={STEP_ORDER.map((k) => STEP_TITLES[k])} current={stepIdx} label="Form steps" className="mb-3" />
+        <p className="mb-5 text-muted-foreground">
+          Step {stepIdx + 1} of {STEP_ORDER.length}: {STEP_TITLES[stepKey]}
         </p>
 
         <Card className="rounded-xl">
@@ -317,7 +295,7 @@ export default function OnboardFormPage() {
             {submitError && (
               <div
                 role="alert"
-                className="mt-5 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300"
+                className="mt-5 flex items-start gap-2 rounded-lg border border-destructive/40 bg-danger-soft px-3 py-2.5 text-sm text-destructive"
               >
                 <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                 {submitError}
@@ -326,14 +304,14 @@ export default function OnboardFormPage() {
 
             {/* Nav */}
             <div className="mt-6 flex items-center justify-between border-t pt-4">
-              <Button variant="outline" onClick={back} disabled={stepIdx === 0 || submitting}>
+              <Button variant="outline" onClick={back} disabled={stepIdx === 0 || submitting} disabledReason="This is the first step.">
                 <ArrowLeft className="mr-1.5 h-4 w-4" /> Back
               </Button>
               {isLast ? (
                 <Button
                   onClick={submit}
-                  disabled={submitting}
-                  className="bg-amber-600 text-white hover:bg-amber-700"
+                  disabled={submitting} disabledReason={false}
+                  className="bg-primary text-primary-foreground hover:bg-primary"
                 >
                   <Send className="mr-1.5 h-4 w-4" />
                   {submitting ? 'Submitting…' : 'Submit onboarding form'}

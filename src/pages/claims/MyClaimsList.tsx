@@ -4,6 +4,7 @@
  * cards on small screens. Drafts can be edited, submitted or deleted;
  * rejected claims can be sent back to draft for fixing.
  */
+import i18n from '@/i18n';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -44,25 +45,25 @@ function Pipeline({ status }: { status: ClaimRecord['status'] }) {
     <div className="flex items-center gap-1">
       {nodes.map((n, i) => (
         <div key={n.label} className="flex items-center gap-1">
-          {i > 0 && <span className={cn('h-px w-3', n.done || nodes[i - 1]!.done ? 'bg-amber-500/60' : 'bg-border')} />}
+          {i > 0 && <span className={cn('h-px w-3', n.done || nodes[i - 1]!.done ? 'bg-primary/60' : 'bg-border')} />}
           <span
             className={cn(
-              'flex h-4 w-4 items-center justify-center rounded-full border text-[9px]',
+              'flex h-6 w-6 items-center justify-center rounded-full border-2 text-xs',
               n.danger && n.done
-                ? 'border-red-500 bg-red-500 text-white'
+                ? 'border-destructive bg-destructive text-destructive-foreground'
                 : n.done
-                  ? 'border-amber-600 bg-amber-600 text-white'
-                  : 'border-border bg-background text-muted-foreground',
+                  ? 'border-primary bg-primary text-primary-foreground'
+                  : 'border-input bg-background text-muted-foreground',
             )}
             title={n.label}
           >
-            {n.done ? (n.danger ? <X className="h-2.5 w-2.5" /> : <Check className="h-2.5 w-2.5" />) : i + 1}
+            {n.done ? (n.danger ? <X className="h-3.5 w-3.5" /> : <Check className="h-3.5 w-3.5" />) : null}
           </span>
           <span
             className={cn(
-              'text-[10px] leading-none',
+              'text-xs leading-tight',
               n.active ? 'font-medium text-foreground' : 'text-muted-foreground',
-              n.danger && n.done && 'text-red-600',
+              n.danger && n.done && 'text-destructive',
             )}
           >
             {n.label}
@@ -87,7 +88,7 @@ function AiBadge() {
   return (
     <Badge
       variant="outline"
-      className="gap-1 border-amber-300 bg-amber-50 font-medium text-amber-700 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-300"
+      className="gap-1 border-warning/40 bg-warning-soft font-medium text-warning"
       title="Fields were prefilled by AI receipt extraction — verify before submitting"
     >
       <Sparkles className="h-3 w-3" /> AI-extracted
@@ -102,7 +103,7 @@ function ReceiptChip({ name }: { name?: string }) {
       <TooltipTrigger asChild>
         <span className="inline-flex max-w-[140px] cursor-help items-center gap-1 text-xs text-muted-foreground">
           <Paperclip className="h-3.5 w-3.5 shrink-0" />
-          <span className="truncate">{name}</span>
+          <span className="break-words">{name}</span>
         </span>
       </TooltipTrigger>
       <TooltipContent>{name}</TooltipContent>
@@ -159,7 +160,7 @@ export default function MyClaimsList({ claims, employee, onNew, onEdit }: Props)
       entityId: c.id,
       detail: 'Rejected claim returned to draft for rework',
     });
-    toast.success('Claim returned to draft for rework');
+    toast.success(i18n.t('msg.claimToDraft'));
   }
 
   function deleteDraft() {
@@ -219,7 +220,7 @@ export default function MyClaimsList({ claims, employee, onNew, onEdit }: Props)
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-red-600 hover:text-red-700"
+                className="text-destructive hover:text-destructive"
                 onClick={() => setPendingDelete(c)}
               >
                 <Trash2 className="h-3.5 w-3.5" />
@@ -256,14 +257,14 @@ export default function MyClaimsList({ claims, employee, onNew, onEdit }: Props)
         </Button>
       )}
       {c.status === 'paid' && (
-        <span className="inline-flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-lime-700">
+        <span className="inline-flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-success">
           <span className="inline-flex items-center gap-1">
             <Check className="h-3.5 w-3.5" /> Reimbursed
           </span>
           {c.paidInRunId && (
             <Link
               to={`/payroll/runs/${c.paidInRunId}`}
-              className="text-amber-700 underline underline-offset-2 hover:text-amber-800"
+              className="text-primary underline underline-offset-2 hover:text-warning"
             >
               View payroll run
             </Link>
@@ -275,7 +276,7 @@ export default function MyClaimsList({ claims, employee, onNew, onEdit }: Props)
 
   const remarkLine = (c: ClaimRecord) =>
     c.status === 'rejected' && c.decisionRemarks ? (
-      <p className="mt-0.5 line-clamp-2 text-xs text-red-600">Approver: {c.decisionRemarks}</p>
+      <p className="mt-0.5 line-clamp-2 text-xs text-destructive">Approver: {c.decisionRemarks}</p>
     ) : c.status === 'approved' && c.decisionRemarks ? (
       <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">Note: {c.decisionRemarks}</p>
     ) : null;

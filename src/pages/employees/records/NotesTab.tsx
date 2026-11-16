@@ -45,8 +45,8 @@ export default function NotesTab({ employee, file, readOnly, actorName }: TabPro
             onChange={(e) => setText(e.target.value)}
           />
           <Button
-            className="bg-amber-600 text-white hover:bg-amber-700"
-            disabled={!text.trim()}
+            className="bg-primary text-primary-foreground hover:bg-primary"
+            disabled={!text.trim()} disabledReason="Fill in the required fields first."
             onClick={submit}
           >
             <Send className="mr-1.5 h-4 w-4" /> Add

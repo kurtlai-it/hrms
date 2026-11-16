@@ -114,8 +114,8 @@ export default function GLExportPanel({ run, slips }: Props) {
       </CardHeader>
       <CardContent className="space-y-4">
         {journal instanceof Error ? (
-          <Alert className="border-red-300 bg-red-50 dark:border-red-900/40 dark:bg-red-950/30">
-            <AlertTitle className="text-red-800 dark:text-red-500">Journal unavailable</AlertTitle>
+          <Alert className="border-destructive/40 bg-danger-soft">
+            <AlertTitle className="text-destructive">Journal unavailable</AlertTitle>
             <AlertDescription className="text-xs text-muted-foreground">{journal.message}</AlertDescription>
           </Alert>
         ) : (
@@ -137,7 +137,7 @@ export default function GLExportPanel({ run, slips }: Props) {
                       type="button"
                       onClick={() => setMode(m)}
                       className={`px-3 py-1.5 text-xs font-medium capitalize transition-colors ${
-                        mode === m ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-400' : 'bg-background text-muted-foreground hover:bg-accent'
+                        mode === m ? 'bg-warning-soft text-warning' : 'bg-background text-muted-foreground hover:bg-accent'
                       }`}
                     >
                       {m === 'summary' ? 'Per account' : 'Per employee'}

@@ -173,7 +173,7 @@ export function NewHireWizard({ open, onOpenChange }: NewHireWizardProps) {
         </DialogHeader>
 
         {/* Stepper */}
-        <ol className="flex items-center gap-1 overflow-x-auto pb-1">
+        <ol className="flex flex-wrap items-center gap-1 pb-1">
           {STEPS.map((s, i) => {
             const Icon = s.icon;
             const done = i < step;
@@ -184,14 +184,14 @@ export function NewHireWizard({ open, onOpenChange }: NewHireWizardProps) {
                   type="button"
                   onClick={() => i < step && setStep(i)}
                   className={cn(
-                    'flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-colors',
-                    current && 'bg-amber-100 text-amber-900',
-                    done && 'bg-lime-100 text-lime-800 hover:bg-lime-200',
-                    !current && !done && 'bg-stone-100 text-stone-500',
+                    'flex h-12 min-h-12 items-center gap-1.5 rounded-md border-2 border-transparent px-3 text-base font-bold transition-colors',
+                    current && 'bg-warning-soft text-warning',
+                    done && 'bg-success-soft text-success hover:bg-success-soft',
+                    !current && !done && 'bg-muted text-muted-foreground',
                   )}
                 >
-                  {done ? <Check className="h-3 w-3" /> : <Icon className="h-3 w-3" />}
-                  <span className="hidden sm:inline">{s.title}</span>
+                  {done ? <Check className="h-5 w-5" /> : <Icon className="h-5 w-5" />}
+                  <span>{s.title}</span>
                 </button>
                 {i < STEPS.length - 1 && <span className="h-px w-3 bg-border" />}
               </li>
@@ -216,7 +216,7 @@ export function NewHireWizard({ open, onOpenChange }: NewHireWizardProps) {
             <div className="space-y-6">
               <CarryInFields carryIn={carryIn} patchCarryIn={patchCarryIn} errors={errors} />
               {/* Live summary */}
-              <div className="rounded-xl bg-stone-50 p-4 text-sm">
+              <div className="rounded-xl bg-muted p-4 text-sm">
                 <p className="mb-2 font-medium text-foreground">Summary</p>
                 <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-muted-foreground">
                   <dt>Name</dt>
@@ -256,7 +256,7 @@ export function NewHireWizard({ open, onOpenChange }: NewHireWizardProps) {
         </div>
 
         <div className="flex items-center justify-between pt-2">
-          <Button variant="outline" onClick={back} disabled={step === 0}>
+          <Button variant="outline" onClick={back} disabled={step === 0} disabledReason="This is the first step.">
             <ArrowLeft className="mr-1.5 h-4 w-4" /> Back
           </Button>
           {step < STEPS.length - 1 ? (

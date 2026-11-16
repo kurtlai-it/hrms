@@ -436,7 +436,7 @@ export function aggregateOrgReport(input: OrgReportInput): OrgReportModel {
     companyRegNo: company?.regNo ?? settings?.companyRegNo ?? '',
     companyCode: company?.code ?? 'COMPANY',
     logoText: company?.branding.logoText ?? company?.code ?? 'HR',
-    accentColor: company?.branding.accentColor ?? '#b45309',
+    accentColor: company?.branding.accentColor ?? '#2E2F70',
     period,
     prorationMethod: method,
     prorationLabel: PRORATION_LABELS[method],
@@ -489,10 +489,10 @@ export function orgReportFileName(model: Pick<OrgReportModel, 'companyCode' | 'm
 /** Register pagination target (~20 rows per landscape page). */
 export const REGISTER_ROWS_PER_PAGE = 20;
 
-/** '#b45309' → [180, 83, 9]; invalid input falls back to the warm amber default. */
+/** '#2E2F70' → [46, 47, 112]; invalid input falls back to the ASM indigo default (#2E2F70). */
 function hexToRgb(hex: string): [number, number, number] {
   const m = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
-  if (!m) return [180, 83, 9];
+  if (!m) return [46, 47, 112];
   const v = parseInt(m[1]!, 16);
   return [(v >> 16) & 255, (v >> 8) & 255, v & 255];
 }

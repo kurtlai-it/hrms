@@ -12,8 +12,7 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Gauge, UserRound } from 'lucide-react';
 import {
-  CartesianGrid, Line, LineChart, PolarAngleAxis, PolarGrid, PolarRadiusAxis,
-  Radar, RadarChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
+  CartesianGrid, Line, LineChart, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ResponsiveContainer, Tooltip, XAxis, YAxis, LabelList,
 } from 'recharts';
 import { avatarTone, cn, initialsOf } from '@/lib/utils';
 import type { Department, Employee } from '@/lib/types';
@@ -33,6 +32,7 @@ import {
 } from './lib';
 import { isFinalReview, objectiveProgress, useObjectives } from '@/lib/kpiEngine';
 import { useAuthSafe } from '@/lib/useAuthSafe';
+import { CHART_TICK, valueLabel } from '@/lib/chartText';
 
 interface Props {
   employees: Employee[];
@@ -124,7 +124,7 @@ export default function EmployeeDashboard({ employees, departments, kpis, review
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">
-          <Gauge className="h-4 w-4 text-amber-600" />
+          <Gauge className="h-4 w-4 text-primary" />
           <h2 className="text-base font-semibold">Employee dashboard</h2>
         </div>
         <Select value={empId} onValueChange={setSelected}>
@@ -215,12 +215,14 @@ export default function EmployeeDashboard({ employees, departments, kpis, review
             ) : (
               <div className="h-56">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={trend} margin={{ top: 8, right: 12, left: -18, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
-                    <XAxis dataKey="period" tickLine={false} axisLine={false} fontSize={12} />
-                    <YAxis domain={[0, 5]} tickLine={false} axisLine={false} fontSize={12} />
+                  <LineChart data={trend} margin={{ top: 28, right: 20, left: -18, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--chart-grid))" />
+                    <XAxis dataKey="period" tickLine={false} axisLine={false} tick={CHART_TICK} />
+                    <YAxis domain={[0, 5]} tickLine={false} axisLine={false} tick={CHART_TICK} />
                     <Tooltip formatter={(value) => [`${value} / 5`, 'Score']} />
-                    <Line type="monotone" dataKey="score" stroke="#d97706" strokeWidth={2.5} dot={{ r: 4, fill: '#d97706' }} />
+                    <Line type="monotone" dataKey="score" stroke="hsl(var(--chart-1))" strokeWidth={2.5} dot={{ r: 4, fill: 'hsl(var(--chart-1))' }}>
+                      <LabelList content={valueLabel()} />
+                    </Line>
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -243,10 +245,10 @@ export default function EmployeeDashboard({ employees, departments, kpis, review
               <div className="h-56">
                 <ResponsiveContainer width="100%" height="100%">
                   <RadarChart data={radar} outerRadius="75%">
-                    <PolarGrid stroke="var(--border)" />
-                    <PolarAngleAxis dataKey="category" fontSize={12} />
+                    <PolarGrid stroke="hsl(var(--chart-grid))" />
+                    <PolarAngleAxis dataKey="category" tick={CHART_TICK} />
                     <PolarRadiusAxis domain={[0, 5]} tick={false} axisLine={false} />
-                    <Radar dataKey="score" stroke="#d97706" fill="#f59e0b" fillOpacity={0.35} />
+                    <Radar dataKey="score" stroke="hsl(var(--chart-1))" fill="hsl(var(--chart-2))" fillOpacity={0.35} />
                     <Tooltip formatter={(value) => [`${value} / 5`, 'Score']} />
                   </RadarChart>
                 </ResponsiveContainer>
@@ -273,7 +275,7 @@ export default function EmployeeDashboard({ employees, departments, kpis, review
               return (
                 <div key={o.id} className="space-y-1.5">
                   <div className="flex items-center justify-between gap-2 text-sm">
-                    <span className="min-w-0 truncate font-medium">{o.title}</span>
+                    <span className="min-w-0 break-words font-medium">{o.title}</span>
                     <span className="shrink-0 text-xs text-muted-foreground">{o.period} · {pct}%</span>
                   </div>
                   <Progress value={pct} className="h-2" />

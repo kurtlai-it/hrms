@@ -24,9 +24,9 @@ export function PrintAreaStyles({ areaClass }: { areaClass: string }) {
     border: none !important;
     box-shadow: none !important;
     background: #ffffff !important;
-    color: #1c1917 !important;
+    color: #000000 !important;
   }
-  .${areaClass} .print-text-muted { color: #57534e !important; }
+  .${areaClass} .print-text-muted { color: #3f3f46 !important; }
   @page { margin: 12mm; }
 }
 `}</style>

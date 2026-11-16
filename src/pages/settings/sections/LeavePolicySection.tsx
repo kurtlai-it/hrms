@@ -81,7 +81,7 @@ export default function LeavePolicySection() {
       >
         <p className="text-sm text-muted-foreground">
           Top-up editing moved to{' '}
-          <Link to="/company?tab=policy" className="font-medium text-amber-700 hover:underline underline-offset-4">
+          <Link to="/company?tab=policy" className="font-medium text-primary hover:underline underline-offset-4">
             Company Setup → Work &amp; Payroll Policy
           </Link>
           , where each type shows a live preview of EA minimum + top-up = total per service tier. Values are saved to

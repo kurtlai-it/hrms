@@ -7,8 +7,8 @@
  * pages/leave ApprovalsQueue, pages/claims ApproverInbox and pages/attendance
  * OTManager) and every decision runs the SAME mutation path as its source
  * module (./useDecisions), so balances, audit and payroll integration behave
- * identically. The NotificationBell badge consumes the same
- * usePendingApprovals() hook, so bell counts always equal inbox counts.
+ * identically. Home's "Things to do today" (useHomeTodos) consumes the same
+ * usePendingApprovals() hook, so Home counts always equal inbox counts.
  *
  * Roles: Admin/HR decide company-wide, Managers their own department; nobody
  * can decide their own request (rows stay visible but locked). Employees have
@@ -16,7 +16,10 @@
  * read-only. A collapsible "Recently decided (7 days)" section closes each
  * queue, and an "All caught up" hero shows when a queue hits zero.
  */
+import { OwnRequestNote } from '@/components/OwnRequestNote';
+import { leaveBulkApprovedMessage, otBulkApprovedMessage } from '@/lib/decisionMessages';
 import { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   AlertTriangle,
   CalendarClock,
@@ -36,9 +39,8 @@ import { toast } from 'sonner';
 import { useCollection } from '@/lib/db';
 import { calcOT, hourlyFromMonthly, MAX_OT_HOURS_MONTH } from '@/lib/statutory';
 import type { Department, Employee, LeaveStatus } from '@/lib/types';
-import { avatarTone, cn, fmtDate, fmtRM, initialsOf, round2 } from '@/lib/utils';
+import { cn, fmtDate, fmtRM, round2 } from '@/lib/utils';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -78,6 +80,8 @@ import { usePendingApprovals } from './usePendingApprovals';
 
 type TabKey = 'all' | ApprovalKind;
 
+const TAB_KEYS: TabKey[] = ['all', 'leave', 'claims', 'ot'];
+
 type DialogState =
   | { kind: 'leave'; action: 'approved' | 'rejected'; req: LeaveRequestEx }
   | { kind: 'leave-bulk'; reqs: LeaveRequestEx[] }
@@ -102,10 +106,10 @@ const DAYTYPE_LABEL = {
 
 function StatusPill({ status }: { status: LeaveStatus }) {
   const cls: Record<LeaveStatus, string> = {
-    pending: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200',
-    approved: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200',
-    rejected: 'bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-200',
-    cancelled: 'bg-stone-200 text-stone-600 dark:bg-stone-700/50 dark:text-stone-300',
+    pending: 'bg-warning-soft text-warning',
+    approved: 'bg-success-soft text-success',
+    rejected: 'bg-danger-soft text-destructive',
+    cancelled: 'bg-secondary text-muted-foreground',
   };
   return (
     <Badge variant="secondary" className={cn('shrink-0 capitalize', cls[status])}>
@@ -120,8 +124,8 @@ function AgeBadge({ at }: { at: string }) {
   return (
     <span
       className={cn(
-        'whitespace-nowrap text-[11px]',
-        d >= 3 ? 'font-medium text-amber-700 dark:text-amber-400' : 'text-muted-foreground',
+        'whitespace-nowrap text-xs',
+        d >= 3 ? 'font-medium text-primary' : 'text-muted-foreground',
       )}
     >
       {d === 0 ? 'today' : `${d}d waiting`}
@@ -140,7 +144,12 @@ export default function ApprovalsPage() {
   const { items: departments } = useCollection<Department>('departments');
   const { items: settingsDocs } = useCollection<ClaimPolicyDoc>('settings');
 
-  const [tab, setTab] = useState<TabKey>('all');
+  // ?tab=leave|claims|ot deep-links from Home's "Things to do today".
+  const [params] = useSearchParams();
+  const [tab, setTab] = useState<TabKey>(() => {
+    const requested = params.get('tab') as TabKey | null;
+    return requested && TAB_KEYS.includes(requested) ? requested : 'all';
+  });
   const [selected, setSelected] = useState<Record<ApprovalKind, Set<string>>>({
     leave: new Set(),
     claims: new Set(),
@@ -217,7 +226,10 @@ export default function ApprovalsPage() {
     } else if (dialog.kind === 'leave-bulk') {
       const { approvedCount, skipped } = leaveDec.approveBulk(dialog.reqs, remarks);
       if (approvedCount > 0) {
-        toast.success(`${approvedCount} leave request${approvedCount === 1 ? '' : 's'} approved`);
+        const skippedIds = new Set(skipped.map((s) => s.req.id));
+        toast.success(leaveBulkApprovedMessage(
+          dialog.reqs.filter((r) => !skippedIds.has(r.id)).map((r) => empById.get(r.employeeId)?.name ?? r.employeeId),
+        ));
       }
       if (skipped.length > 0) {
         toast.error(
@@ -258,7 +270,7 @@ export default function ApprovalsPage() {
     const recs = decidable.ot.filter((r) => selected.ot.has(r.id));
     if (recs.length === 0) return;
     const { approved, skipped } = otDec.approveBulk(recs);
-    if (approved > 0) toast.success(`${approved} OT request${approved === 1 ? '' : 's'} approved`);
+    if (approved > 0) toast.success(otBulkApprovedMessage(approved));
     if (skipped.length > 0) {
       toast.error(
         `${skipped.length} skipped — would exceed the ${MAX_OT_HOURS_MONTH}h monthly OT cap: ${skipped
@@ -290,17 +302,14 @@ export default function ApprovalsPage() {
   ) => {
     if (!isApprover) {
       return (
-        <p className="text-[11px] italic text-muted-foreground sm:max-w-[150px]">
+        <p className="text-xs text-muted-foreground sm:max-w-[150px]">
           Waiting for a Manager/HR/Admin decision.
         </p>
       );
     }
     if (isSelf) {
       return (
-        <p className="flex items-center gap-1 text-xs italic text-muted-foreground sm:max-w-[150px]">
-          <ShieldAlert className="h-3.5 w-3.5 shrink-0 text-amber-600" />
-          Own request — another approver must decide
-        </p>
+        <OwnRequestNote className="sm:max-w-[16rem]" />
       );
     }
     return (
@@ -327,24 +336,20 @@ export default function ApprovalsPage() {
         key={l.id}
         className={cn(
           'flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center',
-          isSel && 'bg-amber-50/60 dark:bg-amber-950/20',
+          isSel && 'bg-warning-soft',
         )}
       >
         <div className="flex min-w-0 flex-1 items-start gap-3">
           {isApprover && (
-            <Checkbox
-              className="mt-1.5"
-              checked={isSel}
-              disabled={isSelf}
-              onCheckedChange={(v) => toggleOne('leave', l.id, v === true)}
-              aria-label={isSelf ? 'You cannot decide your own request' : 'Select leave request'}
-            />
+            <label className="flex min-h-12 min-w-12 shrink-0 cursor-pointer items-center justify-center">
+              <Checkbox
+                checked={isSel}
+                disabled={isSelf}
+                onCheckedChange={(v) => toggleOne('leave', l.id, v === true)}
+                aria-label={isSelf ? 'You cannot decide your own request' : 'Select leave request'}
+              />
+            </label>
           )}
-          <Avatar className="h-9 w-9 shrink-0">
-            <AvatarFallback className={cn('text-xs font-semibold', avatarTone(name))}>
-              {initialsOf(name)}
-            </AvatarFallback>
-          </Avatar>
           <div className="min-w-0 flex-1 space-y-1">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-sm font-medium">{name}</span>
@@ -392,24 +397,20 @@ export default function ApprovalsPage() {
         key={c.id}
         className={cn(
           'flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center',
-          isSel && 'bg-amber-50/60 dark:bg-amber-950/20',
+          isSel && 'bg-warning-soft',
         )}
       >
         <div className="flex min-w-0 flex-1 items-start gap-3">
           {isApprover && (
-            <Checkbox
-              className="mt-1.5"
-              checked={isSel}
-              disabled={isSelf}
-              onCheckedChange={(v) => toggleOne('claims', c.id, v === true)}
-              aria-label={isSelf ? 'You cannot decide your own claim' : 'Select claim'}
-            />
+            <label className="flex min-h-12 min-w-12 shrink-0 cursor-pointer items-center justify-center">
+              <Checkbox
+                checked={isSel}
+                disabled={isSelf}
+                onCheckedChange={(v) => toggleOne('claims', c.id, v === true)}
+                aria-label={isSelf ? 'You cannot decide your own claim' : 'Select claim'}
+              />
+            </label>
           )}
-          <Avatar className="h-9 w-9 shrink-0">
-            <AvatarFallback className={cn('text-xs font-semibold', avatarTone(name))}>
-              {initialsOf(name)}
-            </AvatarFallback>
-          </Avatar>
           <div className="min-w-0 flex-1 space-y-1">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-sm font-medium">{name}</span>
@@ -420,7 +421,7 @@ export default function ApprovalsPage() {
               {flags.length > 0 && (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <span className="inline-flex cursor-help text-amber-600">
+                    <span className="inline-flex cursor-help text-primary">
                       <AlertTriangle className="h-4 w-4" />
                     </span>
                   </TooltipTrigger>
@@ -445,7 +446,7 @@ export default function ApprovalsPage() {
             </p>
           </div>
         </div>
-        <div className="flex shrink-0 items-center justify-end gap-3">
+        <div className="flex min-w-0 flex-wrap items-center justify-end gap-3">
           <span className="text-sm font-semibold tabular-nums">{fmtRM(c.amount)}</span>
           {rowActions(isSelf, () => openClaimsApprove([c]), () => openClaimsReject(c))}
         </div>
@@ -466,24 +467,20 @@ export default function ApprovalsPage() {
         key={r.id}
         className={cn(
           'flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center',
-          isSel && 'bg-amber-50/60 dark:bg-amber-950/20',
+          isSel && 'bg-warning-soft',
         )}
       >
         <div className="flex min-w-0 flex-1 items-start gap-3">
           {isApprover && (
-            <Checkbox
-              className="mt-1.5"
-              checked={isSel}
-              disabled={isSelf}
-              onCheckedChange={(v) => toggleOne('ot', r.id, v === true)}
-              aria-label={isSelf ? 'You cannot decide your own OT request' : 'Select OT request'}
-            />
+            <label className="flex min-h-12 min-w-12 shrink-0 cursor-pointer items-center justify-center">
+              <Checkbox
+                checked={isSel}
+                disabled={isSelf}
+                onCheckedChange={(v) => toggleOne('ot', r.id, v === true)}
+                aria-label={isSelf ? 'You cannot decide your own OT request' : 'Select OT request'}
+              />
+            </label>
           )}
-          <Avatar className="h-9 w-9 shrink-0">
-            <AvatarFallback className={cn('text-xs font-semibold', avatarTone(name))}>
-              {initialsOf(name)}
-            </AvatarFallback>
-          </Avatar>
           <div className="min-w-0 flex-1 space-y-1">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-sm font-medium">{name}</span>
@@ -497,7 +494,7 @@ export default function ApprovalsPage() {
               <p className="text-xs text-muted-foreground">“{r.otRequestReason}”</p>
             )}
             {isApprover && !isSelf && capBlocked && (
-              <p className="flex items-start gap-1 text-[11px] text-rose-700">
+              <p className="flex items-start gap-1 text-xs text-destructive">
                 <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0" />
                 Approving {r.otHours}h would exceed the {MAX_OT_HOURS_MONTH}h monthly OT cap —
                 reject or wait for next month.
@@ -506,7 +503,7 @@ export default function ApprovalsPage() {
           </div>
         </div>
         <div className="flex shrink-0 items-center justify-end gap-3">
-          <span className="text-sm font-semibold tabular-nums text-amber-700">
+          <span className="text-sm font-semibold tabular-nums text-primary">
             {emp ? fmtRM(pay) : '—'}
           </span>
           {rowActions(
@@ -533,7 +530,7 @@ export default function ApprovalsPage() {
           {l.decidedBy ? ` by ${l.decidedBy}` : ''}
         </span>
         {l.decisionRemarks && (
-          <p className="mt-0.5 truncate text-xs italic text-muted-foreground">{l.decisionRemarks}</p>
+          <p className="mt-0.5 break-words text-xs text-muted-foreground"><span className="font-bold">Remark:</span> {l.decisionRemarks}</p>
         )}
       </div>
       <StatusPill status={l.status} />
@@ -549,7 +546,7 @@ export default function ApprovalsPage() {
           {c.decidedAt ? ` · decided ${fmtDate(c.decidedAt)}` : ''}
         </span>
         {c.decisionRemarks && (
-          <p className="mt-0.5 truncate text-xs italic text-muted-foreground">{c.decisionRemarks}</p>
+          <p className="mt-0.5 break-words text-xs text-muted-foreground"><span className="font-bold">Remark:</span> {c.decisionRemarks}</p>
         )}
       </div>
       <StatusPill status={c.status === 'paid' ? 'approved' : (c.status as LeaveStatus)} />
@@ -631,11 +628,11 @@ export default function ApprovalsPage() {
     const allSelected = decidableIds.length > 0 && decidableIds.every((id) => selectedSet.has(id));
     const icon =
       kind === 'leave' ? (
-        <CalendarClock className="h-4 w-4 text-amber-600" />
+        <CalendarClock className="h-4 w-4 text-primary" />
       ) : kind === 'claims' ? (
-        <Receipt className="h-4 w-4 text-amber-600" />
+        <Receipt className="h-4 w-4 text-primary" />
       ) : (
-        <Timer className="h-4 w-4 text-amber-600" />
+        <Timer className="h-4 w-4 text-primary" />
       );
     return (
       <section className="space-y-3">
@@ -751,9 +748,9 @@ export default function ApprovalsPage() {
       {/* ── Header ── */}
       <div className="space-y-1">
         <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
-          <Inbox className="h-6 w-6 text-amber-600" /> Approvals
+          <Inbox className="h-6 w-6 text-primary" /> Approvals
           {counts.total > 0 && (
-            <Badge className="bg-amber-600 text-white hover:bg-amber-600">{counts.total}</Badge>
+            <Badge className="bg-primary text-primary-foreground hover:bg-primary">{counts.total}</Badge>
           )}
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -771,11 +768,11 @@ export default function ApprovalsPage() {
             type="button"
             onClick={() => setTab(s.kind)}
             className={cn(
-              'rounded-xl border bg-card p-4 text-left transition-colors hover:border-amber-400',
-              tab === s.kind && 'border-amber-400',
+              'rounded-xl border bg-card p-4 text-left transition-colors hover:border-warning',
+              tab === s.kind && 'border-warning',
             )}
           >
-            <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <div className="text-xs font-bold text-muted-foreground">
               {s.label}
             </div>
             <div className="mt-1 text-2xl font-semibold tabular-nums">{s.count}</div>
@@ -786,7 +783,7 @@ export default function ApprovalsPage() {
 
       {/* ── Employee direct-visit notice ── */}
       {!isApprover && (
-        <Alert className="border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+        <Alert className="border-warning/40 bg-warning-soft text-warning">
           <ShieldAlert className="h-4 w-4" />
           <AlertDescription>
             These are your own requests waiting for a Manager/HR/Admin decision. Approvers decide
@@ -883,7 +880,7 @@ export default function ApprovalsPage() {
             <ul className="max-h-40 space-y-1 overflow-auto rounded-lg border p-2 text-sm">
               {dialog.reqs.map((r) => (
                 <li key={r.id} className="flex items-center justify-between gap-2">
-                  <span className="truncate">
+                  <span className="break-words">
                     {empById.get(r.employeeId)?.name ?? r.employeeId} — {LEAVE_TYPE_META[r.type].label}
                   </span>
                   <span className="shrink-0 text-muted-foreground">{r.days}d</span>
@@ -1033,7 +1030,7 @@ export default function ApprovalsPage() {
             >
               Cancel
             </Button>
-            <Button variant="destructive" disabled={remarks.trim().length < 3} onClick={confirmClaimsReject}>
+            <Button variant="destructive" disabled={remarks.trim().length < 3} disabledReason="Write a remark first (3 letters or more)." onClick={confirmClaimsReject}>
               <X className="h-4 w-4" /> Reject claim
             </Button>
           </DialogFooter>

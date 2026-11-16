@@ -125,7 +125,7 @@ export default function ProfileSection() {
         description="Registered particulars for the active company — used across payslips, reports and statutory forms."
         action={
           <div className="flex items-center gap-2">
-            {dirty ? <span className="text-xs font-medium text-amber-700">{UNSAVED_HINT}</span> : null}
+            {dirty ? <span className="text-xs font-medium text-primary">{UNSAVED_HINT}</span> : null}
             <SaveButton onSave={onSave} disabled={nameMissing} />
           </div>
         }

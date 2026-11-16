@@ -91,7 +91,7 @@ export default function EmergencyContactsTab({ employee, file, readOnly, actorNa
                 <p className="text-sm font-medium">{c.name}</p>
                 <p className="text-xs text-muted-foreground">
                   {c.relation || 'Contact'} ·{' '}
-                  <a className="text-amber-700 hover:underline underline-offset-4" href={`tel:${c.phone}`}>
+                  <a className="text-primary hover:underline underline-offset-4" href={`tel:${c.phone}`}>
                     {c.phone}
                   </a>
                 </p>
@@ -144,8 +144,8 @@ export default function EmergencyContactsTab({ employee, file, readOnly, actorNa
               Cancel
             </Button>
             <Button
-              className="bg-amber-600 text-white hover:bg-amber-700"
-              disabled={!form.name.trim() || !form.phone.trim()}
+              className="bg-primary text-primary-foreground hover:bg-primary"
+              disabled={!form.name.trim() || !form.phone.trim()} disabledReason="Fill in the required fields first."
               onClick={submit}
             >
               {editing ? 'Save changes' : 'Add contact'}

@@ -119,7 +119,7 @@ function DepartmentsCard({ employees }: { employees: Employee[] }) {
                         variant="ghost"
                         size="icon"
                         aria-label={`Delete ${d.name}`}
-                        disabled={count > 0}
+                        disabled={count > 0} disabledReason="Still in use."
                         title={count > 0 ? 'Reassign employees first' : 'Delete department'}
                         onClick={() => setDeleting(d)}
                       >
@@ -141,12 +141,12 @@ function DepartmentsCard({ employees }: { employees: Employee[] }) {
           return (
             <div key={d.id} className="flex items-center justify-between gap-3 rounded-lg border p-3">
               <div className="min-w-0">
-                <p className="truncate text-sm font-medium">{d.name}</p>
+                <p className="break-words text-sm font-medium">{d.name}</p>
                 <p className="mt-0.5 text-xs text-muted-foreground">
                   {d.code} · {stateInfo(d.state).name} · {count} employee{count === 1 ? '' : 's'}
                 </p>
               </div>
-              <div className="flex shrink-0 gap-1">
+              <div className="flex min-w-0 flex-wrap justify-end gap-1">
                 <Button variant="ghost" size="icon" aria-label={`Edit ${d.name}`} onClick={() => openEdit(d)}>
                   <Pencil className="h-4 w-4" />
                 </Button>
@@ -154,7 +154,7 @@ function DepartmentsCard({ employees }: { employees: Employee[] }) {
                   variant="ghost"
                   size="icon"
                   aria-label={`Delete ${d.name}`}
-                  disabled={count > 0}
+                  disabled={count > 0} disabledReason="Still in use."
                   onClick={() => setDeleting(d)}
                 >
                   <Trash2 className="h-4 w-4 text-destructive" />
@@ -199,7 +199,7 @@ function DepartmentsCard({ employees }: { employees: Employee[] }) {
               <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={!valid}>
+              <Button type="submit" disabled={!valid} disabledReason="Fill in the required fields first.">
                 {editing ? 'Save changes' : 'Add department'}
               </Button>
             </DialogFooter>
@@ -290,7 +290,7 @@ function PositionsCard({ employees }: { employees: Employee[] }) {
       title="Positions"
       description={`${positions.length} positions · salary bands feed the Salary Insights benchmarks.`}
       action={
-        <Button size="sm" onClick={openAdd} disabled={departments.length === 0}>
+        <Button size="sm" onClick={openAdd} disabled={departments.length === 0} disabledReason="Add a department first.">
           <Plus className="mr-1.5 h-4 w-4" /> Add position
         </Button>
       }
@@ -330,7 +330,7 @@ function PositionsCard({ employees }: { employees: Employee[] }) {
                         variant="ghost"
                         size="icon"
                         aria-label={`Delete ${p.title}`}
-                        disabled={count > 0}
+                        disabled={count > 0} disabledReason="Still in use."
                         title={count > 0 ? 'Reassign employees first' : 'Delete position'}
                         onClick={() => setDeleting(p)}
                       >
@@ -351,7 +351,7 @@ function PositionsCard({ employees }: { employees: Employee[] }) {
           return (
             <div key={p.id} className="flex items-center justify-between gap-3 rounded-lg border p-3">
               <div className="min-w-0">
-                <p className="truncate text-sm font-medium">{p.title}</p>
+                <p className="break-words text-sm font-medium">{p.title}</p>
                 <p className="mt-0.5 text-xs text-muted-foreground">
                   {deptName(p.departmentId)} · <span className="capitalize">{p.level}</span> · {count} employee{count === 1 ? '' : 's'}
                 </p>
@@ -359,7 +359,7 @@ function PositionsCard({ employees }: { employees: Employee[] }) {
                   {fmtRM(p.minSalary)} – {fmtRM(p.maxSalary)}
                 </p>
               </div>
-              <div className="flex shrink-0 gap-1">
+              <div className="flex min-w-0 flex-wrap justify-end gap-1">
                 <Button variant="ghost" size="icon" aria-label={`Edit ${p.title}`} onClick={() => openEdit(p)}>
                   <Pencil className="h-4 w-4" />
                 </Button>
@@ -367,7 +367,7 @@ function PositionsCard({ employees }: { employees: Employee[] }) {
                   variant="ghost"
                   size="icon"
                   aria-label={`Delete ${p.title}`}
-                  disabled={count > 0}
+                  disabled={count > 0} disabledReason="Still in use."
                   onClick={() => setDeleting(p)}
                 >
                   <Trash2 className="h-4 w-4 text-destructive" />
@@ -431,7 +431,7 @@ function PositionsCard({ employees }: { employees: Employee[] }) {
               <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={!valid}>
+              <Button type="submit" disabled={!valid} disabledReason="Fill in the required fields first.">
                 {editing ? 'Save changes' : 'Add position'}
               </Button>
             </DialogFooter>

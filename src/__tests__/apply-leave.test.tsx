@@ -12,9 +12,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import ApplyLeaveForm from '@/pages/leave/components/ApplyLeaveForm';
 import { RoleProvider } from '@/lib/roleContext';
 import { getCollection } from '@/lib/db';
+import { isHoliday } from '@/lib/holidays';
+import { STATE_DECILES } from '@/lib/salaryBenchmark';
 import { freshDemoTenant } from '../test/helpers';
 import type { CollectionApi } from '@/lib/db';
-import type { Employee, LeaveBalance, LeaveRequest } from '@/lib/types';
+import type { Employee, LeaveBalance, LeaveRequest, StateCode } from '@/lib/types';
 import type { LeaveRequestEx } from '@/pages/leave/leaveLogic';
 
 const toastSuccess = vi.fn();
@@ -45,13 +47,15 @@ function makeLeavesApi(items: LeaveRequestEx[] = []) {
 }
 
 /** Next Monday (strictly in the future) — guaranteed chargeable for KUL (Sat–Sun weekend). */
+/** The next Monday that is not a public holiday in any state (a working day everywhere). */
 function nextMondayISO(): string {
   const d = new Date();
   d.setDate(d.getDate() + ((8 - d.getDay()) % 7 || 7));
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
+  const iso = () =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const states = Object.keys(STATE_DECILES) as StateCode[];
+  while (states.some((s) => isHoliday(iso(), s))) d.setDate(d.getDate() + 7);
+  return iso();
 }
 
 interface Rendered {

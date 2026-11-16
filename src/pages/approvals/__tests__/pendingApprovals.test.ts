@@ -2,7 +2,7 @@
  * Unified approvals inbox — aggregation math + role scoping tests.
  *
  * Covers the pure logic in ../model (the same functions the /approvals page
- * and the NotificationBell consume via usePendingApprovals):
+ * and Home's to-do list consume via usePendingApprovals):
  *   - scoping mirrors lib/authContext (Admin/HR/SuperAdmin unrestricted,
  *     Manager own department, Employee own records, fail closed when
  *     unlinked, fail open in pre-auth permissive mode);

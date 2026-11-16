@@ -99,7 +99,7 @@ export default function SalaryHistoryTab({ employee, file, readOnly, actorName }
         !readOnly && (
           <Button
             size="sm"
-            className="bg-amber-600 text-white hover:bg-amber-700"
+            className="bg-primary text-primary-foreground hover:bg-primary"
             onClick={() => {
               reset();
               setOpen(true);
@@ -124,7 +124,7 @@ export default function SalaryHistoryTab({ employee, file, readOnly, actorName }
                 <span
                   className={cn(
                     'absolute -left-[27px] top-1 h-2.5 w-2.5 rounded-full',
-                    flat ? 'bg-stone-300' : up ? 'bg-lime-500' : 'bg-red-500',
+                    flat ? 'bg-input' : up ? 'bg-success' : 'bg-destructive',
                   )}
                 />
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
@@ -138,10 +138,10 @@ export default function SalaryHistoryTab({ employee, file, readOnly, actorName }
                     className={cn(
                       'border-transparent',
                       flat
-                        ? 'bg-stone-100 text-stone-600'
+                        ? 'bg-muted text-muted-foreground'
                         : up
-                          ? 'bg-lime-100 text-lime-800'
-                          : 'bg-red-100 text-red-800',
+                          ? 'bg-success-soft text-success'
+                          : 'bg-danger-soft text-destructive',
                     )}
                   >
                     {!flat &&
@@ -153,7 +153,7 @@ export default function SalaryHistoryTab({ employee, file, readOnly, actorName }
                     {up ? '+' : ''}
                     {h.changePercent}%
                   </Badge>
-                  <Badge variant="outline" className="border-transparent bg-stone-100 text-stone-700">
+                  <Badge variant="outline" className="border-transparent bg-muted text-foreground">
                     {SALARY_CHANGE_REASON_LABELS[h.reason]}
                   </Badge>
                 </div>
@@ -220,10 +220,10 @@ export default function SalaryHistoryTab({ employee, file, readOnly, actorName }
               className={cn(
                 'rounded-lg p-3 text-sm font-medium',
                 pct > 0
-                  ? 'bg-lime-50 text-lime-800'
+                  ? 'bg-success-soft text-success'
                   : pct < 0
-                    ? 'bg-red-50 text-red-800'
-                    : 'bg-stone-50 text-stone-600',
+                    ? 'bg-danger-soft text-destructive'
+                    : 'bg-muted text-muted-foreground',
               )}
             >
               {fmtRM(employee.baseSalary)} → {fmtRM(parsed)} ({pct > 0 ? '+' : ''}
@@ -246,8 +246,8 @@ export default function SalaryHistoryTab({ employee, file, readOnly, actorName }
               Cancel
             </Button>
             <Button
-              className="bg-amber-600 text-white hover:bg-amber-700"
-              disabled={!validNew || !effectiveDate}
+              className="bg-primary text-primary-foreground hover:bg-primary"
+              disabled={!validNew || !effectiveDate} disabledReason="Fill in the required fields first."
               onClick={submit}
             >
               Save change

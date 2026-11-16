@@ -44,7 +44,7 @@ const COMPANIES: CompanySeed[] = [
   {
     id: 'co-asm', code: 'ASM', name: 'ASM Tech Sdn Bhd',
     regNo: '201501023456 (1144228-K)', hqState: 'KUL', plan: 'enterprise', status: 'active',
-    accentColor: '#b45309', payrollCutoffDay: 25, workingWeek: 'sat-sun',
+    accentColor: '#2E2F70', payrollCutoffDay: 25, workingWeek: 'sat-sun',
     leaveTopUps: { annual: 2 },
   },
   {

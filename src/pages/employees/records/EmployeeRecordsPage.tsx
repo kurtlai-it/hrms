@@ -154,7 +154,7 @@ export default function EmployeeRecordsPage() {
           <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center">
             <EmployeeAvatar name={emp.name} size="lg" />
             <div className="min-w-0 flex-1 space-y-1.5">
-              <h1 className="truncate text-xl font-semibold tracking-tight">{emp.name}</h1>
+              <h1 className="break-words text-xl font-semibold tracking-tight">{emp.name}</h1>
               <p className="text-sm text-muted-foreground">
                 Personnel records · {position} · {department} · {stateInfo(emp.state).name}
               </p>
@@ -162,7 +162,7 @@ export default function EmployeeRecordsPage() {
                 <StatusBadge status={emp.status} />
                 <TypeBadge type={emp.employmentType} />
                 {readOnly && (
-                  <span className="inline-flex items-center rounded-md bg-stone-100 px-2 py-0.5 text-xs text-stone-600">
+                  <span className="inline-flex items-center rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">
                     Read-only
                   </span>
                 )}
@@ -184,10 +184,10 @@ export default function EmployeeRecordsPage() {
                   className={cn(
                     'text-sm font-semibold',
                     completeness.percent === 100
-                      ? 'text-lime-700'
+                      ? 'text-success'
                       : completeness.percent >= 60
-                        ? 'text-amber-700'
-                        : 'text-red-700',
+                        ? 'text-primary'
+                        : 'text-destructive',
                   )}
                 >
                   {completeness.percent}%
@@ -201,7 +201,7 @@ export default function EmployeeRecordsPage() {
                     .map((i) =>
                       i.section === 'core' ? (
                         <Link key={i.key} to={`/employees/${emp.id}`}>
-                          <span className="inline-flex items-center rounded-full bg-red-50 px-2.5 py-1 text-xs text-red-700 transition-colors hover:bg-red-100">
+                          <span className="inline-flex items-center rounded-full bg-danger-soft px-2.5 py-1 text-xs text-destructive transition-colors hover:bg-danger-soft">
                             {i.label} →
                           </span>
                         </Link>
@@ -210,7 +210,7 @@ export default function EmployeeRecordsPage() {
                           key={i.key}
                           type="button"
                           onClick={chipTarget[i.section]}
-                          className="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-1 text-xs text-amber-800 transition-colors hover:bg-amber-100"
+                          className="inline-flex items-center rounded-full bg-warning-soft px-2.5 py-1 text-xs text-warning transition-colors hover:bg-warning-soft"
                         >
                           {i.label} →
                         </button>
@@ -228,8 +228,8 @@ export default function EmployeeRecordsPage() {
         <Alert
           className={cn(
             expiredCount > 0
-              ? 'border-red-200 bg-red-50/60 text-red-900 [&>svg]:text-red-700'
-              : 'border-amber-200 bg-amber-50/60 text-amber-900 [&>svg]:text-amber-700',
+              ? 'border-destructive/40 bg-danger-soft text-destructive [&>svg]:text-destructive'
+              : 'border-warning/40 bg-warning-soft text-warning [&>svg]:text-warning',
           )}
         >
           <FileWarning className="h-4 w-4" />

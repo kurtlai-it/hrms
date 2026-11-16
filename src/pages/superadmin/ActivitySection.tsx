@@ -120,13 +120,13 @@ export default function ActivitySection() {
                   </TableCell>
                   <TableCell>
                     {r.kind === 'tenant' ? (
-                      <span className="inline-flex items-center gap-1.5 rounded-md bg-stone-100 px-2 py-0.5 text-xs font-medium dark:bg-stone-800">
+                      <span className="inline-flex items-center gap-1.5 rounded-md bg-muted px-2 py-0.5 text-xs font-medium">
                         <AccentDot color={r.row.company.branding.accentColor} />
                         {r.row.company.code}
                       </span>
                     ) : (
                       <span
-                        className="inline-flex items-center gap-1.5 rounded-md bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-950 dark:text-amber-300"
+                        className="inline-flex items-center gap-1.5 rounded-md bg-warning-soft px-2 py-0.5 text-xs font-medium text-warning"
                         title={r.row.companyName ? `Regarding ${r.row.companyName}` : 'Global system event'}
                       >
                         <ShieldCheck className="h-3 w-3" />
@@ -134,12 +134,12 @@ export default function ActivitySection() {
                       </span>
                     )}
                   </TableCell>
-                  <TableCell className="max-w-[14ch] truncate">{r.actorName}</TableCell>
+                  <TableCell className="max-w-[14ch] break-words">{r.actorName}</TableCell>
                   <TableCell>
                     <code className="rounded bg-muted px-1.5 py-0.5 text-xs">{r.action}</code>
                   </TableCell>
                   <TableCell className="hidden md:table-cell">{r.entity}</TableCell>
-                  <TableCell className="hidden max-w-[32ch] truncate lg:table-cell">
+                  <TableCell className="hidden max-w-[32ch] break-words lg:table-cell">
                     {r.detail ?? '—'}
                   </TableCell>
                 </TableRow>

@@ -83,7 +83,7 @@ function EditCompanyDialog(props: {
       return;
     }
     if (!/^#[0-9a-fA-F]{6}$/.test(accentColor.trim())) {
-      setError('Accent color must be a hex value like #b45309.');
+      setError('Accent color must be a hex value like #2E2F70.');
       return;
     }
     if (status === 'trial' && trialEnds && Number.isNaN(new Date(`${trialEnds}T00:00:00`).getTime())) {
@@ -245,13 +245,13 @@ function EditCompanyDialog(props: {
                 type="color"
                 aria-label="Pick accent color"
                 className="h-9 w-10 shrink-0 cursor-pointer rounded-md border bg-background p-1"
-                value={/^#[0-9a-fA-F]{6}$/.test(accentColor) ? accentColor : '#b45309'}
+                value={/^#[0-9a-fA-F]{6}$/.test(accentColor) ? accentColor : '#2e2f70'}
                 onChange={(e) => setAccentColor(e.target.value)}
               />
               <Input
                 id="sa-edit-color"
                 value={accentColor}
-                placeholder="#b45309"
+                placeholder="#2E2F70"
                 onChange={(e) => setAccentColor(e.target.value)}
               />
             </div>
@@ -260,7 +260,7 @@ function EditCompanyDialog(props: {
 
         {/* Subscription — plan changes above flow into the subscription via
             subscriptionFor(); the knobs below are the contract overrides. */}
-        <div className="space-y-3 rounded-lg border border-amber-200 bg-amber-50/50 p-4 dark:border-amber-900 dark:bg-amber-950/20">
+        <div className="space-y-3 rounded-lg border border-warning/40 bg-warning-soft p-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-sm font-medium">Subscription</p>
             {sub ? (
@@ -327,13 +327,13 @@ function EditCompanyDialog(props: {
           </p>
         </div>
 
-        {error ? <p className="text-sm text-red-600 dark:text-red-400">{error}</p> : null}
+        {error ? <p className="text-sm text-destructive">{error}</p> : null}
 
         {/* Danger zone — PDPA erasure (tenant deletion). Type-the-name confirm
             before db.removeCompany purges every tenant key, the directory
             record and the company's user accounts. */}
-        <div className="space-y-3 rounded-lg border border-red-200 bg-red-50/60 p-4 dark:border-red-900 dark:bg-red-950/20">
-          <p className="flex items-center gap-2 text-sm font-medium text-red-700 dark:text-red-400">
+        <div className="space-y-3 rounded-lg border border-destructive/40 bg-danger-soft p-4">
+          <p className="flex items-center gap-2 text-sm font-medium text-destructive">
             <AlertTriangle className="h-4 w-4" />
             Danger zone
           </p>
@@ -357,7 +357,7 @@ function EditCompanyDialog(props: {
             </div>
           ) : (
             <div className="space-y-2">
-              <p className="text-xs text-red-700 dark:text-red-400">
+              <p className="text-xs text-destructive">
                 This purges every storage key under <code>myhrms:t:{company.id}:</code>, removes the
                 company from the directory and deletes its user accounts. A tombstone is written to
                 the global system audit. Type <strong>{company.name}</strong> to confirm.
@@ -650,7 +650,7 @@ export default function CompaniesSection() {
                       <div className="flex items-center gap-2">
                         <AccentDot color={c.branding.accentColor} />
                         <div className="min-w-0">
-                          <p className="truncate font-medium">{c.name}</p>
+                          <p className="break-words font-medium">{c.name}</p>
                           <p className="text-xs text-muted-foreground">
                             {c.code}
                             <span className="lg:hidden"> · {c.regNo}</span>
@@ -672,7 +672,7 @@ export default function CompaniesSection() {
                             {ts.expired ? (
                               <Badge
                                 variant="outline"
-                                className="border-transparent bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300"
+                                className="border-transparent bg-warning-soft text-warning"
                                 title={`Trial ended ${fmtDate(ts.trialEndsAt!)} — company users are blocked at login`}
                               >
                                 Trial expired
@@ -725,7 +725,7 @@ export default function CompaniesSection() {
                             variant="ghost"
                             size="icon"
                             title="Reactivate company"
-                            className="text-lime-700 hover:text-lime-800 dark:text-lime-400"
+                            className="text-success hover:text-success"
                             onClick={() => setConfirm({ company: c, action: 'reactivate' })}
                           >
                             <RotateCcw className="h-4 w-4" />
@@ -735,7 +735,7 @@ export default function CompaniesSection() {
                             variant="ghost"
                             size="icon"
                             title="Suspend company"
-                            className="text-red-600 hover:text-red-700 dark:text-red-400"
+                            className="text-destructive hover:text-destructive"
                             onClick={() => setConfirm({ company: c, action: 'suspend' })}
                           >
                             <Ban className="h-4 w-4" />

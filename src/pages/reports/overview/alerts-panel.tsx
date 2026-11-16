@@ -7,6 +7,7 @@
  * Thresholds come from @/lib/statutory; nothing is hardcoded.
  */
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AlertTriangle, CircleCheck, Globe, Hourglass, Timer, Wallet } from 'lucide-react';
 import { useAuth } from '@/lib/useAuth';
 import { useCollection } from '@/lib/db';
@@ -27,6 +28,7 @@ interface AlertItem {
 }
 
 export function AlertsPanel() {
+  const { t } = useTranslation();
   const { role, scopeEmployees, scopeByEmployee } = useAuth();
   const { items: employees } = useCollection<Employee>('employees');
   const { items: attendance } = useCollection<AttendanceRecord>('attendance');
@@ -82,10 +84,12 @@ export function AlertsPanel() {
     alerts.push({
       id: 'probation-overdue',
       icon: Hourglass,
-      title: 'Probation overdue',
-      detail: `${worst.emp.name} is ${-worst.daysLeft}d past probation end${
-        probationOverdue.length > 1 ? ` +${probationOverdue.length - 1} more` : ''
-      } — confirm or extend`,
+      title: t('dash.alerts.probationOverdue'),
+      detail: t('dash.alerts.probationOverdueDetail', {
+        name: worst.emp.name,
+        days: t('common.days', { count: -worst.daysLeft }),
+        more: probationOverdue.length > 1 ? ` ${t('common.more', { count: probationOverdue.length - 1 })}` : '',
+      }),
       to: '/employees',
       count: probationOverdue.length,
     });
@@ -95,10 +99,12 @@ export function AlertsPanel() {
     alerts.push({
       id: 'min-wage',
       icon: Wallet,
-      title: 'Below minimum wage',
-      detail: `${names}${belowWage.length > 2 ? ` +${belowWage.length - 2} more` : ''} under ${fmtRM(
-        MINIMUM_WAGE,
-      )} basic`,
+      title: t('dash.alerts.belowMinWage'),
+      detail: t('dash.alerts.belowMinWageDetail', {
+        names,
+        more: belowWage.length > 2 ? ` ${t('common.more', { count: belowWage.length - 2 })}` : '',
+        amount: fmtRM(MINIMUM_WAGE),
+      }),
       to: '/employees',
       count: belowWage.length,
     });
@@ -108,8 +114,8 @@ export function AlertsPanel() {
     alerts.push({
       id: 'ot-cap',
       icon: Timer,
-      title: 'OT over monthly cap',
-      detail: `Highest: ${top.emp.name} at ${top.hours}h (cap ${MAX_OT_HOURS_MONTH}h)`,
+      title: t('dash.alerts.otOverCap'),
+      detail: t('dash.alerts.otOverCapDetail', { name: top.emp.name, hours: top.hours, cap: MAX_OT_HOURS_MONTH }),
       to: '/attendance',
       count: otOver.length,
     });
@@ -119,8 +125,11 @@ export function AlertsPanel() {
     alerts.push({
       id: 'probation',
       icon: Hourglass,
-      title: 'Probation ending soon',
-      detail: `${next.emp.name} ends in ${next.daysLeft}d — confirm or extend`,
+      title: t('dash.alerts.probationEnding'),
+      detail: t('dash.alerts.probationEndingDetail', {
+        name: next.emp.name,
+        days: t('common.days', { count: next.daysLeft }),
+      }),
       to: '/employees',
       count: probationEnding.length,
     });
@@ -129,8 +138,8 @@ export function AlertsPanel() {
     alerts.push({
       id: 'foreign-epf',
       icon: Globe,
-      title: 'Foreign-worker EPF applies',
-      detail: `${foreignCount} foreign employee${foreignCount > 1 ? 's' : ''} — 2% + 2% EPF is mandatory (EPF (Amendment) Act 2025)`,
+      title: t('dash.alerts.foreignEpf'),
+      detail: t('dash.alerts.foreignEpfDetail', { count: foreignCount }),
       to: '/employees',
     });
   }
@@ -139,18 +148,18 @@ export function AlertsPanel() {
     <Card className="rounded-xl">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
-          <AlertTriangle className="h-4 w-4 text-amber-600" />
-          Alerts
+          <AlertTriangle className="h-4 w-4 text-warning" />
+          {t('dash.alerts.title')}
         </CardTitle>
-        <CardDescription>Statutory thresholds and workforce watch-outs</CardDescription>
+        <CardDescription>{t('dash.alerts.desc')}</CardDescription>
       </CardHeader>
       <CardContent>
         {alerts.length === 0 ? (
           <div className="flex flex-col items-center gap-2 py-6 text-center">
-            <CircleCheck className="h-6 w-6 text-lime-700" />
-            <p className="text-sm font-medium">All clear</p>
+            <CircleCheck className="h-6 w-6 text-success" />
+            <p className="text-sm font-medium">{t('dash.alerts.allClear')}</p>
             <p className="text-xs text-muted-foreground">
-              No minimum-wage, OT-cap or probation issues right now.
+              {t('dash.alerts.allClearDesc')}
             </p>
           </div>
         ) : (
@@ -161,10 +170,10 @@ export function AlertsPanel() {
                   to={a.to}
                   className="flex items-start gap-3 rounded-lg p-2 -m-2 transition-colors hover:bg-accent"
                 >
-                  <a.icon className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" />
+                  <a.icon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <p className="truncate text-sm font-medium">{a.title}</p>
+                      <p className="break-words text-sm font-medium">{a.title}</p>
                       {a.count !== undefined && (
                         <Badge variant="secondary" className="shrink-0">
                           {a.count}

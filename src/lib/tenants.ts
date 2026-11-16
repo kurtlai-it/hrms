@@ -50,7 +50,7 @@ const SPECS: CompanySeedSpec[] = [
     hqState: 'KUL',
     plan: 'enterprise',
     status: 'active',
-    accentColor: '#b45309',
+    accentColor: '#2E2F70',
     payrollCutoffDay: 25,
     leaveTopUps: { annual: 2 },
   },

@@ -37,25 +37,25 @@ export interface CategoryMeta {
 }
 
 export const CATEGORIES: CategoryMeta[] = [
-  { id: 'travel', label: 'Travel', claimCategory: 'travel', color: '#b45309' },
-  { id: 'mileage', label: 'Mileage', claimCategory: 'travel', color: '#92400e' },
-  { id: 'meal', label: 'Meal & Entertainment', claimCategory: 'meal', color: '#d97706' },
-  { id: 'medical', label: 'Medical', claimCategory: 'medical', color: '#dc2626' },
-  { id: 'telephone', label: 'Phone & Internet', claimCategory: 'telephone', color: '#a16207' },
-  { id: 'parking', label: 'Parking & Toll', claimCategory: 'parking', color: '#78716c' },
-  { id: 'training', label: 'Training', claimCategory: 'training', color: '#4d7c0f' },
-  { id: 'other', label: 'Other', claimCategory: 'other', color: '#a8a29e' },
+  { id: 'travel', label: 'Travel', claimCategory: 'travel', color: 'hsl(var(--chart-1))' },
+  { id: 'mileage', label: 'Mileage', claimCategory: 'travel', color: 'hsl(var(--chart-1))' },
+  { id: 'meal', label: 'Meal & Entertainment', claimCategory: 'meal', color: 'hsl(var(--chart-2))' },
+  { id: 'medical', label: 'Medical', claimCategory: 'medical', color: 'hsl(var(--chart-3))' },
+  { id: 'telephone', label: 'Phone & Internet', claimCategory: 'telephone', color: 'hsl(var(--chart-6))' },
+  { id: 'parking', label: 'Parking & Toll', claimCategory: 'parking', color: 'hsl(var(--chart-4))' },
+  { id: 'training', label: 'Training', claimCategory: 'training', color: 'hsl(var(--chart-5))' },
+  { id: 'other', label: 'Other', claimCategory: 'other', color: 'hsl(var(--chart-grid))' },
 ];
 
 /** Chart colours keyed by the core category (mileage folds into travel). */
 export const CATEGORY_COLOR: Record<ClaimCategory, string> = {
-  travel: '#b45309',
-  meal: '#d97706',
-  medical: '#dc2626',
-  parking: '#78716c',
-  telephone: '#a16207',
-  training: '#4d7c0f',
-  other: '#a8a29e',
+  travel: 'hsl(var(--chart-1))',
+  meal: 'hsl(var(--chart-2))',
+  medical: 'hsl(var(--chart-3))',
+  parking: 'hsl(var(--chart-4))',
+  telephone: 'hsl(var(--chart-6))',
+  training: 'hsl(var(--chart-5))',
+  other: 'hsl(var(--chart-grid))',
 };
 
 export const CATEGORY_LABEL: Record<ClaimCategory, string> = {
@@ -233,9 +233,9 @@ export function policyWarnings(
 // ── Status pipeline ─────────────────────────────────────────────────────────
 
 export const STATUS_META: Record<ClaimStatus, { label: string; badgeClass: string }> = {
-  draft: { label: 'Draft', badgeClass: 'border-stone-300 bg-stone-100 text-stone-600' },
-  submitted: { label: 'Submitted', badgeClass: 'border-amber-300 bg-amber-100 text-amber-800' },
-  approved: { label: 'Approved', badgeClass: 'border-lime-300 bg-lime-100 text-lime-800' },
-  rejected: { label: 'Rejected', badgeClass: 'border-red-300 bg-red-100 text-red-700' },
-  paid: { label: 'Paid', badgeClass: 'border-lime-600 bg-lime-600 text-white' },
+  draft: { label: 'Draft', badgeClass: 'border-border bg-muted text-muted-foreground' },
+  submitted: { label: 'Submitted', badgeClass: 'border-warning/40 bg-warning-soft text-warning' },
+  approved: { label: 'Approved', badgeClass: 'border-success/40 bg-success-soft text-success' },
+  rejected: { label: 'Rejected', badgeClass: 'border-destructive/40 bg-danger-soft text-destructive' },
+  paid: { label: 'Paid', badgeClass: 'border-success bg-success text-success-foreground' },
 };

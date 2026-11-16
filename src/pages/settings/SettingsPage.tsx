@@ -55,7 +55,7 @@ export default function SettingsPage() {
         <AlertDescription>
           Branding, module toggles, work &amp; payroll policy and custom employee fields are now managed per company
           in{' '}
-          <Link to="/company" className="font-medium text-amber-700 hover:underline underline-offset-4">
+          <Link to="/company" className="font-medium text-primary hover:underline underline-offset-4">
             Company Setup
           </Link>
           . Claim policy, payroll cut-off and leave top-ups saved there are mirrored here so everything stays in sync.

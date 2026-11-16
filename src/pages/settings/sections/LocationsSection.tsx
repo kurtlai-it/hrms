@@ -142,7 +142,7 @@ export default function LocationsSection() {
               <div key={l.id} className="flex flex-col gap-2 rounded-xl border p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">{l.name}</p>
+                    <p className="break-words text-sm font-medium">{l.name}</p>
                     <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">{l.address}</p>
                   </div>
                   <Badge variant="secondary" className="shrink-0">
@@ -194,7 +194,7 @@ export default function LocationsSection() {
               {latInvalid ? <p className="text-xs text-destructive">Latitude must be between -90 and 90.</p> : null}
               {lngInvalid ? <p className="text-xs text-destructive">Longitude must be between -180 and 180.</p> : null}
               {outsideMalaysia ? (
-                <p className="text-xs text-amber-700 dark:text-amber-400">
+                <p className="text-xs text-primary">
                   These coordinates fall outside Malaysia — double-check before saving an overseas site.
                 </p>
               ) : null}
@@ -202,7 +202,7 @@ export default function LocationsSection() {
                 <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
                   Cancel
                 </Button>
-                <Button type="submit" disabled={!valid}>
+                <Button type="submit" disabled={!valid} disabledReason="Fill in the required fields first.">
                   {editing ? 'Save changes' : 'Add location'}
                 </Button>
               </DialogFooter>

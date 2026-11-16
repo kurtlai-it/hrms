@@ -84,7 +84,7 @@ export default function ContactBankStep({ form, patch, errors }: Props) {
         </Field>
       </div>
 
-      <div className="space-y-4 rounded-xl border bg-stone-50/60 p-4 dark:bg-stone-900/30">
+      <div className="space-y-4 rounded-xl border p-4">
         <p className="text-sm font-medium">
           Statutory numbers{' '}
           <span className="ml-1 text-xs font-normal text-muted-foreground">

@@ -289,10 +289,10 @@ export default function DataSection() {
           </RadioGroup>
 
           <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setImportPreview(null)} disabled={importing}>
+            <Button variant="outline" onClick={() => setImportPreview(null)} disabled={importing} disabledReason={false}>
               Cancel
             </Button>
-            <Button onClick={applyImport} disabled={importing}>
+            <Button onClick={applyImport} disabled={importing} disabledReason={false}>
               <Upload className="mr-1.5 h-4 w-4" />
               {importing ? 'Importing…' : importMode === 'merge' ? 'Merge into active company' : 'Replace active company data'}
             </Button>
@@ -313,13 +313,13 @@ export default function DataSection() {
                   the audit log also return to their defaults. This cannot be undone.
                 </p>
                 {resetDone ? (
-                  <p className="mt-2 text-xs font-medium text-amber-700 dark:text-amber-400">
+                  <p className="mt-2 text-xs font-medium text-primary">
                     Demo data has been reset and reseeded.
                   </p>
                 ) : null}
               </div>
             </div>
-            <Button variant="destructive" className="shrink-0" disabled={reseeding} onClick={() => setConfirmOpen(true)}>
+            <Button variant="destructive" className="shrink-0" disabled={reseeding} disabledReason={false} onClick={() => setConfirmOpen(true)}>
               {reseeding ? 'Reseeding…' : 'Reset & reseed'}
             </Button>
           </div>

@@ -7,24 +7,24 @@ import type { ContractKind, ContractStatus, EmploymentContract } from '@/lib/con
 export function statusBadgeClass(s: ContractStatus): string {
   switch (s) {
     case 'active':
-      return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400';
+      return 'bg-success-soft text-success';
     case 'expiring':
-      return 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-400';
+      return 'bg-warning-soft text-warning';
     case 'expired':
-      return 'bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-400';
+      return 'bg-danger-soft text-destructive';
     case 'draft':
-      return 'bg-stone-200/80 text-stone-700 dark:bg-stone-800 dark:text-stone-300';
+      return 'bg-secondary text-foreground';
     case 'renewed':
-      return 'bg-sky-100 text-sky-800 dark:bg-sky-950/60 dark:text-sky-400';
+      return 'bg-accent text-accent-foreground';
     case 'terminated':
-      return 'bg-stone-300/60 text-stone-600 line-through dark:bg-stone-800 dark:text-stone-400';
+      return 'bg-secondary text-muted-foreground line-through';
   }
 }
 
 export function kindBadgeClass(kind: ContractKind): string {
   return kind === 'of-service'
-    ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-400'
-    : 'bg-stone-200/80 text-stone-700 dark:bg-stone-800 dark:text-stone-300';
+    ? 'bg-warning-soft text-warning'
+    : 'bg-secondary text-foreground';
 }
 
 export function remunerationUnit(c: EmploymentContract): string {

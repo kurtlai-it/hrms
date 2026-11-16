@@ -3,6 +3,7 @@
  * compliance checks, step 3 execute `runPayroll(month)` and show the summary.
  * All thresholds come from `@/lib/statutory` constants; nothing is hardcoded.
  */
+import { StepList } from '@/components/ui/step-list';
 import { useMemo, useState } from 'react';
 import {
   AlertTriangle, BadgeCheck, CalendarClock, ChevronLeft, ChevronRight, CircleAlert,
@@ -229,26 +230,7 @@ export default function RunPayrollWizard({ open, onOpenChange, onCompleted }: Wi
           </DialogDescription>
         </DialogHeader>
 
-        {/* Step indicator */}
-        <ol className="flex items-center gap-2 text-xs">
-          {steps.map((s, i) => (
-            <li key={s} className="flex items-center gap-2">
-              <span
-                className={`flex h-6 w-6 items-center justify-center rounded-full border font-medium ${
-                  step === i + 1
-                    ? 'border-amber-600 bg-amber-600/10 text-amber-700'
-                    : step > i + 1
-                      ? 'border-amber-600 bg-amber-600 text-white'
-                      : 'text-muted-foreground'
-                }`}
-              >
-                {i + 1}
-              </span>
-              <span className={step === i + 1 ? 'font-medium' : 'text-muted-foreground'}>{s}</span>
-              {i < steps.length - 1 && <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />}
-            </li>
-          ))}
-        </ol>
+        <StepList steps={steps} current={step - 1} label="Run payroll steps" />
         <Separator />
 
         {step === 1 && (
@@ -306,7 +288,7 @@ export default function RunPayrollWizard({ open, onOpenChange, onCompleted }: Wi
                     onCheckedChange={(c) => toggle(e.id, c === true)}
                   />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-medium">{e.name}</span>
+                    <span className="block break-words text-sm font-medium">{e.name}</span>
                     <span className="block text-xs text-muted-foreground">
                       {e.ic} · {fmtRM(e.baseSalary)}
                       {e.status !== 'active' ? ` · ${e.status}` : ''}
@@ -327,7 +309,7 @@ export default function RunPayrollWizard({ open, onOpenChange, onCompleted }: Wi
             {/* Cut-off transparency: the window this run pays for, and what defers. */}
             <div className="rounded-xl border p-3">
               <p className="flex items-center gap-2 text-sm font-medium">
-                <CalendarClock className="h-4 w-4 text-amber-600" />
+                <CalendarClock className="h-4 w-4 text-primary" />
                 Payroll cut-off — day {preflight.cutoffDay} of the month
               </p>
               <p className="mt-1 pl-6 text-xs text-muted-foreground">
@@ -335,7 +317,7 @@ export default function RunPayrollWizard({ open, onOpenChange, onCompleted }: Wi
                 {fmtDate(preflight.periodEnd)}.
               </p>
               {preflight.deferredOtRecords + preflight.deferredClaimsCount > 0 && (
-                <p className="mt-1 pl-6 text-xs font-medium text-amber-700 dark:text-amber-500">
+                <p className="mt-1 pl-6 text-xs font-medium text-primary">
                   {preflight.deferredOtRecords > 0 &&
                     `${preflight.deferredOtRecords} OT record(s) (${preflight.deferredOtHours}h)`}
                   {preflight.deferredOtRecords > 0 && preflight.deferredClaimsCount > 0 && ' and '}
@@ -419,8 +401,8 @@ export default function RunPayrollWizard({ open, onOpenChange, onCompleted }: Wi
 
         {step === 3 && result && (
           <div className="space-y-4">
-            <div className="flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/40 dark:bg-amber-950/30">
-              <BadgeCheck className="h-5 w-5 text-amber-600" />
+            <div className="flex items-center gap-3 rounded-xl border border-warning/40 bg-warning-soft p-4">
+              <BadgeCheck className="h-5 w-5 text-primary" />
               <div>
                 <p className="text-sm font-medium">
                   Draft payroll for {monthLabel(result.run.monthKey)} created
@@ -439,7 +421,7 @@ export default function RunPayrollWizard({ open, onOpenChange, onCompleted }: Wi
             {result.run.warnings.length > 0 && (
               <div className="rounded-xl border p-3">
                 <p className="flex items-center gap-2 text-sm font-medium">
-                  <AlertTriangle className="h-4 w-4 text-amber-600" />
+                  <AlertTriangle className="h-4 w-4 text-warning" />
                   {result.run.warnings.length} compliance warning(s)
                 </p>
                 <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-muted-foreground">
@@ -508,11 +490,11 @@ function CheckItem({
     <div className="rounded-xl border p-3">
       <p className="flex items-center gap-2 text-sm font-medium">
         {ok ? (
-          <BadgeCheck className="h-4 w-4 text-emerald-600" />
+          <BadgeCheck className="h-4 w-4 text-success" />
         ) : neutral ? (
-          <Globe2 className="h-4 w-4 text-amber-600" />
+          <Globe2 className="h-4 w-4 text-primary" />
         ) : (
-          <CircleAlert className="h-4 w-4 text-amber-600" />
+          <CircleAlert className="h-4 w-4 text-warning" />
         )}
         {title}
         {!ok && <Badge variant="secondary">{items.length}</Badge>}

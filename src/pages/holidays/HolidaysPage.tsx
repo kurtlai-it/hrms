@@ -46,12 +46,12 @@ function HolidayBadges({ h, gazetted }: { h: Holiday; gazetted?: boolean }) {
     <div className="flex flex-wrap gap-1">
       {scopeBadge(h)}
       {gazetted && (
-        <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 dark:bg-emerald-900/40 dark:text-emerald-200">
+        <Badge className="bg-success-soft text-success hover:bg-success-soft">
           Gazetted
         </Badge>
       )}
       {h.isCompulsoryEA && (
-        <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100 dark:bg-amber-900/40 dark:text-amber-200">
+        <Badge className="bg-warning-soft text-warning hover:bg-warning-soft">
           EA compulsory
         </Badge>
       )}
@@ -59,7 +59,7 @@ function HolidayBadges({ h, gazetted }: { h: Holiday; gazetted?: boolean }) {
         <Badge variant="outline" className="border-dashed">Tentative</Badge>
       )}
       {h.replacesDate && (
-        <Badge variant="secondary" className="bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-200">
+        <Badge variant="secondary" className="bg-warning-soft text-warning">
           In lieu of {fmtDate(h.replacesDate)}
         </Badge>
       )}
@@ -205,8 +205,8 @@ export default function HolidaysPage() {
       </div>
 
       {/* EA 1955 s.60D explainer */}
-      <Alert className="rounded-xl border-amber-200 bg-amber-50/60 dark:border-amber-900/40 dark:bg-amber-950/30">
-        <Info className="h-4 w-4 text-amber-700 dark:text-amber-400" />
+      <Alert className="rounded-xl border-warning/40 bg-warning-soft">
+        <Info className="h-4 w-4 text-primary" />
         <AlertTitle>EA 1955 s.60D — paid public holidays</AlertTitle>
         <AlertDescription className="text-sm">
           Employees are entitled to <strong>11 gazetted paid public holidays</strong> a year, of which
@@ -245,7 +245,7 @@ export default function HolidaysPage() {
               </SelectContent>
             </Select>
           </div>
-          <Button onClick={onRefresh} disabled={refreshing} className="gap-1.5 md:ml-auto">
+          <Button onClick={onRefresh} disabled={refreshing} disabledReason={false} className="gap-1.5 md:ml-auto">
             {refreshing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
             {refreshing ? 'Refreshing…' : 'Auto-refresh holidays'}
           </Button>
@@ -256,8 +256,8 @@ export default function HolidaysPage() {
               className={cn(
                 'rounded-xl',
                 refreshResult.source === 'api'
-                  ? 'border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-100'
-                  : 'border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-100',
+                  ? 'border-success/40 bg-success-soft text-success'
+                  : 'border-warning/40 bg-warning-soft text-warning',
               )}
             >
               {refreshResult.source === 'api' ? <RefreshCw className="h-4 w-4" /> : <Info className="h-4 w-4" />}
@@ -288,7 +288,7 @@ export default function HolidaysPage() {
           <Badge variant="secondary">{stats.inLieu} in-lieu replacement{stats.inLieu === 1 ? '' : 's'}</Badge>
           {stats.tentative > 0 && <Badge variant="outline" className="border-dashed">{stats.tentative} tentative (pending gazette)</Badge>}
           {gazettedSet && (
-            <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 dark:bg-emerald-900/40 dark:text-emerald-200">
+            <Badge className="bg-success-soft text-success hover:bg-success-soft">
               {gazettedSet.size} gazetted (published)
             </Badge>
           )}
@@ -298,7 +298,7 @@ export default function HolidaysPage() {
         <Card className="rounded-xl">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <CalendarDays className="h-4 w-4 text-amber-600" />
+              <CalendarDays className="h-4 w-4 text-primary" />
               {stateInfo(stateCode).name} — {year}
             </CardTitle>
             <CardDescription>
@@ -453,7 +453,7 @@ export default function HolidaysPage() {
                       aria-label={`Delete ${h.name}`}
                       onClick={() => onDeleteOverride(h)}
                     >
-                      <Trash2 className="h-4 w-4 text-rose-600" />
+                      <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   </li>
                 ))}

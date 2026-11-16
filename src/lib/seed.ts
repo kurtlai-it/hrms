@@ -257,6 +257,10 @@ export function buildCompanySeedData(p: CompanySeedParams): Record<string, unkno
 
   // ── Proportional samples (≈ ½ headcount leaves, ⅔ claims, ⅓ KPI owners) ──
   const hrDecider = p.deptHeads[Object.keys(p.deptHeads)[0]!] ?? employees[0]!.id;
+  // Nobody decides their own request: the decider's own go to another department head.
+  const otherDecider =
+    Object.values(p.deptHeads).find((id) => id && id !== hrDecider) ?? employees.find((e) => e.id !== hrDecider)!.id;
+  const deciderFor = (empId: string) => (empId === hrDecider ? otherDecider : hrDecider);
   const leaveTypes: LeaveRequest['type'][] = ['annual', 'sick', 'annual', 'emergency', 'annual', 'unpaid'];
   const leaveReasons = ['Family matter', 'Fever, MC attached', 'Short break', 'Father hospitalised', 'Travel', 'Personal matters (unpaid)'];
   const leaveStatuses: LeaveRequest['status'][] = ['approved', 'approved', 'pending', 'approved', 'rejected', 'approved'];
@@ -268,7 +272,7 @@ export function buildCompanySeedData(p: CompanySeedParams): Record<string, unkno
       const start = `${mk}-${String(Math.min(28, startDay)).padStart(2, '0')}`;
       const days = (i % 3) + 1;
       const end = `${mk}-${String(Math.min(28, startDay + days - 1)).padStart(2, '0')}`;
-      return mkLeave(e.id, leaveTypes[i % leaveTypes.length], start, end, days, leaveStatuses[i % leaveStatuses.length], leaveReasons[i % leaveReasons.length], hrDecider);
+      return mkLeave(e.id, leaveTypes[i % leaveTypes.length], start, end, days, leaveStatuses[i % leaveStatuses.length], leaveReasons[i % leaveReasons.length], deciderFor(e.id));
     });
 
   const claimCats: Claim['category'][] = ['travel', 'meal', 'parking', 'telephone', 'medical', 'training'];
@@ -280,7 +284,7 @@ export function buildCompanySeedData(p: CompanySeedParams): Record<string, unkno
     .map((e, i) => {
       const mk = i % 2 === 0 ? thisMonth : prevMonth;
       const date = `${mk}-${String(3 + ((i * 5) % 20)).padStart(2, '0')}`;
-      return mkClaim(e.id, claimCats[i % claimCats.length], claimTitles[i % claimTitles.length], claimAmounts[i % claimAmounts.length], date, claimStatuses[i % claimStatuses.length], hrDecider);
+      return mkClaim(e.id, claimCats[i % claimCats.length], claimTitles[i % claimTitles.length], claimAmounts[i % claimAmounts.length], date, claimStatuses[i % claimStatuses.length], deciderFor(e.id));
     });
 
   const kpiOwners = employees.filter((_, i) => i % 3 === 0);
@@ -441,7 +445,8 @@ export function buildSeedData(): Record<string, unknown[]> {
     mkLeave('emp-21', 'unpaid', `${thisMonth}-10`, `${thisMonth}-12`, 3, 'approved', 'Hajj preparation (unpaid)', 'emp-02'),
     mkLeave('emp-15', 'annual', `${prevMonth}-26`, `${prevMonth}-27`, 2, 'rejected', 'Peak sales period', 'emp-02'),
     mkLeave('emp-24', 'emergency', `${thisMonth}-08`, `${thisMonth}-08`, 1, 'approved', 'Father hospitalised', 'emp-02'),
-    mkLeave('emp-02', 'maternity', `${thisMonth}-01`, `${thisMonth}-31`, 30, 'approved', 'Maternity leave (98 days, part 1)', 'emp-02'),
+    // The HR manager's own leave is approved by the Admin account, never by herself.
+    mkLeave('emp-02', 'maternity', `${thisMonth}-01`, `${thisMonth}-31`, 30, 'approved', 'Maternity leave (98 days, part 1)', 'admin'),
     mkLeave('emp-30', 'paternity', `${prevMonth}-05`, `${prevMonth}-11`, 7, 'approved', 'Paternity leave (7 days)', 'emp-02'),
     mkLeave('emp-08', 'annual', `${thisMonth}-15`, `${thisMonth}-16`, 2, 'pending', 'Personal'),
   ];

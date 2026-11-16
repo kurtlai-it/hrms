@@ -11,6 +11,7 @@
  * seed is run (seedTenantIfEmpty is deliberately NOT called here; entering
  * the company later initialises empty collections only).
  */
+import { StepList } from '@/components/ui/step-list';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -22,7 +23,6 @@ import { toast } from 'sonner';
 import { logAudit, uid, upsertCompany } from '@/lib/db';
 import { states } from '@/lib/holidays';
 import { defaultWorkingWeek } from '@/lib/tenants';
-import { cn } from '@/lib/utils';
 import type {
   Company, CompanyPlan, ModuleKey, StateCode, WorkingWeek,
 } from '@/lib/types';
@@ -204,7 +204,7 @@ export default function CreateCompanyWizard(props: {
       plan: data.plan,
       trialEndsAt,
       createdAt: new Date().toISOString(),
-      branding: { logoText: code, accentColor: '#b45309' },
+      branding: { logoText: code, accentColor: '#2E2F70' },
       config: {
         workingWeek: data.workingWeek,
         payrollCutoffDay: Number(data.payrollCutoffDay),
@@ -279,7 +279,7 @@ export default function CreateCompanyWizard(props: {
           <>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-lime-600" />
+                <CheckCircle2 className="h-5 w-5 text-success" />
                 Company created
               </DialogTitle>
               <DialogDescription>
@@ -290,9 +290,9 @@ export default function CreateCompanyWizard(props: {
               </DialogDescription>
             </DialogHeader>
 
-            <div className="space-y-3 rounded-lg border bg-stone-50 p-4 dark:bg-stone-900/40">
+            <div className="space-y-3 rounded-lg border p-4">
               <p className="flex items-center gap-2 text-sm font-medium">
-                <KeyRound className="h-4 w-4 text-amber-600" />
+                <KeyRound className="h-4 w-4 text-primary" />
                 First Admin account
               </p>
               {created.accountCreated ? (
@@ -307,7 +307,7 @@ export default function CreateCompanyWizard(props: {
                   </div>
                 </dl>
               ) : (
-                <p className="text-sm text-red-600 dark:text-red-400">
+                <p className="text-sm text-destructive">
                   The company was created, but the admin account could not be added (username
                   conflict or storage unavailable). Add it from the auth directory.
                 </p>
@@ -332,7 +332,7 @@ export default function CreateCompanyWizard(props: {
           <>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <Building2 className="h-5 w-5 text-amber-600" />
+                <Building2 className="h-5 w-5 text-primary" />
                 New company
               </DialogTitle>
               <DialogDescription>
@@ -340,25 +340,7 @@ export default function CreateCompanyWizard(props: {
               </DialogDescription>
             </DialogHeader>
 
-            {/* Step indicator */}
-            <div className="flex flex-wrap items-center gap-2">
-              {STEP_LABELS.map((label, i) => (
-                <div
-                  key={label}
-                  className={cn(
-                    'flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs',
-                    i === step
-                      ? 'border-amber-600 bg-amber-50 font-medium text-amber-800 dark:bg-amber-950/40 dark:text-amber-300'
-                      : i < step
-                        ? 'border-transparent bg-lime-100 text-lime-800 dark:bg-lime-950 dark:text-lime-300'
-                        : 'text-muted-foreground',
-                  )}
-                >
-                  {i < step ? <Check className="h-3 w-3" /> : <span>{i + 1}</span>}
-                  <span>{label}</span>
-                </div>
-              ))}
-            </div>
+            <StepList steps={STEP_LABELS} current={step} label="New company steps" />
 
             {step === 0 && (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -572,7 +554,7 @@ export default function CreateCompanyWizard(props: {
                     <dt className="text-xs text-muted-foreground">Plan / status</dt>
                     <dd className="flex items-center gap-2 font-medium">
                       <PlanBadge plan={data.plan} />
-                      <Badge variant="outline" className="border-transparent bg-yellow-100 text-yellow-800 dark:bg-yellow-950 dark:text-yellow-300">
+                      <Badge variant="outline" className="border-transparent bg-warning-soft text-warning">
                         Trial
                       </Badge>
                       <span className="text-xs font-normal text-muted-foreground">
@@ -620,10 +602,10 @@ export default function CreateCompanyWizard(props: {
               </div>
             )}
 
-            {error ? <p className="text-sm text-red-600 dark:text-red-400">{error}</p> : null}
+            {error ? <p className="text-sm text-destructive">{error}</p> : null}
 
             <DialogFooter className="gap-2 sm:justify-between">
-              <Button variant="outline" onClick={back} disabled={step === 0}>
+              <Button variant="outline" onClick={back} disabled={step === 0} disabledReason="This is the first step.">
                 <ArrowLeft className="mr-1.5 h-4 w-4" />
                 Back
               </Button>

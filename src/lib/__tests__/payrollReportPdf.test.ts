@@ -316,7 +316,7 @@ describe('aggregateOrgReport — run context', () => {
     });
     expect(model.companyName).toBe('ASM Tech Sdn Bhd');
     expect(model.companyRegNo).toBe('202401000001 (1234567-A)');
-    expect(model.accentColor).toBe('#b45309');
+    expect(model.accentColor).toBe('#2E2F70');
   });
 });
 

@@ -31,19 +31,7 @@ import {
   Search,
 } from 'lucide-react';
 import {
-  Bar,
-  CartesianGrid,
-  Cell,
-  ComposedChart,
-  Legend,
-  Line,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-  BarChart,
+  Bar, CartesianGrid, Cell, ComposedChart, Legend, Line, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis, BarChart, LabelList,
 } from 'recharts';
 import { getActiveCompany, useCollection } from '@/lib/db';
 import { downloadCsv } from '@/lib/csv';
@@ -85,6 +73,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { CHART_LEGEND_STYLE, CHART_TICK, chartLegendText, barNameLabel, lineEndLabel, pieValueLabel, valueLabel } from '@/lib/chartText';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Small display helpers
@@ -102,7 +91,8 @@ const PRESET_LABELS: Record<SalaryPeriodPreset, string> = {
 };
 
 /** Warm low-saturation donut palette (matches DeptCostChart). */
-const DONUT_COLORS = ['#b45309', '#f59e0b', '#78716c', '#4d7c0f', '#ca8a04', '#9a3412', '#57534e'];
+// Series colours in order; rose (chart-7) is kept for warnings.
+const DONUT_COLORS = [1, 2, 3, 4, 5, 6].map((n) => `hsl(var(--chart-${n}))`);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Page
@@ -224,7 +214,7 @@ export default function SalaryReportPage() {
       <Card className="rounded-xl">
         <CardHeader className="pb-3">
           <div className="flex items-center gap-3">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-100 text-amber-700">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-warning-soft text-warning">
               <CalendarRange className="h-4 w-4" />
             </span>
             <div>
@@ -362,7 +352,7 @@ export default function SalaryReportPage() {
         <>
           {/* ── Summary header ── */}
           {model.hasGaps && (
-            <div className="flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+            <div className="flex items-start gap-3 rounded-xl border border-warning/40 bg-warning-soft p-4 text-sm text-warning">
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
               <div>
                 <p className="font-medium">
@@ -391,11 +381,11 @@ export default function SalaryReportPage() {
             ).map(([label, value, sub]) => (
               <Card key={label} className="rounded-xl">
                 <CardContent className="p-4">
-                  <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                  <p className="text-xs font-bold text-muted-foreground">
                     {label}
                   </p>
                   <p className="mt-1 text-lg font-semibold tabular-nums">{fmtRM(value)}</p>
-                  <p className="mt-0.5 text-[11px] text-muted-foreground">{sub}</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">{sub}</p>
                 </CardContent>
               </Card>
             ))}
@@ -412,11 +402,11 @@ export default function SalaryReportPage() {
             ).map(([label, value, sub]) => (
               <Card key={label} className="rounded-xl">
                 <CardContent className="p-4">
-                  <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                  <p className="text-xs font-bold text-muted-foreground">
                     {label}
                   </p>
                   <p className="mt-1 text-lg font-semibold tabular-nums">{value}</p>
-                  <p className="mt-0.5 text-[11px] text-muted-foreground">{sub}</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">{sub}</p>
                 </CardContent>
               </Card>
             ))}
@@ -450,9 +440,9 @@ export default function SalaryReportPage() {
                   <div className="h-[300px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
                       <ComposedChart data={model.monthly} margin={{ top: 8, right: 16, bottom: 0, left: 8 }} barCategoryGap="28%">
-                        <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#e7e5e4" />
-                        <XAxis dataKey="label" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-                        <YAxis tickFormatter={shortRM} tick={{ fontSize: 11 }} axisLine={false} tickLine={false} width={72} />
+                        <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="hsl(var(--chart-grid))" />
+                        <XAxis dataKey="label" tick={CHART_TICK} axisLine={false} tickLine={false} />
+                        <YAxis tickFormatter={shortRM} tick={CHART_TICK} axisLine={false} tickLine={false} width={72} />
                         <Tooltip
                           formatter={(value: number, name: string) => [fmtRM(value), name]}
                           labelFormatter={(_l, payload) => {
@@ -460,20 +450,26 @@ export default function SalaryReportPage() {
                             if (!row?.month) return '';
                             return `${salaryMonthLabel(row.month)}${row.finalized ? '' : ' — not finalized'}`;
                           }}
-                          cursor={{ fill: '#fafaf9' }}
+                          cursor={{ fill: 'hsl(var(--muted))' }}
                         />
-                        <Legend wrapperStyle={{ fontSize: 12 }} />
-                        <Bar dataKey="gross" name="Gross" fill="#f59e0b" isAnimationActive={false} />
-                        <Bar dataKey="net" name="Net" fill="#4d7c0f" radius={[4, 4, 0, 0]} isAnimationActive={false} />
+                        <Legend wrapperStyle={CHART_LEGEND_STYLE} formatter={chartLegendText} />
+                        <Bar dataKey="gross" name="Gross" fill="hsl(var(--chart-1))" isAnimationActive={false}>
+                          <LabelList content={barNameLabel('Gross', model.monthly.map((r) => r.gross))} />
+                        </Bar>
+                        <Bar dataKey="net" name="Net" fill="hsl(var(--chart-5))" radius={[4, 4, 0, 0]} isAnimationActive={false}>
+                          <LabelList content={barNameLabel('Net', model.monthly.map((r) => r.net))} />
+                        </Bar>
                         <Line
                           type="monotone"
                           dataKey="employerCost"
                           name="Employer cost"
-                          stroke="#b45309"
+                          stroke="hsl(var(--chart-3))"
                           strokeWidth={2}
                           dot={{ r: 2.5 }}
                           isAnimationActive={false}
-                        />
+                        >
+                          <LabelList content={lineEndLabel('Employer cost', model.monthly.length)} />
+                        </Line>
                       </ComposedChart>
                     </ResponsiveContainer>
                   </div>
@@ -539,6 +535,8 @@ export default function SalaryReportPage() {
                             outerRadius="78%"
                             paddingAngle={2}
                             isAnimationActive={false}
+                            label={pieValueLabel}
+                            labelLine={false}
                           >
                             {model.departments.map((d, i) => (
                               <Cell
@@ -548,7 +546,7 @@ export default function SalaryReportPage() {
                             ))}
                           </Pie>
                           <Tooltip formatter={(value: number, name: string) => [fmtRM(value), name]} />
-                          <Legend wrapperStyle={{ fontSize: 12 }} />
+                          <Legend wrapperStyle={CHART_LEGEND_STYLE} formatter={chartLegendText} />
                         </PieChart>
                       </ResponsiveContainer>
                     </div>
@@ -569,12 +567,14 @@ export default function SalaryReportPage() {
                   <CardContent>
                     <div className="h-[260px] w-full">
                       <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={model.bands} margin={{ top: 8, right: 8, bottom: 0, left: 0 }} barCategoryGap="24%">
-                          <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#e7e5e4" />
-                          <XAxis dataKey="label" tick={{ fontSize: 10 }} interval={0} axisLine={false} tickLine={false} />
-                          <YAxis allowDecimals={false} tick={{ fontSize: 11 }} axisLine={false} tickLine={false} width={32} />
-                          <Tooltip formatter={(value: number) => [`${value} employee(s)`, 'Count']} cursor={{ fill: '#fafaf9' }} />
-                          <Bar dataKey="count" name="Employees" fill="#b45309" radius={[4, 4, 0, 0]} isAnimationActive={false} />
+                        <BarChart data={model.bands} margin={{ top: 28, right: 8, bottom: 0, left: 0 }} barCategoryGap="24%">
+                          <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="hsl(var(--chart-grid))" />
+                          <XAxis dataKey="label" tick={CHART_TICK} interval={0} axisLine={false} tickLine={false} />
+                          <YAxis allowDecimals={false} tick={CHART_TICK} axisLine={false} tickLine={false} width={32} />
+                          <Tooltip formatter={(value: number) => [`${value} employee(s)`, 'Count']} cursor={{ fill: 'hsl(var(--muted))' }} />
+                          <Bar dataKey="count" name="Employees" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} isAnimationActive={false}>
+                            <LabelList content={valueLabel()} />
+                          </Bar>
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
@@ -633,7 +633,7 @@ export default function SalaryReportPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-wrap gap-2">
-              <Button onClick={handlePdf} disabled={generating}>
+              <Button onClick={handlePdf} disabled={generating} disabledReason={false}>
                 {generating ? (
                   <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
                 ) : (
@@ -726,7 +726,7 @@ function EmployeeTable({ rows }: { rows: SalaryEmployeeRow[] }) {
           <Table className="min-w-[1080px]">
             <TableHeader>
               <TableRow>
-                <TableHead className="w-8" />
+                <TableHead className="w-8"><span className="sr-only">Details</span></TableHead>
                 <TableHead>Employee</TableHead>
                 <TableHead className="text-right">Months</TableHead>
                 <TableHead className="text-right">Gross</TableHead>
@@ -806,7 +806,7 @@ function EmployeeRows({
         <TableCell className="text-right tabular-nums">{fmtRM(r.socsoEmployee)}</TableCell>
         <TableCell className="text-right tabular-nums">{fmtRM(r.eisEmployee)}</TableCell>
         <TableCell className="text-right tabular-nums">{fmtRM(r.pcb)}</TableCell>
-        <TableCell className={cn('text-right tabular-nums', r.loans > 0 && 'text-amber-700')}>
+        <TableCell className={cn('text-right tabular-nums', r.loans > 0 && 'text-primary')}>
           {fmtRM(r.loans)}
         </TableCell>
         <TableCell className="text-right tabular-nums">{fmtRM(r.net)}</TableCell>

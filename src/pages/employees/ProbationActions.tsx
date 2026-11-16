@@ -5,6 +5,7 @@
  *  - ProbationTimeline — the append-only extend/confirm/terminate trail.
  *  - ProbationHistoryButton — compact popover wrapper around the timeline.
  */
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import * as Popover from '@radix-ui/react-popover';
 import { BadgeCheck, CalendarClock, History, Hourglass, UserX } from 'lucide-react';
@@ -51,7 +52,7 @@ export function ProbationTimeline({ entries }: { entries: ProbationHistoryEntry[
         const Icon = ACTION_ICON[h.action];
         return (
           <li key={`${h.at}-${i}`} className="flex items-start gap-2.5 text-xs">
-            <Icon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-600" />
+            <Icon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
             <div className="min-w-0">
               <p className="font-medium text-foreground">
                 {ACTION_LABEL[h.action]}: {fmtDate(h.fromEnd)} → {fmtDate(h.toEnd)}
@@ -70,13 +71,14 @@ export function ProbationTimeline({ entries }: { entries: ProbationHistoryEntry[
 
 /** Compact popover listing the employee's probation history. */
 export function ProbationHistoryButton({ employee }: { employee: Employee }) {
+  const { t } = useTranslation();
   const count = employee.probationHistory?.length ?? 0;
   return (
     <Popover.Root>
       <Popover.Trigger asChild>
-        <Button size="sm" variant="ghost" aria-label={`Probation history (${count})`}>
-          <History className="h-3.5 w-3.5" />
-          {count > 0 && <span className="ml-1 text-xs">{count}</span>}
+        <Button size="sm" variant="ghost">
+          <History aria-hidden className="h-4 w-4" />
+          {count > 0 ? t('probation.historyCount', { count }) : t('probation.history')}
         </Button>
       </Popover.Trigger>
       <Popover.Portal>
@@ -186,7 +188,7 @@ export function ExtendProbationDialog({
               />
             </div>
           ) : (
-            <p className="flex items-center gap-1.5 rounded-lg bg-stone-50 px-3 py-2 text-xs text-muted-foreground">
+            <p className="flex items-center gap-1.5 rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">
               <CalendarClock className="h-3.5 w-3.5" />
               New end date: <span className="font-medium text-foreground">{fmtDate(newEnd)}</span>
             </p>
@@ -208,8 +210,8 @@ export function ExtendProbationDialog({
           <Button variant="outline" onClick={() => close(false)}>Cancel</Button>
           <Button
             onClick={submit}
-            disabled={!valid}
-            className="bg-amber-600 text-white hover:bg-amber-700"
+            disabled={!valid} disabledReason="Fill in the required fields first."
+            className="bg-primary text-primary-foreground hover:bg-primary"
           >
             <Hourglass className="mr-1.5 h-4 w-4" />
             Extend probation

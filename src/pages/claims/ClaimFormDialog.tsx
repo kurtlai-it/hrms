@@ -310,7 +310,7 @@ export default function ClaimFormDialog({ open, onOpenChange, employee, claims, 
       <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Receipt className="h-5 w-5 text-amber-600" />
+            <Receipt className="h-5 w-5 text-primary" />
             {editing ? 'Edit draft claim' : 'New claim'}
           </DialogTitle>
           <DialogDescription>
@@ -347,7 +347,7 @@ export default function ClaimFormDialog({ open, onOpenChange, employee, claims, 
           </div>
 
           {isMileage ? (
-            <div className="space-y-3 rounded-xl border border-dashed bg-muted/40 p-3">
+            <div className="space-y-3 rounded-xl border border-dashed p-3">
               <p className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
                 <Calculator className="h-3.5 w-3.5" /> Mileage calculator — distance × rate
               </p>
@@ -418,7 +418,7 @@ export default function ClaimFormDialog({ open, onOpenChange, employee, claims, 
 
           <div className="space-y-2">
             <Label className="flex items-center gap-1.5">
-              <ScanLine className="h-3.5 w-3.5 text-amber-600" /> Receipt &amp; AI scan
+              <ScanLine className="h-3.5 w-3.5 text-primary" /> Receipt &amp; AI scan
             </Label>
             {/* Hidden pickers: gallery upload + mobile camera capture. */}
             <input
@@ -451,7 +451,7 @@ export default function ClaimFormDialog({ open, onOpenChange, employee, claims, 
                 type="button"
                 variant="outline"
                 size="sm"
-                disabled={receiptBusy || scanning}
+                disabled={receiptBusy || scanning} disabledReason={false}
                 onClick={() => uploadInputRef.current?.click()}
               >
                 {receiptBusy ? (
@@ -465,7 +465,7 @@ export default function ClaimFormDialog({ open, onOpenChange, employee, claims, 
                 type="button"
                 variant="outline"
                 size="sm"
-                disabled={receiptBusy || scanning}
+                disabled={receiptBusy || scanning} disabledReason={false}
                 onClick={() => cameraInputRef.current?.click()}
               >
                 <Camera className="h-3.5 w-3.5" /> Use camera
@@ -473,7 +473,7 @@ export default function ClaimFormDialog({ open, onOpenChange, employee, claims, 
             </div>
 
             {receiptPreview ? (
-              <div className="flex items-start gap-3 rounded-xl border bg-muted/40 p-2.5">
+              <div className="flex items-start gap-3 rounded-xl border p-2.5">
                 <img
                   src={receiptPreview}
                   alt="Receipt preview"
@@ -482,7 +482,7 @@ export default function ClaimFormDialog({ open, onOpenChange, employee, claims, 
                 <div className="min-w-0 flex-1 space-y-1.5">
                   <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <Paperclip className="h-3.5 w-3.5 shrink-0" />
-                    <span className="truncate">{receiptName ?? 'receipt.jpg'}</span>
+                    <span className="break-words">{receiptName ?? 'receipt.jpg'}</span>
                   </p>
                   <Button
                     type="button"
@@ -502,7 +502,7 @@ export default function ClaimFormDialog({ open, onOpenChange, employee, claims, 
                 <button
                   type="button"
                   onClick={() => void clearReceipt()}
-                  className="inline-flex shrink-0 items-center gap-0.5 rounded-md px-1.5 py-0.5 text-xs text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950/40"
+                  className="inline-flex shrink-0 items-center gap-0.5 rounded-md px-1.5 py-0.5 text-xs text-destructive transition-colors hover:bg-danger-soft hover:text-destructive"
                   aria-label="Remove receipt"
                 >
                   <X className="h-3 w-3" /> Remove
@@ -512,11 +512,11 @@ export default function ClaimFormDialog({ open, onOpenChange, employee, claims, 
               // Legacy / bytes-missing case: label-only attachment.
               <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <Paperclip className="h-3.5 w-3.5 shrink-0" />
-                <span className="min-w-0 flex-1 truncate">{receiptName}</span>
+                <span className="min-w-0 flex-1 break-words">{receiptName}</span>
                 <button
                   type="button"
                   onClick={() => void clearReceipt()}
-                  className="inline-flex shrink-0 items-center gap-0.5 rounded-md px-1.5 py-0.5 text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950/40"
+                  className="inline-flex shrink-0 items-center gap-0.5 rounded-md px-1.5 py-0.5 text-destructive transition-colors hover:bg-danger-soft hover:text-destructive"
                   aria-label="Remove receipt"
                 >
                   <X className="h-3 w-3" /> Remove
@@ -533,7 +533,7 @@ export default function ClaimFormDialog({ open, onOpenChange, employee, claims, 
           </div>
 
           {warnings.length > 0 && (
-            <Alert className="border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-200">
+            <Alert className="border-warning/40 bg-warning-soft text-warning">
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>Policy limit warning</AlertTitle>
               <AlertDescription>
@@ -542,7 +542,7 @@ export default function ClaimFormDialog({ open, onOpenChange, employee, claims, 
                     <li key={w}>{w}</li>
                   ))}
                 </ul>
-                <p className="mt-1 text-xs opacity-80">
+                <p className="mt-1 text-xs">
                   You can still submit — the approver will see these flags.
                 </p>
               </AlertDescription>
@@ -550,7 +550,7 @@ export default function ClaimFormDialog({ open, onOpenChange, employee, claims, 
           )}
 
           {touched && !valid && (
-            <Alert className="border-red-300 bg-red-50 text-red-800 dark:border-red-800 dark:bg-red-950/40 dark:text-red-300">
+            <Alert className="border-destructive/40 bg-danger-soft text-destructive">
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>Please fix before saving</AlertTitle>
               <AlertDescription>

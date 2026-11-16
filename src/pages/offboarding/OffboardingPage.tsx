@@ -79,7 +79,7 @@ export default function OffboardingPage() {
             Notice periods, clearance, final pay and CP22A — exits handled the Malaysian way.
           </p>
         </div>
-        <Button onClick={() => setDialogOpen(true)} className="bg-amber-600 text-white hover:bg-amber-700">
+        <Button onClick={() => setDialogOpen(true)} className="bg-primary text-primary-foreground hover:bg-primary">
           <UserMinus className="mr-1.5 h-4 w-4" /> Initiate offboarding
         </Button>
       </div>
@@ -88,7 +88,7 @@ export default function OffboardingPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Card className="rounded-xl">
           <CardContent className="flex items-center gap-3 p-4">
-            <div className="rounded-lg bg-amber-100 p-2 text-amber-700 dark:bg-amber-950/60 dark:text-amber-400">
+            <div className="rounded-lg bg-warning-soft p-2 text-warning">
               <Users className="h-5 w-5" />
             </div>
             <div>
@@ -99,7 +99,7 @@ export default function OffboardingPage() {
         </Card>
         <Card className="rounded-xl">
           <CardContent className="flex items-center gap-3 p-4">
-            <div className="rounded-lg bg-stone-200/70 p-2 text-stone-700 dark:bg-stone-800 dark:text-stone-300">
+            <div className="rounded-lg bg-secondary p-2 text-foreground">
               <CalendarClock className="h-5 w-5" />
             </div>
             <div>
@@ -110,7 +110,7 @@ export default function OffboardingPage() {
         </Card>
         <Card className="rounded-xl">
           <CardContent className="flex items-center gap-3 p-4">
-            <div className="rounded-lg bg-red-100 p-2 text-red-700 dark:bg-red-950/60 dark:text-red-400">
+            <div className="rounded-lg bg-danger-soft p-2 text-destructive">
               <FileWarning className="h-5 w-5" />
             </div>
             <div>
@@ -139,7 +139,7 @@ export default function OffboardingPage() {
       {visible.length === 0 ? (
         <Card className="rounded-xl">
           <CardContent className="py-12 text-center">
-            <UserMinus className="mx-auto mb-3 h-8 w-8 text-muted-foreground/50" />
+            <UserMinus className="mx-auto mb-3 h-8 w-8 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">
               {tab === 'exited'
                 ? 'No completed exits yet.'

@@ -22,7 +22,7 @@ const PRINT_AREA = 'payslip-print-area';
 function kv(label: string, value: string) {
   return (
     <div>
-      <p className="text-[11px] uppercase tracking-wide text-muted-foreground print-text-muted">{label}</p>
+      <p className="text-xs text-muted-foreground print-text-muted font-bold">{label}</p>
       <p className="text-sm font-medium">{value || '—'}</p>
     </div>
   );
@@ -63,7 +63,7 @@ export default function PayslipPage() {
   if (auth && !auth.canViewEmployee(slip.employeeId)) {
     return (
       <div className="flex flex-col items-center gap-3 py-16 text-center">
-        <ShieldAlert className="h-10 w-10 text-amber-600" />
+        <ShieldAlert className="h-10 w-10 text-warning" />
         <p className="font-medium">Access restricted</p>
         <p className="max-w-sm text-sm text-muted-foreground">
           You don't have permission to view this payslip. Employees can only open
@@ -122,7 +122,7 @@ export default function PayslipPage() {
         </Button>
       </div>
 
-      <div className={`${PRINT_AREA} mx-auto max-w-3xl rounded-xl border bg-card p-6 shadow-sm md:p-8`}>
+      <div className={`${PRINT_AREA} mx-auto max-w-3xl rounded-lg border bg-card p-6 md:p-8`}>
         {/* Company header */}
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
@@ -135,7 +135,7 @@ export default function PayslipPage() {
             </p>
           </div>
           <div className="text-right">
-            <p className="text-lg font-semibold uppercase tracking-wide">Payslip</p>
+            <h1 className="text-lg font-bold">Payslip</h1>
             <p className="text-sm text-muted-foreground print-text-muted">
               {monthLabel(slip.monthKey)}
             </p>
@@ -270,9 +270,9 @@ export default function PayslipPage() {
         )}
 
         {/* Net pay */}
-        <div className="mt-6 flex items-center justify-between rounded-xl bg-amber-50 px-5 py-4 dark:bg-amber-950/30">
+        <div className="mt-6 flex items-center justify-between rounded-xl bg-warning-soft px-5 py-4">
           <div>
-            <p className="text-xs uppercase tracking-wide text-muted-foreground print-text-muted">
+            <p className="text-xs text-muted-foreground print-text-muted font-bold">
               Net pay
             </p>
             <p className="text-xs text-muted-foreground print-text-muted">
@@ -343,7 +343,7 @@ export default function PayslipPage() {
         </div>
 
         <Separator className="my-5" />
-        <p className="text-[11px] text-muted-foreground print-text-muted">
+        <p className="text-xs text-muted-foreground print-text-muted">
           Generated {fmtDate(new Date())} by {company?.companyName ?? 'ASM Tech Sdn Bhd'} HRMS.
           Figures computed per EPF Act 1991 (Third Schedule), SOCSO Act 1969, EIS Act 2017,
           PSMB Act 2001 and LHDN computerized PCB specification. This is a computer-generated

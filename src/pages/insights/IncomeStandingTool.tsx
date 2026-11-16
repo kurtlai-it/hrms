@@ -32,15 +32,15 @@ import {
 
 const BAND_STYLE: Record<IncomeBand, { badge: string; blurb: string }> = {
   B40: {
-    badge: 'border-transparent bg-stone-200 text-stone-800 hover:bg-stone-200',
+    badge: 'border-transparent bg-secondary text-foreground hover:bg-secondary',
     blurb: 'Bottom 40% of Malaysian households (up to RM5,859/month).',
   },
   M40: {
-    badge: 'border-transparent bg-amber-100 text-amber-800 hover:bg-amber-100',
+    badge: 'border-transparent bg-warning-soft text-warning hover:bg-warning-soft',
     blurb: 'Middle 40% of Malaysian households (RM5,860–12,679/month).',
   },
   T20: {
-    badge: 'border-transparent bg-green-100 text-green-800 hover:bg-green-100',
+    badge: 'border-transparent bg-success-soft text-success hover:bg-success-soft',
     blurb: 'Top 20% of Malaysian households (RM12,680+/month).',
   },
 };
@@ -114,7 +114,7 @@ export default function IncomeStandingTool() {
                   Sub-group {result.subBand}
                 </Badge>
                 {result.t15Zone && (
-                  <Badge className="border-transparent bg-red-100 text-red-800 hover:bg-red-100">
+                  <Badge className="border-transparent bg-danger-soft text-destructive hover:bg-danger-soft">
                     <Flag className="mr-1 h-3 w-3" /> T15 policy zone
                   </Badge>
                 )}
@@ -153,27 +153,27 @@ export default function IncomeStandingTool() {
               {/* National scale */}
               <div className="space-y-2">
                 <div className="relative h-8 w-full overflow-hidden rounded-full">
-                  <div className="absolute inset-y-0 left-0 bg-stone-300" style={{ width: `${(B40_CEILING / SCALE_MAX) * 100}%` }} />
+                  <div className="absolute inset-y-0 left-0 bg-input" style={{ width: `${(B40_CEILING / SCALE_MAX) * 100}%` }} />
                   <div
-                    className="absolute inset-y-0 bg-amber-300"
+                    className="absolute inset-y-0 bg-warning-soft"
                     style={{
                       left: `${(B40_CEILING / SCALE_MAX) * 100}%`,
                       width: `${((T20_FLOOR - B40_CEILING) / SCALE_MAX) * 100}%`,
                     }}
                   />
                   <div
-                    className="absolute inset-y-0 bg-green-300"
+                    className="absolute inset-y-0 bg-success-soft"
                     style={{
                       left: `${(T20_FLOOR / SCALE_MAX) * 100}%`,
                       width: `${((SCALE_MAX - T20_FLOOR) / SCALE_MAX) * 100}%`,
                     }}
                   />
                   <div
-                    className="absolute inset-y-0 w-1 bg-stone-900"
+                    className="absolute inset-y-0 w-1 bg-foreground"
                     style={{ left: `calc(${markerPct}% - 2px)` }}
                   />
                 </div>
-                <div className="flex justify-between text-[11px] text-muted-foreground">
+                <div className="flex justify-between text-xs text-muted-foreground">
                   <span>RM 0</span>
                   <span>B40 ends {fmtRM(B40_CEILING)}</span>
                   <span>T20 from {fmtRM(T20_FLOOR)}</span>
@@ -188,7 +188,7 @@ export default function IncomeStandingTool() {
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div className="space-y-1.5 rounded-xl border px-4 py-3">
                   <div className="flex items-center gap-2 text-sm font-medium">
-                    <Landmark className="h-4 w-4 text-amber-600" /> National context
+                    <Landmark className="h-4 w-4 text-primary" /> National context
                   </div>
                   <p className="text-sm text-muted-foreground">
                     Median individual wage {fmtRM(NATIONAL_MEDIAN_WAGE)}/month (DOSM Salaries &amp;
@@ -197,7 +197,7 @@ export default function IncomeStandingTool() {
                 </div>
                 <div className="space-y-1.5 rounded-xl border px-4 py-3">
                   <div className="flex items-center gap-2 text-sm font-medium">
-                    <Scale className="h-4 w-4 text-amber-600" /> {stateName} context
+                    <Scale className="h-4 w-4 text-primary" /> {stateName} context
                   </div>
                   <p className="text-sm text-muted-foreground">
                     On the {stateName} household ladder this sits at the D{placement?.decile} rung
@@ -223,7 +223,7 @@ export default function IncomeStandingTool() {
               </div>
 
               {result.t15Zone && (
-                <div className="flex items-start gap-2 rounded-lg bg-red-50 px-3 py-2.5 text-xs text-red-800">
+                <div className="flex items-start gap-2 rounded-lg bg-danger-soft px-3 py-2.5 text-xs text-destructive">
                   <Flag className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                   <p>
                     T15 policy zone (≈RM14,000+/month household, HIS 2024): the Budget 2025–2026
@@ -236,7 +236,7 @@ export default function IncomeStandingTool() {
             </>
           ) : (
             <div className="flex flex-col items-center gap-2 py-10 text-center">
-              <Scale className="h-6 w-6 text-amber-500" />
+              <Scale className="h-6 w-6 text-primary" />
               <p className="text-sm font-medium">Enter a monthly gross income</p>
               <p className="max-w-xs text-sm text-muted-foreground">
                 The tool places it on the B40/M40/T20 ladder with national and state context.

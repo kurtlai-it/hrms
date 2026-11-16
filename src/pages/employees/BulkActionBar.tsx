@@ -25,7 +25,7 @@ export function BulkActionBar({ selected, actorName, onClear }: BulkActionBarPro
         onCompleted={onClear}
         align="start"
         trigger={
-          <Button size="sm" className="bg-amber-600 text-white hover:bg-amber-700">
+          <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary">
             Separation actions
           </Button>
         }
@@ -39,18 +39,18 @@ export function BulkActionBar({ selected, actorName, onClear }: BulkActionBarPro
   return (
     <>
       {/* Desktop / tablet — inline sticky bar */}
-      <div className="sticky top-2 z-20 hidden items-center gap-3 rounded-xl border border-amber-200/70 bg-amber-50/90 px-4 py-2.5 shadow-sm backdrop-blur md:flex">
+      <div className="sticky top-2 z-20 hidden items-center gap-3 rounded-xl border border-warning/40 bg-warning-soft px-4 py-2.5 shadow-sm backdrop-blur md:flex">
         <p className="text-sm font-medium">
-          <span className="font-semibold text-amber-800">{selected.length}</span> selected
+          <span className="font-semibold text-warning">{selected.length}</span> selected
         </p>
         <div className="ml-auto flex items-center gap-2">{actions}</div>
       </div>
 
       {/* Mobile — fixed bottom sheet */}
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-amber-200/70 bg-amber-50/95 px-4 py-3 shadow-[0_-4px_16px_rgba(0,0,0,0.08)] backdrop-blur md:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-warning/40 bg-warning-soft px-4 py-3 shadow-[0_-4px_16px_rgba(0,0,0,0.08)] backdrop-blur md:hidden">
         <div className="flex items-center gap-3">
           <p className="text-sm font-medium">
-            <span className="font-semibold text-amber-800">{selected.length}</span> selected
+            <span className="font-semibold text-warning">{selected.length}</span> selected
           </p>
           <div className="ml-auto flex items-center gap-2">{actions}</div>
         </div>

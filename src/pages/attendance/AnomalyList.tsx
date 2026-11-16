@@ -34,9 +34,9 @@ interface Anomaly {
 }
 
 const KIND_META = {
-  'missing-out': { label: 'Missing clock-out', icon: CalendarClock, cls: 'bg-amber-100 text-amber-800' },
-  'over-12h': { label: '>12h day', icon: ShieldAlert, cls: 'bg-rose-100 text-rose-800' },
-  'rest-day-work': { label: 'Rest-day work', icon: MoonStar, cls: 'bg-stone-200 text-stone-700' },
+  'missing-out': { label: 'Missing clock-out', icon: CalendarClock, cls: 'bg-warning-soft text-warning' },
+  'over-12h': { label: '>12h day', icon: ShieldAlert, cls: 'bg-danger-soft text-destructive' },
+  'rest-day-work': { label: 'Rest-day work', icon: MoonStar, cls: 'bg-secondary text-foreground' },
 } as const;
 
 /** Grace after shift end before a still-open today record counts as forgotten. */
@@ -166,12 +166,12 @@ export default function AnomalyList() {
         </div>
       </div>
 
-      {fixedMsg && <p className="text-sm text-emerald-700">{fixedMsg}</p>}
+      {fixedMsg && <p className="text-sm text-success">{fixedMsg}</p>}
 
       <Card className="rounded-xl">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
-            <AlertTriangle className="h-4 w-4 text-amber-600" />
+            <AlertTriangle className="h-4 w-4 text-warning" />
             {auth && auth.role === 'Employee' ? `Your anomalies — ${month}` : `Anomalies — ${month}`}
           </CardTitle>
         </CardHeader>

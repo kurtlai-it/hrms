@@ -250,7 +250,7 @@ export default function CreateLoanDialog({ open, onOpenChange, employees, actor,
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={submit} disabled={!valid}>Create loan</Button>
+          <Button onClick={submit} disabled={!valid} disabledReason="Fill in the required fields first.">Create loan</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

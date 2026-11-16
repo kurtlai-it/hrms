@@ -47,7 +47,7 @@ export function PasswordField({ id, label = 'Password', value, onChange, show, o
           <RefreshCw className="mr-1.5 h-3.5 w-3.5" /> Generate
         </Button>
       </div>
-      {error ? <p className="text-xs text-red-600">{error}</p> : null}
+      {error ? <p className="text-xs text-destructive">{error}</p> : null}
       {!error && hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
     </div>
   );

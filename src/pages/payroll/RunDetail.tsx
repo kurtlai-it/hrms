@@ -1,33 +1,50 @@
 /**
- * Payroll run detail — per-employee payslip table with totals, warnings
- * panel, and the statutory outputs tab (EPF/SOCSO/EIS/CP39/HRD + bank giro).
+ * Payroll run page (/payroll/runs/:id) — docs/design/payroll-run.html and the
+ * "Payroll run page" section of docs/design/DESIGN.md. Top to bottom:
+ * breadcrumb, title + status word, the 5-step tracker, 4 totals in plain
+ * words, "What to do now", the staff table, and the red "Made a mistake?" box.
  *
- * Draft runs (wizard review step) expose the kakitangan-style editor:
- * per-employee Adjust dialog (CP38 / Zakat / PTPTN / custom lines, reset,
- * exclude) plus a Finalize action that locks the run. Statutory exports and
- * the bank giro are gated to finalized runs. 'Undo run' deletes the run and
- * its payslips and reverts paid claims to approved.
+ * Staff table: 5 columns by default (Staff, Pay before deductions, Deductions,
+ * Take-home pay, Payslip); "Show all details" adds the rest (remembered in
+ * localStorage). Staff column and header row stay in place while scrolling.
+ * Under 700px wide: one card per person instead of the table.
+ *
+ * Draft runs: "What to do now" is "Review and approve" (finalize), each row
+ * has "Change" (the per-employee adjust dialog), and the bottom box offers
+ * "Run this month again" / "Discard this draft" instead of undo.
+ *
+ * Money columns are display-only re-groupings of the stored payslip fields
+ * (./runSummary) — payroll calculations are not changed here. "Pay before
+ * deductions" is the payslip's gross; "Claims paid back" (refunds paid with
+ * the salary) appears only when at least one row in the run has some.
  */
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
-  AlertTriangle, ArrowLeft, BadgeCheck, ChevronRight, Search, SlidersHorizontal,
-  Undo2, Users, Wallet,
+  AlertTriangle, ArrowLeft, BadgeCheck, Check, CircleDashed, Download, FileText,
+  List, Pencil, Printer, RotateCcw, Search, Trash2, Undo2, Wallet, X,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCollection } from '@/lib/db';
 import { useRole } from '@/lib/useRole';
-import { finalizePayrollRun, undoPayrollRun } from '@/lib/payrollEngine';
-import { fmtDate, fmtRM, round2 } from '@/lib/utils';
+import { finalizePayrollRun, runPayroll, undoPayrollRun } from '@/lib/payrollEngine';
+import { downloadTextFile } from '@/lib/csv';
+import { cn, fmtRM } from '@/lib/utils';
 import type {
-  Employee, PayrollRun, Payslip, Settings as CompanySettings,
+  AuditLog, Employee, PayrollRun, Payslip, Settings as CompanySettings,
 } from '@/lib/types';
-import { empById, monthLabel } from './helpers';
+import { formatDate } from '@/i18n';
+import { greetingName } from '@/pages/dashboard/lib';
+import { buttonVariants } from '@/components/ui/button-variants';
+import { canSeeSensitive, useAuthSafe } from '@/lib/useAuthSafe';
+import { empById } from './helpers';
 import StatutoryOutputs from './StatutoryOutputs';
 import EmployeeAdjustDialog from './EmployeeAdjustDialog';
 import OrgPayrollReport from './OrgPayrollReport';
-import { Money } from './components';
-import { canSeeSensitive, useAuthSafe } from '@/lib/useAuthSafe';
+import { MonthTracker } from './MonthTracker';
+import { giroTxt, missingBankDetails } from './bankGiro';
+import { hasClaimsBack, summarizePayslip, sumPayslips, type PayslipSummary } from './runSummary';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -35,14 +52,32 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow,
-} from '@/components/ui/table';
+  Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle,
+} from '@/components/ui/sheet';
+
+const DETAILS_KEY = 'myhrms:payrollDetails';
+
+function readDetails(): boolean {
+  try {
+    return localStorage.getItem(DETAILS_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function saveDetails(on: boolean): void {
+  try {
+    localStorage.setItem(DETAILS_KEY, on ? '1' : '0');
+  } catch {
+    /* ignore — the toggle still works for this visit */
+  }
+}
+
+const money = (n: number) => fmtRM(n);
 
 export default function RunDetail() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { role: stubRole } = useRole();
@@ -52,59 +87,41 @@ export default function RunDetail() {
   const { items: payslips } = useCollection<Payslip>('payslips');
   const { items: employees } = useCollection<Employee>('employees');
   const { items: settingsItems } = useCollection<CompanySettings>('settings');
+  const { items: audit } = useCollection<AuditLog>('audit');
   const [query, setQuery] = useState('');
+  const [details, setDetails] = useState(readDetails);
+  const [filesOpen, setFilesOpen] = useState(false);
   const [adjustEmpId, setAdjustEmpId] = useState<string | null>(null);
-  const [confirmFinalize, setConfirmFinalize] = useState(false);
-  const [confirmUndo, setConfirmUndo] = useState(false);
+  const [confirm, setConfirm] = useState<null | 'finalize' | 'undo' | 'rerun' | 'discard'>(null);
 
   const run = runs.find((r) => r.id === id);
   const empMap = useMemo(() => empById(employees), [employees]);
   const slips = useMemo(() => payslips.filter((p) => p.runId === id), [payslips, id]);
-
-  // B2 — IC / bank details are HR-only; managers and employees never see them
-  // on run rows (pre-integration, when auth is absent, behaviour is unchanged).
+  // IC / bank details are HR-only; managers and employees never see them.
   const showSensitive = canSeeSensitive(auth);
+  const me = greetingName(employees.find((e) => e.id === auth?.employeeId)?.name, auth?.user?.username) || String(role);
 
   const filtered = useMemo(() => {
-    const q = query.toLowerCase();
+    const q = query.trim().toLowerCase();
+    if (!q) return slips;
     return slips.filter((p) => {
       const e = empMap.get(p.employeeId);
       return `${e?.name ?? ''} ${e?.ic ?? ''}`.toLowerCase().includes(q);
     });
   }, [slips, empMap, query]);
-
-  // B9 — footer totals follow the active filter so visible rows foot exactly.
-  const totals = useMemo(() => {
-    const sum = (fn: (p: Payslip) => number) => round2(filtered.reduce((s, p) => s + fn(p), 0));
-    return {
-      basic: sum((p) => p.basicPay),
-      allowances: sum((p) => p.allowances),
-      ot: sum((p) => p.otPay),
-      gross: sum((p) => p.grossPay),
-      epfEe: sum((p) => p.epfEmployee),
-      epfEr: sum((p) => p.epfEmployer),
-      socsoEe: sum((p) => p.socsoEmployee),
-      socsoEr: sum((p) => p.socsoEmployer),
-      eisEe: sum((p) => p.eisEmployee),
-      eisEr: sum((p) => p.eisEmployer),
-      pcb: sum((p) => p.pcb),
-      hrd: sum((p) => p.hrdLevy),
-      net: sum((p) => p.netPay),
-      cost: sum((p) => p.employerCost),
-    };
-  }, [filtered]);
+  // Totals follow the search so the visible rows always foot.
+  const totals = useMemo(() => sumPayslips(filtered), [filtered]);
+  const allTotals = useMemo(() => sumPayslips(slips), [slips]);
 
   if (!run) {
     return (
       <div className="flex flex-col items-center gap-3 py-16 text-center">
-        <Wallet className="h-10 w-10 text-muted-foreground" />
-        <p className="font-medium">Payroll run not found</p>
-        <p className="text-sm text-muted-foreground">
-          It may have been replaced by a re-run of the same month.
-        </p>
+        <Wallet className="h-10 w-10 text-muted-foreground" aria-hidden="true" />
+        <p className="font-bold">{t('run.notFoundTitle')}</p>
+        <p className="text-muted-foreground">{t('run.notFoundBody')}</p>
         <Button variant="outline" asChild>
           <Link to="/payroll">
-            <ArrowLeft className="h-4 w-4" /> Back to payroll
+            <ArrowLeft className="h-5 w-5" aria-hidden="true" /> {t('run.backToPayroll')}
           </Link>
         </Button>
       </div>
@@ -112,415 +129,521 @@ export default function RunDetail() {
   }
 
   const isDraft = run.status === 'draft';
+  /** A cell of the flat totals panel (take-home highlighted). */
+  const totalBox = (main = false) =>
+    cn('flex-[1_1_16rem] p-5 shadow-[-1px_-1px_0_0_hsl(var(--border))]', main ? 'bg-accent text-accent-foreground' : 'bg-card');
+  const [y, m] = run.monthKey.split('-').map(Number);
+  const month = formatDate(new Date(y!, m! - 1, 1), { month: 'long', year: 'numeric' });
+  const finalizedBy = [...audit].reverse().find((a) => a.action === 'payroll.finalize' && a.entityId === run.id)?.actorName ?? run.runBy;
   const adjustSlip = adjustEmpId ? slips.find((p) => p.employeeId === adjustEmpId) : undefined;
+  const missingBank = missingBankDetails(slips, empMap);
+  const nameOf = (p: Payslip) => empMap.get(p.employeeId)?.name ?? p.employeeId;
 
+  const closeConfirm = () => setConfirm(null);
   const doFinalize = () => {
-    finalizePayrollRun(run.id, role);
-    toast.success(`${monthLabel(run.monthKey)} payroll finalized`, {
-      description: `${slips.length} payslip(s) locked · statutory outputs and bank giro are now available.`,
-    });
-    setConfirmFinalize(false);
+    finalizePayrollRun(run.id, me);
+    toast.success(t('run.toastFinalized', { month }), { description: t('run.toastFinalizedDesc') });
+    closeConfirm();
   };
-
   const doUndo = () => {
-    const label = monthLabel(run.monthKey);
-    if (undoPayrollRun(run.id, role)) {
-      toast.success(`Payroll run for ${label} undone`, {
-        description: 'Run and payslips deleted; paid claims reverted to approved.',
-      });
-      setConfirmUndo(false);
+    if (undoPayrollRun(run.id, me)) {
+      toast.success(t('run.toastUndone', { month }));
       navigate('/payroll');
     } else {
-      toast.error(`Could not undo the ${label} run`);
-      setConfirmUndo(false);
+      toast.error(t('run.toastUndoFail', { month }));
     }
+    closeConfirm();
+  };
+  const doDiscard = () => {
+    if (undoPayrollRun(run.id, me)) {
+      toast.success(t('run.toastDiscarded', { month }));
+      navigate('/payroll');
+    } else {
+      toast.error(t('run.toastUndoFail', { month }));
+    }
+    closeConfirm();
+  };
+  const doRerun = () => {
+    // Same staff as this draft, and still a draft (as the Run payroll wizard does).
+    const res = runPayroll(run.monthKey, slips.map((p) => p.employeeId), me, { draft: true });
+    toast.success(t('run.toastRerun', { month }));
+    closeConfirm();
+    navigate(`/payroll/runs/${res.run.id}`, { replace: true });
+  };
+  const downloadBank = () => {
+    const file = `bank-giro-${run.monthKey}.txt`;
+    downloadTextFile(file, giroTxt(slips, empMap, settingsItems[0], run.monthKey), 'text/plain');
+    toast.success(t('run.toastDownload'), { description: file });
+  };
+  const toggleDetails = () => {
+    setDetails((d) => {
+      saveDetails(!d);
+      return !d;
+    });
   };
 
-  const stat = (label: string, value: string) => (
-    <Card className="rounded-xl">
-      <CardContent className="pt-5">
-        <p className="text-xs text-muted-foreground">{label}</p>
-        <p className="mt-1 text-xl font-semibold tabular-nums">{value}</p>
-      </CardContent>
-    </Card>
+  // ── Columns (details adds the rest) ────────────────────────────────────────
+  type Col = { key: string; label: string; cell: (p: Payslip, s: PayslipSummary) => ReactNode; total: ReactNode; strong?: boolean };
+  const pair = (a: number, b: number) => `${money(a)} / ${money(b)}`;
+  const colPayBefore: Col = { key: 'payBefore', label: t('run.colPayBefore'), cell: (_p, s) => money(s.payBefore), total: money(totals.payBefore) };
+  const colDeductions: Col = { key: 'deductions', label: t('run.colDeductions'), cell: (_p, s) => money(s.deductions), total: money(totals.deductions) };
+  const colTakeHome: Col = { key: 'takeHome', label: t('run.colTakeHome'), cell: (_p, s) => money(s.takeHome), total: money(totals.takeHome), strong: true };
+  // Shown only when the run pays back claims or other cash refunds to someone.
+  const showClaimsBack = hasClaimsBack(slips);
+  const colClaimsBack: Col = { key: 'claimsBack', label: t('run.colClaimsBack'), cell: (_p, s) => money(s.claimsBack), total: money(totals.claimsBack) };
+  const claimsBackCols = showClaimsBack ? [colClaimsBack] : [];
+  const detailCols: Col[] = [
+    { key: 'basic', label: t('run.colBasic'), cell: (p) => money(p.basicPay), total: money(totals.basic) },
+    { key: 'allowances', label: t('run.colAllowances'), cell: (p) => money(p.allowances), total: money(totals.allowances) },
+    {
+      key: 'ot', label: t('run.colOvertime'),
+      cell: (p) => (
+        <>
+          {money(p.otPay)}
+          {p.otHours > 0 && <span className="block text-muted-foreground">{t('run.hours', { count: p.otHours })}</span>}
+        </>
+      ),
+      total: money(totals.ot),
+    },
+    colPayBefore,
+    { key: 'epf', label: t('run.colEpf'), cell: (p) => pair(p.epfEmployee, p.epfEmployer), total: pair(totals.epfEe, totals.epfEr) },
+    { key: 'socso', label: t('run.colSocso'), cell: (p) => pair(p.socsoEmployee, p.socsoEmployer), total: pair(totals.socsoEe, totals.socsoEr) },
+    { key: 'eis', label: t('run.colEis'), cell: (p) => pair(p.eisEmployee, p.eisEmployer), total: pair(totals.eisEe, totals.eisEr) },
+    { key: 'pcb', label: t('run.colPcb'), cell: (p) => money(p.pcb), total: money(totals.pcb) },
+    { key: 'other', label: t('run.colOther'), cell: (_p, s) => money(s.otherDeductions), total: money(totals.otherDeductions) },
+    colDeductions,
+    ...claimsBackCols,
+    colTakeHome,
+    { key: 'cost', label: t('run.colCost'), cell: (p) => money(p.employerCost), total: money(totals.cost) },
+  ];
+  const cols = details ? detailCols : [colPayBefore, colDeductions, ...claimsBackCols, colTakeHome];
+
+  const badges = (p: Payslip) => (
+    <span className="mt-1 flex flex-wrap gap-1">
+      {p.salaryTypeUsed === 'daily' && <Badge variant="secondary">{t('run.badgeDaily')}</Badge>}
+      {p.salaryTypeUsed === 'hourly' && <Badge variant="secondary">{t('run.badgeHourly')}</Badge>}
+      {p.basicOverride !== undefined && <Badge variant="outline" className="border-warning text-warning">{t('run.badgeBasicSet')}</Badge>}
+      {(p.adjustmentDeductions ?? 0) + (p.adjustmentEarnings ?? 0) > 0 && (
+        <Badge variant="outline" className="border-warning text-warning">{t('run.badgeChanged')}</Badge>
+      )}
+      {(p.excludeEpf || p.excludeSocso || p.excludeEis || p.excludePcb) && (
+        <Badge variant="outline" className="border-destructive text-destructive">{t('run.badgeOptOut')}</Badge>
+      )}
+    </span>
   );
 
-  return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-1">
-          <Button variant="ghost" size="sm" className="-ml-2" asChild>
-            <Link to="/payroll">
-              <ArrowLeft className="h-4 w-4" /> Payroll
-            </Link>
-          </Button>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Payroll run — {monthLabel(run.monthKey)}
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Run {fmtDate(run.runAt)} by {run.runBy} ·{' '}
-            <Badge variant={run.status === 'finalized' ? 'secondary' : 'outline'}>{run.status}</Badge>
-          </p>
-        </div>
-        <div className="flex gap-2">
-          {isDraft && (
-            <Button onClick={() => setConfirmFinalize(true)}>
-              <BadgeCheck className="h-4 w-4" /> Finalize run
-            </Button>
-          )}
-          {!isDraft && <OrgPayrollReport run={run} />}
-          <Button variant="outline" onClick={() => setConfirmUndo(true)}>
-            <Undo2 className="h-4 w-4" /> Undo run
-          </Button>
-        </div>
-      </div>
-
+  const rowActions = (p: Payslip, full = false) => (
+    <div className={cn('flex gap-2', full ? 'flex-col' : 'justify-center')}>
+      <Button asChild variant="outline" className={cn(full && 'w-full')}>
+        <Link to={`/payroll/payslip/${p.id}`} aria-label={t('run.viewFor', { name: nameOf(p) })}>
+          {full ? t('run.viewPayslip') : t('run.view')}
+        </Link>
+      </Button>
       {isDraft && (
-        <Alert className="border-amber-300 bg-amber-50 dark:border-amber-900/40 dark:bg-amber-950/30">
-          <SlidersHorizontal className="h-4 w-4 text-amber-600" />
-          <AlertTitle className="text-amber-800 dark:text-amber-500">Draft — review before finalizing</AlertTitle>
-          <AlertDescription className="text-xs text-muted-foreground">
-            Use <strong>Adjust</strong> on any employee to add CP38 / Zakat / PTPTN / custom lines,
-            reset them to defaults, or exclude them from this run. Claims are only marked paid and
-            statutory outputs &amp; bank giro become available after you <strong>Finalize run</strong>.
-          </AlertDescription>
-        </Alert>
+        <Button
+          variant="outline"
+          className={cn(full && 'w-full')}
+          aria-label={t('run.changeFor', { name: nameOf(p) })}
+          onClick={() => setAdjustEmpId(p.employeeId)}
+        >
+          <Pencil className="h-5 w-5" aria-hidden="true" /> {t('run.change')}
+        </Button>
       )}
+    </div>
+  );
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {stat('Employees', String(run.employeeCount))}
-        {stat('Total gross', fmtRM(run.totalGross))}
-        {stat('Total net pay', fmtRM(run.totalNet))}
-        {stat('Employer cost', fmtRM(run.totalEmployerCost))}
+  const total = filtered.length === slips.length ? slips.length : filtered.length;
+
+  return (
+    <div className="space-y-8">
+      {/* ── Breadcrumb, title, status ── */}
+      <div className="space-y-2">
+        <nav aria-label={t('a11y.breadcrumb')}>
+          <ol className="flex flex-wrap items-center gap-1 text-muted-foreground">
+            <li><Link to="/" className="inline-flex min-h-12 items-center hover:underline">{t('bar.home')}</Link></li>
+            <li aria-hidden="true">›</li>
+            <li><Link to="/go/pay" className="inline-flex min-h-12 items-center hover:underline">{t('group.pay')}</Link></li>
+            <li aria-hidden="true">›</li>
+            <li><Link to="/payroll" className="inline-flex min-h-12 items-center hover:underline">{t('page.runPayroll.name')}</Link></li>
+          </ol>
+        </nav>
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="text-[2rem] font-bold leading-tight">{t('run.title', { month })}</h1>
+          {isDraft ? (
+            <span className={'inline-flex items-center gap-1.5 rounded-md bg-warning-soft px-3 py-1 font-bold text-warning'}>
+              <CircleDashed className="h-5 w-5" aria-hidden="true" /> {t('run.statusNotFinished')}
+            </span>
+          ) : (
+            <span className={'inline-flex items-center gap-1.5 rounded-md bg-success-soft px-3 py-1 font-bold text-success'}>
+              <Check className="h-5 w-5" aria-hidden="true" /> {t('run.statusFinished')}
+            </span>
+          )}
+        </div>
+        <p className="text-muted-foreground">
+          {isDraft
+            ? t('run.startedBy', { date: formatDate(run.runAt), name: run.runBy })
+            : t('run.finishedBy', { date: formatDate(run.finalizedAt ?? run.runAt), name: finalizedBy })}
+        </p>
       </div>
+
+      {/* ── 5-step tracker ── */}
+      <MonthTracker runs={runs} run={run} paydayDay={settingsItems[0]?.paydayDay} variant="run" />
+
+      {/* ── Totals (a 5th card when the run pays claims back). Boxes are at least
+          16rem and wrap to a new row instead of squeezing, so amounts never wrap. ── */}
+      {/* One flat panel; cells wrap to a new row (never squeeze) and are split by thin lines. */}
+      <div className="flex flex-wrap overflow-hidden rounded-lg border bg-card">
+        <div className={totalBox()}>
+          <p className="font-bold">{t('run.staffPaid')}</p>
+          <p className="whitespace-nowrap text-[1.6rem] font-bold tabular-nums">{slips.length}</p>
+          <p className="text-muted-foreground">{t('run.staffPaidSub')}</p>
+        </div>
+        <div className={totalBox()}>
+          <p className="font-bold">{t('run.totalBefore')}</p>
+          <p className="whitespace-nowrap text-[1.6rem] font-bold tabular-nums">{money(allTotals.payBefore)}</p>
+          <p className="text-muted-foreground">{t('run.totalBeforeSubGross')}</p>
+        </div>
+        {allTotals.claimsBack > 0 && (
+          <div className={totalBox()}>
+            <p className="font-bold">{t('run.colClaimsBack')}</p>
+            <p className="whitespace-nowrap text-[1.6rem] font-bold tabular-nums">{money(allTotals.claimsBack)}</p>
+            <p className="text-muted-foreground">{t('run.claimsBackSub')}</p>
+          </div>
+        )}
+        <div className={totalBox(true)}>
+          <p className="font-bold">{t('run.totalTakeHome')}</p>
+          <p className="whitespace-nowrap text-[1.6rem] font-bold tabular-nums">{money(allTotals.takeHome)}</p>
+          <p className="text-muted-foreground">{t('run.totalTakeHomeSub')}</p>
+        </div>
+        <div className={totalBox()}>
+          <p className="font-bold">{t('run.totalCost')}</p>
+          <p className="whitespace-nowrap text-[1.6rem] font-bold tabular-nums">{money(allTotals.cost)}</p>
+          <p className="text-muted-foreground">{t('run.totalCostSub')}</p>
+        </div>
+      </div>
+
+      {/* ── What to do now ── */}
+      <section aria-labelledby="run-what-now" className="space-y-3">
+        <h2 id="run-what-now" className="text-[1.35rem] font-bold">{t('run.whatNow')}</h2>
+        {isDraft ? (
+          <>
+            <p>{t('run.draftHelp')}</p>
+            <Button onClick={() => setConfirm('finalize')}>
+              <BadgeCheck className="h-5 w-5" aria-hidden="true" /> {t('run.reviewApprove')}
+            </Button>
+          </>
+        ) : (
+          <>
+            <div className="flex flex-wrap gap-3">
+              <Button onClick={downloadBank}>
+                <Download className="h-5 w-5" aria-hidden="true" /> {t('run.downloadBank')}
+              </Button>
+              <Button asChild variant="outline">
+                <Link to={`/payroll/batch-payslips?run=${run.id}`}>
+                  <Printer className="h-5 w-5" aria-hidden="true" /> {t('run.printAll')}
+                </Link>
+              </Button>
+              <Button variant="outline" onClick={() => setFilesOpen(true)}>
+                <FileText className="h-5 w-5" aria-hidden="true" /> {t('run.statutoryFiles')}
+              </Button>
+            </div>
+            {missingBank.length > 0 && (
+              <p className="flex items-start gap-2 text-warning">
+                <AlertTriangle className="mt-1 h-5 w-5 shrink-0" aria-hidden="true" />
+                {t('run.bankMissing', { count: missingBank.length, names: missingBank.map(nameOf).join(', ') })}
+              </p>
+            )}
+          </>
+        )}
+      </section>
 
       {run.warnings.length > 0 && (
-        <Alert className="border-amber-300 bg-amber-50 dark:border-amber-900/40 dark:bg-amber-950/30">
-          <AlertTriangle className="h-4 w-4 text-amber-600" />
-          <AlertTitle className="text-amber-800 dark:text-amber-500">
-            {run.warnings.length} compliance warning(s)
-          </AlertTitle>
+        <Alert className="border-warning/40 bg-warning-soft">
+          <AlertTriangle className="h-5 w-5 text-warning" aria-hidden="true" />
+          <AlertTitle className="font-bold text-warning">{t('run.warnings', { count: run.warnings.length })}</AlertTitle>
           <AlertDescription>
-            <ul className="list-disc space-y-0.5 pl-4 text-xs text-muted-foreground">
-              {run.warnings.map((w) => (
-                <li key={w}>{w}</li>
-              ))}
+            <ul className="list-disc space-y-1 pl-5">
+              {run.warnings.map((w) => <li key={w}>{w}</li>)}
             </ul>
           </AlertDescription>
         </Alert>
       )}
 
-      <Tabs defaultValue="payslips">
-        <TabsList>
-          <TabsTrigger value="payslips">Payslips</TabsTrigger>
-          <TabsTrigger value="statutory">Statutory outputs & bank giro</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="payslips" className="space-y-4">
-          <div className="relative max-w-xs">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Filter by name or IC…"
-              className="pl-8"
+      {/* ── Staff table / cards ── */}
+      <section aria-labelledby="run-pay-each" className="space-y-4">
+        <h2 id="run-pay-each" className="text-[1.35rem] font-bold">{t('run.payEach')}</h2>
+        <div className="flex flex-wrap gap-3">
+          <label className="relative min-w-[16rem] flex-1">
+            <span className="sr-only">{t('run.search')}</span>
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+            <input
+              type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
+              placeholder={t('run.search')}
+              className={'h-12 w-full rounded-md border-2 border-input bg-card pl-12 pr-4 text-card-foreground placeholder:text-muted-foreground'}
             />
+          </label>
+          <Button
+            variant={details ? 'default' : 'outline'}
+            aria-pressed={details}
+            onClick={toggleDetails}
+            className="h-12"
+          >
+            <List className="h-5 w-5" aria-hidden="true" /> {details ? t('run.showFewer') : t('run.showAll')}
+          </Button>
+        </div>
+
+        {slips.length === 0 ? (
+          <p className="rounded-xl border-2 border-dashed p-8 text-center font-bold">{t('run.noSlips')}</p>
+        ) : filtered.length === 0 ? (
+          <div className="flex flex-col items-center gap-3 rounded-xl border-2 border-dashed p-8 text-center">
+            <p>{t('run.noneMatch', { query: query.trim() })}</p>
+            <Button variant="outline" onClick={() => setQuery('')}>
+              <X className="h-5 w-5" aria-hidden="true" /> {t('run.clearSearch')}
+            </Button>
           </div>
-
-          {slips.length === 0 ? (
-            <Card className="rounded-xl">
-              <CardContent className="flex flex-col items-center gap-2 py-12 text-center">
-                <Users className="h-8 w-8 text-muted-foreground" />
-                <p className="font-medium">No payslips in this run</p>
-              </CardContent>
-            </Card>
-          ) : (
-            <>
-              {/* Desktop table */}
-              <div className="hidden md:block">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Employee</TableHead>
-                      <TableHead className="text-right">Basic</TableHead>
-                      <TableHead className="text-right">Allowances</TableHead>
-                      <TableHead className="text-right">OT</TableHead>
-                      <TableHead className="text-right">Gross</TableHead>
-                      <TableHead className="text-right">EPF ee/er</TableHead>
-                      <TableHead className="text-right">SOCSO ee/er</TableHead>
-                      <TableHead className="text-right">EIS ee/er</TableHead>
-                      <TableHead className="text-right">PCB</TableHead>
-                      <TableHead className="text-right">Net</TableHead>
-                      <TableHead className="text-right">Employer cost</TableHead>
-                      <TableHead />
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filtered.map((p) => (
-                      <TableRow key={p.id}>
-                        <TableCell>
-                          <Link
-                            to={`/payroll/payslip/${p.id}`}
-                            className="font-medium text-amber-700 underline-offset-4 hover:underline dark:text-amber-500"
-                          >
-                            {empMap.get(p.employeeId)?.name ?? 'Unknown'}
-                          </Link>
-                          <span className="block text-xs text-muted-foreground">
-                            {showSensitive ? empMap.get(p.employeeId)?.ic : '—'}
-                          </span>
-                          <span className="block text-xs text-muted-foreground">{p.refNo ?? p.id}</span>
-                          {p.salaryTypeUsed && p.salaryTypeUsed !== 'monthly' && (
-                            <Badge variant="secondary" className="mt-0.5 text-[10px]">
-                              {p.salaryTypeUsed}-rated
-                            </Badge>
-                          )}
-                          {p.basicOverride !== undefined && (
-                            <Badge variant="outline" className="ml-1 mt-0.5 border-amber-400 text-[10px] text-amber-700 dark:text-amber-500">
-                              basic overridden
-                            </Badge>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right"><Money>{fmtRM(p.basicPay)}</Money></TableCell>
-                        <TableCell className="text-right"><Money>{fmtRM(p.allowances)}</Money></TableCell>
-                        <TableCell className="text-right">
-                          <Money>{fmtRM(p.otPay)}</Money>
-                          {p.otHours > 0 && (
-                            <span className="block text-xs text-muted-foreground">{p.otHours}h</span>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right"><Money>{fmtRM(p.grossPay)}</Money></TableCell>
-                        <TableCell className="text-right">
-                          <Money>{fmtRM(p.epfEmployee)}</Money>
-                          <span className="text-muted-foreground"> / </span>
-                          <Money>{fmtRM(p.epfEmployer)}</Money>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Money>{fmtRM(p.socsoEmployee)}</Money>
-                          <span className="text-muted-foreground"> / </span>
-                          <Money>{fmtRM(p.socsoEmployer)}</Money>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Money>{fmtRM(p.eisEmployee)}</Money>
-                          <span className="text-muted-foreground"> / </span>
-                          <Money>{fmtRM(p.eisEmployer)}</Money>
-                        </TableCell>
-                        <TableCell className="text-right"><Money>{fmtRM(p.pcb)}</Money></TableCell>
-                        <TableCell className="text-right font-medium"><Money>{fmtRM(p.netPay)}</Money></TableCell>
-                        <TableCell className="text-right"><Money>{fmtRM(p.employerCost)}</Money></TableCell>
-                        <TableCell>
-                          <div className="flex justify-end gap-1">
-                            {(p.adjustmentDeductions ?? 0) + (p.adjustmentEarnings ?? 0) > 0 && (
-                              <Badge variant="outline" className="mr-1 border-amber-400 text-amber-700 dark:text-amber-500">
-                                adjusted
-                              </Badge>
-                            )}
-                            {(p.excludeEpf || p.excludeSocso || p.excludeEis || p.excludePcb) && (
-                              <Badge variant="outline" className="mr-1 border-red-400 text-red-700 dark:text-red-400">
-                                opt-out
-                              </Badge>
-                            )}
-                            {isDraft && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                title="Adjust this employee"
-                                onClick={() => setAdjustEmpId(p.employeeId)}
-                              >
-                                <SlidersHorizontal className="h-4 w-4" />
-                              </Button>
-                            )}
-                            <Button variant="ghost" size="sm" asChild>
-                              <Link to={`/payroll/payslip/${p.id}`}>
-                                <ChevronRight className="h-4 w-4" />
-                              </Link>
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                  <TableFooter>
-                    <TableRow>
-                      <TableCell>
-                        Total (
-                        {filtered.length === slips.length
-                          ? slips.length
-                          : `${filtered.length} of ${slips.length}`}
-                        )
-                      </TableCell>
-                      <TableCell className="text-right"><Money>{fmtRM(totals.basic)}</Money></TableCell>
-                      <TableCell className="text-right"><Money>{fmtRM(totals.allowances)}</Money></TableCell>
-                      <TableCell className="text-right"><Money>{fmtRM(totals.ot)}</Money></TableCell>
-                      <TableCell className="text-right"><Money>{fmtRM(totals.gross)}</Money></TableCell>
-                      <TableCell className="text-right">
-                        <Money>{fmtRM(totals.epfEe)}</Money>
-                        <span className="text-muted-foreground"> / </span>
-                        <Money>{fmtRM(totals.epfEr)}</Money>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Money>{fmtRM(totals.socsoEe)}</Money>
-                        <span className="text-muted-foreground"> / </span>
-                        <Money>{fmtRM(totals.socsoEr)}</Money>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Money>{fmtRM(totals.eisEe)}</Money>
-                        <span className="text-muted-foreground"> / </span>
-                        <Money>{fmtRM(totals.eisEr)}</Money>
-                      </TableCell>
-                      <TableCell className="text-right"><Money>{fmtRM(totals.pcb)}</Money></TableCell>
-                      <TableCell className="text-right"><Money>{fmtRM(totals.net)}</Money></TableCell>
-                      <TableCell className="text-right"><Money>{fmtRM(totals.cost)}</Money></TableCell>
-                      <TableCell />
-                    </TableRow>
-                  </TableFooter>
-                </Table>
-              </div>
-
-              {/* Mobile cards */}
-              <div className="space-y-3 md:hidden">
-                {filtered.map((p) => (
-                  <div key={p.id} className="rounded-xl border p-4">
-                    <Link
-                      to={`/payroll/payslip/${p.id}`}
-                      className="block transition-colors hover:bg-accent"
-                    >
-                      <div className="flex items-center justify-between">
-                        <p className="font-medium">{empMap.get(p.employeeId)?.name ?? 'Unknown'}</p>
-                        <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                      </div>
-                      <p className="mt-0.5 text-xs text-muted-foreground">{p.refNo ?? p.id}</p>
-                      <div className="mt-2 grid grid-cols-3 gap-2 text-sm">
-                        <div>
-                          <p className="text-xs text-muted-foreground">Gross</p>
-                          <p className="tabular-nums">{fmtRM(p.grossPay)}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-muted-foreground">PCB</p>
-                          <p className="tabular-nums">{fmtRM(p.pcb)}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-muted-foreground">Net</p>
-                          <p className="font-medium tabular-nums">{fmtRM(p.netPay)}</p>
-                        </div>
-                      </div>
-                    </Link>
-                    {isDraft && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="mt-3 w-full"
-                        onClick={() => setAdjustEmpId(p.employeeId)}
-                      >
-                        <SlidersHorizontal className="h-4 w-4" /> Adjust
-                      </Button>
-                    )}
-                  </div>
-                ))}
-              </div>
-              {filtered.length === 0 && (
-                <p className="py-6 text-center text-sm text-muted-foreground">
-                  No employees match "{query}".
-                </p>
+        ) : (
+          <>
+            {/* 700px and wider: table. With details off it shows in full on the
+                page; with details on it scrolls in its own box, Staff column and
+                header row fixed. */}
+            <div
+              data-testid="run-table"
+              className={cn(
+                'hidden overflow-x-auto bg-card min-[700px]:block',
+                'rounded-lg border',
+                details && 'max-h-[75vh] overflow-y-auto',
               )}
-            </>
-          )}
-        </TabsContent>
+            >
+              <table className="w-full border-separate border-spacing-0 text-left">
+                <thead>
+                  <tr>
+                    <th scope="col" className="sticky left-0 top-0 z-30 min-w-[15rem] border-b-2 border-r bg-muted px-4 py-3 font-bold">
+                      {t('run.colStaff')}
+                    </th>
+                    {cols.map((c) => (
+                      <th key={c.key} scope="col" className="sticky top-0 z-20 border-b-2 bg-muted px-4 py-3 text-right font-bold">
+                        {c.label}
+                      </th>
+                    ))}
+                    <th scope="col" className="sticky top-0 z-20 border-b-2 bg-muted px-4 py-3 text-center font-bold">
+                      {t('run.colPayslip')}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((p) => {
+                    const s = summarizePayslip(p);
+                    const e = empMap.get(p.employeeId);
+                    return (
+                      <tr key={p.id}>
+                        <th scope="row" className="sticky left-0 z-10 border-b border-r bg-card px-4 py-3 text-left align-top font-normal">
+                          <span className="block font-bold">{nameOf(p)}</span>
+                          {showSensitive && e?.ic && <span className="block whitespace-nowrap text-muted-foreground">{t('run.ic', { ic: e.ic })}</span>}
+                          {badges(p)}
+                        </th>
+                        {cols.map((c) => (
+                          <td key={c.key} className={cn('whitespace-nowrap border-b px-4 py-3 text-right align-middle tabular-nums', c.strong && 'font-bold')}>
+                            {c.cell(p, s)}
+                          </td>
+                        ))}
+                        <td className="border-b px-4 py-2 align-middle">{rowActions(p)}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th scope="row" className="sticky left-0 z-10 border-r bg-muted px-4 py-3 text-left font-bold">
+                      {t('run.total', { count: total })}
+                    </th>
+                    {cols.map((c) => (
+                      <td key={c.key} className="whitespace-nowrap bg-muted px-4 py-3 text-right font-bold tabular-nums">{c.total}</td>
+                    ))}
+                    <td className="bg-muted" />
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
 
-        <TabsContent value="statutory">
-          {isDraft ? (
-            <Card className="rounded-xl">
-              <CardContent className="flex flex-col items-center gap-2 py-12 text-center">
-                <BadgeCheck className="h-8 w-8 text-muted-foreground" />
-                <p className="font-medium">Finalize the run to unlock statutory outputs</p>
-                <p className="max-w-sm text-sm text-muted-foreground">
-                  EPF Form A, SOCSO Borang 8A, EIS, CP39, HRD levy and the bank giro file are
-                  generated only for finalized runs, so draft edits can never leak into a filing.
-                </p>
-                <Button onClick={() => setConfirmFinalize(true)}>
-                  <BadgeCheck className="h-4 w-4" /> Finalize run
-                </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <StatutoryOutputs
-              run={run}
-              slips={slips}
-              empMap={empMap}
-              settings={settingsItems[0]}
-            />
-          )}
-        </TabsContent>
-      </Tabs>
+            {/* Under 700px: one card per person */}
+            <ul className="space-y-4 min-[700px]:hidden">
+              {filtered.map((p) => {
+                const s = summarizePayslip(p);
+                const e = empMap.get(p.employeeId);
+                return (
+                  <li key={p.id} className="space-y-3 rounded-lg border bg-card p-4">
+                    <div>
+                      <p className="font-bold">{nameOf(p)}</p>
+                      {showSensitive && e?.ic && <p className="text-muted-foreground">{t('run.ic', { ic: e.ic })}</p>}
+                      {badges(p)}
+                    </div>
+                    <dl className="space-y-1">
+                      <div className="flex items-baseline justify-between gap-3">
+                        <dt>{t('run.colTakeHome')}</dt>
+                        <dd className="text-[1.35rem] font-bold tabular-nums">{money(s.takeHome)}</dd>
+                      </div>
+                      {(details ? detailCols.filter((c) => c.key !== 'takeHome') : [colPayBefore, colDeductions, colClaimsBack])
+                        // Claims paid back: one extra line, only when this person has some.
+                        .filter((c) => c.key !== 'claimsBack' || s.claimsBack > 0)
+                        .map((c) => (
+                        <div key={c.key} className="flex items-baseline justify-between gap-3">
+                          <dt className="text-muted-foreground">{c.label}</dt>
+                          <dd className="text-right tabular-nums">{c.cell(p, s)}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                    {rowActions(p, true)}
+                  </li>
+                );
+              })}
+              <li className="flex items-baseline justify-between gap-3 rounded-xl bg-muted p-4 font-bold">
+                <span>{t('run.totalTakeHomeShort', { count: total })}</span>
+                <span className="tabular-nums">{money(totals.takeHome)}</span>
+              </li>
+            </ul>
+          </>
+        )}
+      </section>
 
-      {/* Kakitangan-style per-employee editor (draft runs only) */}
+      {/* ── Bottom box: undo (finished) or start again (draft) ── */}
+      {isDraft ? (
+        <section aria-labelledby="run-start-again" className="flex flex-wrap items-center justify-between gap-4 rounded-lg border bg-card p-5">
+          <div className="space-y-1">
+            <h2 id="run-start-again" className="font-bold">{t('run.startAgainTitle')}</h2>
+            <p className="text-muted-foreground">{t('run.startAgainBody')}</p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Button variant="outline" onClick={() => setConfirm('rerun')}>
+              <RotateCcw className="h-5 w-5" aria-hidden="true" /> {t('run.rerun')}
+            </Button>
+            <Button variant="destructive" onClick={() => setConfirm('discard')}>
+              <Trash2 className="h-5 w-5" aria-hidden="true" /> {t('run.discard')}
+            </Button>
+          </div>
+        </section>
+      ) : (
+        <section aria-labelledby="run-mistake" className="flex flex-wrap items-center justify-between gap-4 rounded-lg bg-danger-soft p-5">
+          <div className="space-y-1">
+            <h2 id="run-mistake" className="font-bold">{t('run.mistakeTitle')}</h2>
+            <p>{t('run.mistakeBody')}</p>
+          </div>
+          <Button variant="destructive" onClick={() => setConfirm('undo')}>
+            <Undo2 className="h-5 w-5" aria-hidden="true" /> {t('run.undoRun')}
+          </Button>
+        </section>
+      )}
+
+      {/* ── EPF / SOCSO / EIS / PCB files ── */}
+      <Sheet open={filesOpen} onOpenChange={setFilesOpen}>
+        <SheetContent side="right" showClose={false} className="w-full gap-4 overflow-y-auto p-6 sm:max-w-4xl">
+          <SheetHeader className="p-0">
+            <SheetTitle className="text-[1.5rem] font-bold">{t('run.statutoryFiles')}</SheetTitle>
+            <SheetDescription className="text-base">{t('run.statutoryDesc')}</SheetDescription>
+          </SheetHeader>
+          <div className="flex flex-wrap gap-3">
+            <OrgPayrollReport run={run} />
+            <SheetClose asChild>
+              <Button variant="outline">
+                <X className="h-5 w-5" aria-hidden="true" /> {t('help.close')}
+              </Button>
+            </SheetClose>
+          </div>
+          <StatutoryOutputs run={run} slips={slips} empMap={empMap} settings={settingsItems[0]} />
+        </SheetContent>
+      </Sheet>
+
+      {/* Per-employee editor (draft runs only) */}
       <EmployeeAdjustDialog
         open={adjustEmpId !== null}
         onOpenChange={(o) => !o && setAdjustEmpId(null)}
         runId={run.id}
         payslip={adjustSlip}
         employee={adjustEmpId ? empMap.get(adjustEmpId) : undefined}
-        actor={role}
+        actor={me}
         onChanged={() => {/* collections are reactive — re-render happens automatically */}}
         onExcluded={() => setAdjustEmpId(null)}
       />
 
-      {/* Finalize confirmation */}
-      <AlertDialog open={confirmFinalize} onOpenChange={setConfirmFinalize}>
+      {/* ── Confirm dialogs ── */}
+      <AlertDialog open={confirm !== null} onOpenChange={(o) => !o && closeConfirm()}>
         <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              <BadgeCheck className="h-5 w-5 text-amber-600" />
-              Finalize {monthLabel(run.monthKey)} payroll?
-            </AlertDialogTitle>
-            <AlertDialogDescription asChild>
-              <div className="space-y-2">
-                <p>
-                  Finalizing locks this run's <strong>{slips.length} payslip(s)</strong> (net{' '}
-                  <strong>{fmtRM(run.totalNet)}</strong>): per-employee adjustments, resets and
-                  exclusions are no longer possible.
-                </p>
-                <p>
-                  Approved claims covered by the run are marked <strong>paid</strong>, and the
-                  statutory outputs (EPF / SOCSO / EIS / CP39 / HRD) and bank giro file become
-                  available. To change figures afterwards, undo the run and start again.
-                </p>
-              </div>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={doFinalize}>
-              <BadgeCheck className="h-4 w-4" /> Finalize run
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Undo confirmation */}
-      <AlertDialog open={confirmUndo} onOpenChange={setConfirmUndo}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-amber-600" />
-              Undo {monthLabel(run.monthKey)} payroll run?
-            </AlertDialogTitle>
-            <AlertDialogDescription asChild>
-              <div className="space-y-2">
-                <p>This permanently deletes the run and its <strong>{slips.length} payslip(s)</strong>.</p>
-                <p>
-                  Claims marked paid by this run revert to <strong>approved</strong> so they can be
-                  reimbursed again, and year-to-date figures recompute from the remaining payslips.
-                  Re-running the month afterwards reproduces identical payslips.
-                </p>
-              </div>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={doUndo}>
-              <Undo2 className="h-4 w-4" /> Undo run
-            </AlertDialogAction>
-          </AlertDialogFooter>
+          {confirm === 'finalize' && (
+            <>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="flex items-center gap-2">
+                  <BadgeCheck className="h-5 w-5 text-primary" aria-hidden="true" /> {t('run.finalizeTitle', { month })}
+                </AlertDialogTitle>
+                <AlertDialogDescription asChild>
+                  <div className="space-y-2">
+                    <p>{t('run.finalizeBody1', { count: slips.length, amount: money(allTotals.takeHome) })}</p>
+                    <p>{t('run.finalizeBody2')}</p>
+                  </div>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t('run.cancel')}</AlertDialogCancel>
+                <AlertDialogAction onClick={doFinalize}>{t('run.finalizeYes')}</AlertDialogAction>
+              </AlertDialogFooter>
+            </>
+          )}
+          {confirm === 'undo' && (
+            <>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-destructive" aria-hidden="true" /> {t('run.undoTitle', { month })}
+                </AlertDialogTitle>
+                <AlertDialogDescription asChild>
+                  <div className="space-y-3">
+                    <p>{t('run.undoLose')}</p>
+                    <ul className="list-disc space-y-1 pl-5">
+                      <li>{t('run.undoLose1', { month, count: slips.length, amount: money(allTotals.takeHome) })}</li>
+                      <li>{t('run.undoLose2')}</li>
+                      <li>{t('run.undoLose3')}</li>
+                    </ul>
+                    <p>{t('run.undoYtd')}</p>
+                  </div>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t('run.keep')}</AlertDialogCancel>
+                <AlertDialogAction onClick={doUndo} className={buttonVariants({ variant: 'destructive' })}>
+                  <Undo2 className="h-5 w-5" aria-hidden="true" /> {t('run.undoYes')}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </>
+          )}
+          {confirm === 'rerun' && (
+            <>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{t('run.rerunTitle', { month })}</AlertDialogTitle>
+                <AlertDialogDescription>{t('run.rerunBody')}</AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t('run.keep')}</AlertDialogCancel>
+                <AlertDialogAction onClick={doRerun}>
+                  <RotateCcw className="h-5 w-5" aria-hidden="true" /> {t('run.rerunYes')}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </>
+          )}
+          {confirm === 'discard' && (
+            <>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-destructive" aria-hidden="true" /> {t('run.discardTitle', { month })}
+                </AlertDialogTitle>
+                <AlertDialogDescription>{t('run.discardBody', { count: slips.length })}</AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t('run.keep')}</AlertDialogCancel>
+                <AlertDialogAction onClick={doDiscard} className={buttonVariants({ variant: 'destructive' })}>
+                  <Trash2 className="h-5 w-5" aria-hidden="true" /> {t('run.discardYes')}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </>
+          )}
         </AlertDialogContent>
       </AlertDialog>
     </div>

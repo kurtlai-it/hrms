@@ -16,6 +16,7 @@ import { fmtDate, fmtRM } from '@/lib/utils';
 import type { Employee, PayrollRun, Payslip, Settings as CompanySettings } from '@/lib/types';
 import { monthLabel } from './helpers';
 import RunPayrollWizard from './RunPayrollWizard';
+import { MonthTracker } from './MonthTracker';
 import EAFormDialog from './EAForm';
 import { Money } from './components';
 import { Badge } from '@/components/ui/badge';
@@ -108,7 +109,7 @@ export default function PayrollHome() {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="space-y-1">
           <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
-            <Wallet className="h-6 w-6 text-amber-600" /> Payroll
+            <Wallet className="h-6 w-6 text-primary" /> Payroll
           </h1>
           <p className="text-sm text-muted-foreground">
             Monthly payroll runs with EPF, SOCSO, EIS, PCB and HRD levy — computed by the statutory engine.
@@ -124,6 +125,8 @@ export default function PayrollHome() {
         </div>
       </div>
 
+      <MonthTracker runs={runs} paydayDay={settingsItems[0]?.paydayDay} onStart={() => setWizardOpen(true)} />
+
       <Card className="rounded-xl">
         <CardHeader>
           <CardTitle className="text-base">Run history</CardTitle>
@@ -137,7 +140,7 @@ export default function PayrollHome() {
             </div>
           ) : employees.length === 0 ? (
             <div className="flex flex-col items-center gap-3 py-12 text-center">
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950/50">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-warning-soft text-warning">
                 <Users className="h-6 w-6" />
               </span>
               <div>
@@ -150,7 +153,7 @@ export default function PayrollHome() {
             </div>
           ) : sorted.length === 0 ? (
             <div className="flex flex-col items-center gap-3 py-12 text-center">
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950/50">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-warning-soft text-warning">
                 <Landmark className="h-6 w-6" />
               </span>
               <div>
@@ -186,7 +189,7 @@ export default function PayrollHome() {
                         <TableCell className="font-medium">
                           <Link
                             to={`/payroll/runs/${r.id}`}
-                            className="text-amber-700 underline-offset-4 hover:underline dark:text-amber-500"
+                            className="text-primary underline-offset-4 hover:underline"
                           >
                             {monthLabel(r.monthKey)}
                           </Link>
@@ -239,7 +242,7 @@ export default function PayrollHome() {
                     <div className="flex items-center justify-between">
                       <Link
                         to={`/payroll/runs/${r.id}`}
-                        className="font-medium text-amber-700 underline-offset-4 hover:underline dark:text-amber-500"
+                        className="font-medium text-primary underline-offset-4 hover:underline"
                       >
                         {monthLabel(r.monthKey)}
                       </Link>
@@ -289,7 +292,7 @@ export default function PayrollHome() {
         <CardContent className="flex flex-wrap items-center justify-between gap-4 pt-6">
           <div className="space-y-1">
             <p className="flex items-center gap-2 text-sm font-semibold">
-              <CalendarClock className="h-4 w-4 text-amber-600" /> Year-end & payslip distribution
+              <CalendarClock className="h-4 w-4 text-primary" /> Year-end & payslip distribution
             </p>
             <p className="max-w-xl text-xs text-muted-foreground">
               Form E / CP8D / CP21 annual LHDN filings from finalized runs, plus batch payslip
@@ -317,7 +320,7 @@ export default function PayrollHome() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-amber-600" />
+              <AlertTriangle className="h-5 w-5 text-warning" />
               Re-run {rerunTarget ? monthLabel(rerunTarget.monthKey) : ''} payroll?
             </AlertDialogTitle>
             <AlertDialogDescription asChild>
@@ -358,7 +361,7 @@ export default function PayrollHome() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-amber-600" />
+              <AlertTriangle className="h-5 w-5 text-warning" />
               Undo {undoTarget ? monthLabel(undoTarget.monthKey) : ''} payroll run?
             </AlertDialogTitle>
             <AlertDialogDescription asChild>

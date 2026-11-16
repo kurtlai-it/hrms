@@ -180,7 +180,7 @@ export function CreateAccountDialog({
 
         {created ? (
           <>
-            <div className="space-y-2 rounded-lg border border-lime-200 bg-lime-50/60 p-4 dark:border-lime-900 dark:bg-lime-950/30">
+            <div className="space-y-2 rounded-lg border border-success/40 bg-success-soft p-4">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-sm text-muted-foreground">Username</span>
                 <code className="rounded bg-background px-1.5 py-0.5 text-sm font-medium">{created.username}</code>
@@ -250,7 +250,7 @@ export function CreateAccountDialog({
                   autoComplete="off"
                 />
                 {usernameHint ? (
-                  <p className="text-xs text-red-600">{usernameHint}</p>
+                  <p className="text-xs text-destructive">{usernameHint}</p>
                 ) : (
                   <p className="text-xs text-muted-foreground">
                     Auto-suggested from the email prefix — editable. Usernames are global across companies.
@@ -283,7 +283,7 @@ export function CreateAccountDialog({
                 </Select>
               </div>
 
-              {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-300">{error}</p>}
+              {error && <p className="rounded-lg bg-danger-soft px-3 py-2 text-sm text-destructive">{error}</p>}
             </div>
 
             <DialogFooter>

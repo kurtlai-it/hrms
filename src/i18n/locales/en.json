@@ -1,0 +1,785 @@
+{
+  "bar": {
+    "back": "Back",
+    "home": "Home",
+    "help": "Help",
+    "me": "Me",
+    "todo": "To do ({{count}})",
+    "logo": "ASM"
+  },
+  "me": {
+    "language": "Language",
+    "textSize": "Text size",
+    "normal": "Normal",
+    "big": "Big",
+    "bigger": "Bigger",
+    "signOut": "Sign out",
+    "screen": "Screen",
+    "light": "Light",
+    "dark": "Dark",
+    "myPayslips": "My payslips",
+    "superAdmin": "Super Admin console",
+    "devRole": "Test role (developers only)",
+    "signedInAs": "Signed in as {{name}} ({{role}})"
+  },
+  "home": {
+    "what": "What do you want to do?",
+    "pick": "Choose one:",
+    "start": "Start",
+    "nothing": "Nothing is waiting for you. New requests will show here.",
+    "todoLeave_one": "Leave to approve ({{count}})",
+    "todoLeave_other": "Leave to approve ({{count}})",
+    "todoClaims_one": "Expense claims to approve ({{count}}) · {{amount}}",
+    "todoClaims_other": "Expense claims to approve ({{count}}) · {{amount}}",
+    "todoOt_one": "Overtime to approve ({{count}})",
+    "todoOt_other": "Overtime to approve ({{count}})",
+    "todoClockIn": "You have not clocked in today",
+    "clockIn": "Clock in",
+    "todoPayrollStart": "{{month}} payroll: not started",
+    "todoPayrollFinish": "{{month}} payroll: draft, not finished",
+    "todoOnboarding_one": "New staff forms to check ({{count}})",
+    "todoOnboarding_other": "New staff forms to check ({{count}})",
+    "todoOwnLeave_one": "Your leave request waiting for a decision ({{count}})",
+    "todoOwnLeave_other": "Your leave requests waiting for a decision ({{count}})",
+    "todoOwnClaims_one": "Your expense claim waiting for a decision ({{count}})",
+    "todoOwnClaims_other": "Your expense claims waiting for a decision ({{count}})",
+    "myNumbers": "My numbers",
+    "leaveLeft": "Annual leave left",
+    "presentMonth": "Days present this month",
+    "claimsWaiting": "Claims waiting for approval",
+    "noRecord": "No record yet",
+    "claimsValue_one": "{{count}} claim ({{amount}})",
+    "claimsValue_other": "{{count}} claims ({{amount}})",
+    "waitingFor": "Waiting for you · {{date}}",
+    "reviewLeave": "Review leave",
+    "reviewClaims": "Review claims",
+    "reviewOt": "Review overtime",
+    "checkForms": "Check forms",
+    "startPayroll": "Start payroll",
+    "finishPayroll": "Finish payroll",
+    "seeMyLeave": "See my leave",
+    "seeMyClaims": "See my claims",
+    "todoPayrollStartDue": "{{month}} payroll: not started · pay staff by {{date}}",
+    "todoPayrollFinishDue": "{{month}} payroll: draft, not finished · pay staff by {{date}}",
+    "todoStaffPay": "Pay staff for {{month}}: due {{date}}",
+    "todoStatutory": "EPF, SOCSO, EIS and PCB for {{month}}: due {{date}}",
+    "todoProbationEnded_one": "Probation ended, not yet confirmed ({{count}}) · ended {{date}}",
+    "todoProbationEnded_other": "Probation ended, not yet confirmed ({{count}}) · first ended {{date}}",
+    "todoProbationEnds_one": "Probation ending soon ({{count}}) · ends {{date}}",
+    "todoProbationEnds_other": "Probation ending soon ({{count}}) · first ends {{date}}",
+    "todoContracts_one": "Contract ending soon ({{count}}) · ends {{date}}",
+    "todoContracts_other": "Contracts ending soon ({{count}}) · first ends {{date}}",
+    "openPayroll": "Open payroll",
+    "confirmOrExtend": "Confirm or extend",
+    "reviewContracts": "Review contracts",
+    "showAll": "Show all ({{count}})",
+    "showFewer": "Show fewer",
+    "nextPayday": "Next payday",
+    "clockedIn": "Clocked in today"
+  },
+  "group": {
+    "staff": "Staff",
+    "time": "Leave and attendance",
+    "pay": "Pay",
+    "claims": "Claims",
+    "reports": "Reports",
+    "company": "Company"
+  },
+  "page": {
+    "findStaff": {
+      "name": "Find a staff member"
+    },
+    "addStaff": {
+      "name": "Add a new staff member"
+    },
+    "leavingStaff": {
+      "name": "Staff who are leaving"
+    },
+    "contracts": {
+      "name": "Contracts"
+    },
+    "approveLeave": {
+      "name": "Approve leave"
+    },
+    "attendanceToday": {
+      "name": "Attendance today"
+    },
+    "holidays": {
+      "name": "Public holidays"
+    },
+    "runPayroll": {
+      "name": "Run monthly payroll"
+    },
+    "payslips": {
+      "name": "Payslips"
+    },
+    "loansBenefits": {
+      "name": "Loans and benefits"
+    },
+    "approveClaims": {
+      "name": "Approve claims"
+    },
+    "allClaims": {
+      "name": "All claims"
+    },
+    "monthlyReports": {
+      "name": "Monthly reports"
+    },
+    "kpi": {
+      "name": "Staff reviews (KPI)"
+    },
+    "salaryComparison": {
+      "name": "Salary comparison"
+    },
+    "companyDetails": {
+      "name": "Company details"
+    },
+    "departments": {
+      "name": "Departments"
+    },
+    "settings": {
+      "name": "Settings"
+    },
+    "leave": {
+      "name": "Leave"
+    },
+    "claims": {
+      "name": "Claims"
+    },
+    "orgChart": {
+      "name": "Org chart"
+    }
+  },
+  "role": {
+    "Admin": "Admin",
+    "HR": "HR",
+    "Manager": "Manager",
+    "Employee": "Employee",
+    "SuperAdmin": "Super Admin"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "approvals": "Approvals",
+    "employees": "Employees",
+    "contracts": "Contracts",
+    "organization": "Organization",
+    "orgChart": "Org Chart",
+    "attendance": "Attendance",
+    "leave": "Leave",
+    "holidays": "Holidays",
+    "claims": "Claims",
+    "payroll": "Payroll",
+    "loansBenefits": "Loans & Benefits",
+    "myPayslips": "My Payslips",
+    "kpi": "KPI",
+    "salaryInsights": "Salary Insights",
+    "reports": "Reports",
+    "onboarding": "Onboarding",
+    "offboarding": "Offboarding",
+    "companySetup": "Company Setup",
+    "settings": "Settings",
+    "superAdmin": "Super Admin"
+  },
+  "shell": {
+    "brand": "MY HRMS",
+    "guest": "Guest",
+    "notSignedIn": "Not signed in",
+    "systemView": "System view",
+    "systemViewBanner": "Viewing system — enter a company to manage its data.",
+    "enterCompany": "Enter a company…",
+    "openSuperAdmin": "Open Super Admin console"
+  },
+  "search": {
+    "results": "Search results",
+    "noResults": "No results for “{{query}}”",
+    "searching": "Searching…",
+    "staffPlaceholder": "Type a name, staff number or IC number"
+  },
+  "leaveType": {
+    "annual": "Annual leave",
+    "sick": "Sick leave",
+    "hospitalization": "Hospitalisation leave",
+    "maternity": "Maternity leave",
+    "paternity": "Paternity leave",
+    "unpaid": "Unpaid leave",
+    "emergency": "Emergency leave",
+    "compassionate": "Compassionate leave"
+  },
+  "claimCategory": {
+    "travel": "Travel",
+    "meal": "Meals",
+    "medical": "Medical",
+    "parking": "Parking",
+    "telephone": "Telephone",
+    "training": "Training",
+    "other": "Other"
+  },
+  "common": {
+    "days_one": "{{count}} day",
+    "days_other": "{{count}} days",
+    "more": "+{{count}} more",
+    "notAvailable": "Not available"
+  },
+  "dash": {
+    "title": "Dashboard",
+    "subtitleEmployee": "Your attendance, leave and claims at a glance · {{date}}",
+    "subtitleStaff": "Workforce, payroll and statutory compliance at a glance · {{date}}",
+    "quickActions": "Quick actions",
+    "qa": {
+      "employees": "Directory, profiles & documents",
+      "attendance": "Clock-ins, shifts & OT approval",
+      "claims": "Submissions, approvals & payouts",
+      "payroll": "Monthly runs & payslips"
+    },
+    "stat": {
+      "myAttendance": "My attendance this month",
+      "myAttendanceHint": "{{present}} present · {{half}} half-day · {{leave}} on leave",
+      "myLeaveBalance": "My annual leave balance",
+      "leaveUsedHint": "{{used}} used of {{total}} entitled ({{year}})",
+      "noLeaveBalance": "No leave balance record yet",
+      "myPendingClaims": "My pending claims",
+      "claimsAwaiting": "{{amount}} awaiting approval",
+      "leaveRequestsPending_one": "{{count}} leave request pending",
+      "leaveRequestsPending_other": "{{count}} leave requests pending",
+      "nothingAwaiting": "Nothing awaiting approval",
+      "teamHeadcount": "Team headcount",
+      "activeHeadcount": "Active headcount",
+      "headcountHint": "{{probation}} on probation · {{resigned}} resigned",
+      "presentToday": "Present today",
+      "presentHint": "of {{count}} active employees clocked in",
+      "pendingApprovals": "Pending approvals",
+      "pendingHint": "{{leave}} leave · {{claims}} claims · {{ot}} OT",
+      "payrollCost": "Payroll cost this month",
+      "payrollFinalized": "Finalized {{month}} run · {{count}} payslips",
+      "payrollDraft": "Estimate · {{month}} run still in draft",
+      "payrollLastRun": "Estimate · last run {{month}} at {{amount}}",
+      "payrollNoRun": "Estimate from current salaries · no run yet"
+    },
+    "compliance": {
+      "title": "Compliance deadlines",
+      "desc": "Next statutory submission dates",
+      "dueToday": "Due today",
+      "daysLeft_one": "{{count}} day left",
+      "daysLeft_other": "{{count}} days left",
+      "contrib": {
+        "title": "EPF / SOCSO / EIS remittance",
+        "note": "Contributions for the previous wage period"
+      },
+      "cp39": {
+        "title": "CP39 — PCB / MTD payment",
+        "note": "Monthly tax deductions to LHDN"
+      },
+      "hrd": {
+        "title": "HRD Corp levy remittance",
+        "note": "Monthly levy for registered employers (PSMB Act 2001)"
+      },
+      "ea": {
+        "title": "Form EA to employees",
+        "note": "Annual remuneration statement, previous YA"
+      },
+      "formE": {
+        "title": "Form E employer return",
+        "note": "Annual employer declaration to LHDN"
+      }
+    },
+    "holidays": {
+      "title": "Upcoming public holidays",
+      "next": "{{state}} · next {{count}}",
+      "none": "No upcoming holidays found for {{state}}.",
+      "eaCompulsory": "EA s.60D",
+      "tentative": "Tentative"
+    },
+    "alerts": {
+      "title": "Alerts",
+      "desc": "Statutory thresholds and workforce watch-outs",
+      "allClear": "All clear",
+      "allClearDesc": "No minimum-wage, OT-cap or probation issues right now.",
+      "probationOverdue": "Probation overdue",
+      "probationOverdueDetail": "{{name}} is {{days}} past probation end{{more}} — confirm or extend",
+      "belowMinWage": "Below minimum wage",
+      "belowMinWageDetail": "{{names}}{{more}} under {{amount}} basic",
+      "otOverCap": "OT over monthly cap",
+      "otOverCapDetail": "Highest: {{name}} at {{hours}}h (cap {{cap}}h)",
+      "probationEnding": "Probation ending soon",
+      "probationEndingDetail": "{{name}} ends in {{days}} — confirm or extend",
+      "foreignEpf": "Foreign-worker EPF applies",
+      "foreignEpfDetail_one": "{{count}} foreign employee — 2% + 2% EPF is mandatory (EPF (Amendment) Act 2025)",
+      "foreignEpfDetail_other": "{{count}} foreign employees — 2% + 2% EPF is mandatory (EPF (Amendment) Act 2025)"
+    },
+    "charts": {
+      "headcountTitle": "Headcount by department",
+      "headcountDesc": "Active and probation employees",
+      "headcountEmpty": "No active employees yet — add employees to see the distribution.",
+      "employees": "Employees",
+      "payrollTitle": "Payroll cost trend",
+      "payrollDesc": "Total employer cost from finalized runs (last 6)",
+      "payrollEmpty": "No finished payroll run yet. The trend starts after the first run is finished. Estimated monthly cost now: {{amount}}.",
+      "employerCost": "Employer cost",
+      "attendanceTitle": "Attendance rate",
+      "attendanceDesc": "Share of scheduled staff present, last 14 days",
+      "attendanceEmpty": "No attendance records in the last 14 days.",
+      "attendanceRate": "Attendance rate",
+      "claimsTitle": "Claims by category",
+      "claimsDesc_one": "{{count}} claim on record, all statuses",
+      "claimsDesc_other": "{{count}} claims on record, all statuses",
+      "claimsEmpty": "No claims yet — submitted expenses will be grouped here.",
+      "total": "Total"
+    },
+    "overview": "Overview"
+  },
+  "a11y": {
+    "skip": "Skip to main content",
+    "breadcrumb": "Breadcrumb",
+    "mainNav": "Main"
+  },
+  "help": {
+    "title": "Help for this page",
+    "close": "Close",
+    "tips": {
+      "home": [
+        "The work waiting for you is at the top, with one button for each job.",
+        "Under “Go to”, press a picture to open a page. “More” lists every page.",
+        "Press Home at the top at any time to come back here.",
+        "Press Me to change the language or make the text bigger."
+      ],
+      "staff": [
+        "Type a name in the search box to find a staff member.",
+        "Press a staff member to see and change their details.",
+        "Use \"Add a new staff member\" for a step-by-step form."
+      ],
+      "time": [
+        "Leave requests waiting for you are shown first.",
+        "Attendance today shows who has clocked in.",
+        "Public holidays lists this year’s holidays for your state.",
+        "Leave balances follow the Employment Act 1955 (sections 60E and 60F), counted from each person’s join date. Public holidays and rest days do not use up leave.",
+        "Balances are set on 1 January for the whole year, with no proration in the year someone joins. Company extra days are added on top of the legal minimum."
+      ],
+      "pay": [
+        "Run monthly payroll goes step by step. You can stop and come back.",
+        "Check the totals before you finalise the month.",
+        "Payslips can be printed or saved as PDF."
+      ],
+      "claims": [
+        "Attach a photo of the receipt to each claim.",
+        "Claims waiting for you are shown first.",
+        "Approved claims are paid through payroll. They show on the payslip as a refund and are not counted for EPF, SOCSO, EIS or PCB.",
+        "Keep the original receipts for 7 years (Income Tax Act 1967, section 82).",
+        "Receipt details are kept so they can be used for LHDN MyInvois e-invoices if your company turns that on."
+      ],
+      "reports": [
+        "Pick the month first, then the report.",
+        "Every report can be printed or downloaded.",
+        "Staff reviews (KPI) shows performance reviews."
+      ],
+      "company": [
+        "Company details holds the name, logo and address.",
+        "Departments shows who reports to whom.",
+        "Only an Admin can change Settings."
+      ],
+      "other": [
+        "Press Back at the top to go to the previous page.",
+        "Press Home to start again.",
+        "Need a person? Call HR support."
+      ]
+    },
+    "hrSupport": "Need a person? Call HR support at {{ext}}."
+  },
+  "tracker": {
+    "title": "{{month}} payroll: 5 steps",
+    "youAreHere": "You are here",
+    "done": "Done",
+    "stepN": "Step {{n}}:",
+    "allDone": "All 5 steps are done for {{month}}.",
+    "s1Title": "Start the {{month}} run",
+    "s1Detail": "Pick the month and the staff to include.",
+    "s2Title": "Check the payslips",
+    "s2Detail": "Look at each payslip and fix any extra pay or deductions.",
+    "s3Title": "Finalise the month",
+    "s3Detail": "Locks the payslips so staff can see them.",
+    "s4Title": "Pay staff",
+    "s4Detail": "Download the bank file and pay staff.",
+    "s4DetailDate": "Download the bank file and pay staff by {{date}}.",
+    "s5Title": "Pay EPF, SOCSO, EIS and PCB",
+    "s5Detail": "Due by {{date}}.",
+    "due": "Due {{date}}",
+    "step": "Step {{n}}",
+    "start": "Start",
+    "open": "Open",
+    "markDone": "Mark as done",
+    "doneBy": "Done by {{name}} on {{date}}",
+    "undo": "Undo",
+    "undoTitle": "Remove the \"done\" mark from \"{{step}}\"?",
+    "undoBody": "This only removes the mark. No payment is changed or cancelled.",
+    "undoConfirm": "Yes, remove the mark",
+    "cancel": "Cancel",
+    "stepOf": "Step {{n}} of 5: {{title}}"
+  },
+  "settings": {
+    "hrPhone": "HR support phone or extension",
+    "hrPhoneHint": "Shown to staff in the help strip: \"Need a person? Call HR support at …\". Leave empty to hide that sentence.",
+    "hrPhonePlaceholder": "e.g. 03-1234 5678 ext. 210"
+  },
+  "reports": {
+    "title": "Reports",
+    "intro": "Reports for HR and finance. Look at them on screen or download them as a spreadsheet (CSV).",
+    "managerScope": "Showing your department only. Company-wide payroll and compliance reports are for Admin and HR.",
+    "noAccessTitle": "No access to reports",
+    "noAccessBody": "Reports are for Admin, HR and Managers. If you need a figure from a report, please ask HR.",
+    "noDataTitle": "No data yet",
+    "noDataBody": "Reports use the staff list, attendance and payroll. If the demo data did not load, load it again from Settings.",
+    "openReport": "Open report",
+    "csv": "CSV",
+    "downloadCsvFor": "Download {{title}} as CSV",
+    "downloadCsv": "Download CSV",
+    "rows_one": "{{count}} row",
+    "rows_other": "{{count}} rows",
+    "month": "Month",
+    "salaryTitle": "Salary report",
+    "salaryDesc": "Salary over several months: trends, totals per person, departments and spread (finalised runs only). Download as PDF or CSV.",
+    "openSalary": "Open salary report",
+    "noPayslipsTitle": "No payslips for {{month}}",
+    "noPayslipsHR": "This report reads saved payslips. Run payroll for this month to create them.",
+    "noPayslipsOther": "This report reads saved payslips. Payroll for {{month}} has not been run yet. HR can run it from the Payroll page.",
+    "running": "Running payroll…",
+    "runFor": "Run payroll for {{month}}",
+    "nothingTitle": "Nothing to report",
+    "nothingBody": "No records match this report for the chosen month. Try another month.",
+    "meta": {
+      "headcount": {
+        "title": "Headcount report",
+        "desc": "Staff by department, state and employment status."
+      },
+      "attendance": {
+        "title": "Attendance summary",
+        "desc": "Days present, late arrivals and overtime (approved and waiting) for one month."
+      },
+      "leave": {
+        "title": "Leave liability",
+        "desc": "Annual leave not yet taken, valued at normal daily pay."
+      },
+      "payroll": {
+        "title": "Payroll register",
+        "desc": "Every payslip with EPF, SOCSO, EIS, PCB and HRD levy."
+      },
+      "dept-cost": {
+        "title": "Payroll cost by department",
+        "desc": "Company cost per department, with cost-centre codes (finalised runs only)."
+      },
+      "compliance": {
+        "title": "Statutory compliance checklist",
+        "desc": "Payment deadlines, EA form readiness, minimum wage and overtime limit checks."
+      }
+    },
+    "note": {
+      "headcount": "A snapshot of today's staff list. Staff who have left are shown under Status.",
+      "attendance": "Late = clocked in after the shift started. Overtime pay uses the Employment Act rates (1.5×, 2×, 3×) for approved overtime only.",
+      "leave": "Annual leave not yet taken in {{year}}, valued at normal pay (monthly pay ÷ 26, Employment Act s.60I(a)). This is the amount to set aside in the accounts.",
+      "payroll": "All payslips for {{month}}. \"Staff\" is the staff member's share, \"company\" is the company's share. Amounts are exactly what payroll worked out.",
+      "dept-cost": "Finalised payroll for {{month}} only; drafts are left out. Cost-centre codes come from Departments. Total company cost = gross pay + company EPF/SOCSO/EIS + HRD levy + claims.",
+      "compliance": "A checklist worked out from payroll, attendance and the staff list. Payments to EPF, SOCSO, EIS, LHDN and HRD Corp are not recorded here, so check them on each agency's website."
+    },
+    "status": {
+      "pass": "Pass",
+      "review": "Review",
+      "actionRequired": "Action needed",
+      "notDue": "Not due yet",
+      "pending": "Waiting"
+    },
+    "chart": {
+      "gross": "Gross pay",
+      "erStatutory": "Company EPF/SOCSO/EIS",
+      "hrd": "HRD levy",
+      "claims": "Claims"
+    },
+    "col": {
+      "section": "Section",
+      "category": "Group",
+      "headcount": "Headcount",
+      "sharePct": "Share %",
+      "employee": "Staff member",
+      "department": "Department",
+      "present": "Present",
+      "late": "Late",
+      "absent": "Absent",
+      "leaveDays": "Leave",
+      "restDays": "Rest days / holidays",
+      "otApproved": "Overtime hours (approved)",
+      "otPending": "Overtime hours (waiting)",
+      "otPay": "Overtime pay (approved)",
+      "entitled": "Entitled",
+      "carried": "Carried over",
+      "used": "Used",
+      "balance": "Left",
+      "dailyRate": "Daily pay",
+      "liability": "Value of leave",
+      "gross": "Gross pay",
+      "epfEE": "EPF (staff)",
+      "epfER": "EPF (company)",
+      "socsoEE": "SOCSO (staff)",
+      "socsoER": "SOCSO (company)",
+      "eisEE": "EIS (staff)",
+      "eisER": "EIS (company)",
+      "pcb": "PCB",
+      "hrd": "HRD levy",
+      "net": "Net pay",
+      "cost": "Company cost",
+      "costCenter": "Cost centre",
+      "erStatutory": "Company EPF/SOCSO/EIS",
+      "claims": "Claims",
+      "totalCost": "Total company cost",
+      "check": "Check",
+      "status": "Status",
+      "detail": "Detail"
+    },
+    "listTitle": "Reports",
+    "colReport": "Report",
+    "colShows": "What it shows",
+    "colActions": "Actions"
+  },
+  "run": {
+    "notFoundTitle": "Payroll run not found",
+    "notFoundBody": "It may have been replaced when the month was run again.",
+    "backToPayroll": "Back to Payroll",
+    "title": "{{month}} payroll",
+    "statusFinished": "Finished",
+    "statusNotFinished": "Not finished",
+    "finishedBy": "Finished on {{date}} by {{name}}.",
+    "startedBy": "Started on {{date}} by {{name}}. Not finished yet.",
+    "staffPaid": "Staff paid",
+    "staffPaidSub": "people in this run",
+    "totalBefore": "Total pay before deductions",
+    "totalBeforeSubGross": "also called gross pay",
+    "totalTakeHome": "Total take-home pay",
+    "totalTakeHomeSub": "the amount the bank pays to staff",
+    "totalCost": "Total cost to company",
+    "totalCostSub": "pay plus company EPF, SOCSO, EIS and HRD levy",
+    "whatNow": "What to do now",
+    "downloadBank": "Download bank payment file",
+    "bankMissing_one": "{{count}} staff member has no bank details: {{names}}. Add them before you send the file to the bank.",
+    "bankMissing_other": "{{count}} staff members have no bank details: {{names}}. Add them before you send the file to the bank.",
+    "printAll": "Print all payslips",
+    "statutoryFiles": "EPF, SOCSO, EIS and PCB files",
+    "statutoryDesc": "Download each file, then submit it on the agency website by the 15th of next month.",
+    "reviewApprove": "Review and approve",
+    "draftHelp": "Check each person below. Use Change to fix extra pay or deductions, then press Review and approve.",
+    "warnings_one": "{{count}} thing to check",
+    "warnings_other": "{{count}} things to check",
+    "payEach": "Pay for each staff member",
+    "search": "Find a staff member (name or IC)",
+    "showAll": "Show all details",
+    "showFewer": "Show fewer details",
+    "colStaff": "Staff",
+    "colPayBefore": "Pay before deductions",
+    "colDeductions": "Deductions",
+    "colTakeHome": "Take-home pay",
+    "colPayslip": "Payslip",
+    "colBasic": "Basic pay",
+    "colAllowances": "Allowances",
+    "colOvertime": "Overtime",
+    "colEpf": "EPF (staff / company)",
+    "colSocso": "SOCSO (staff / company)",
+    "colEis": "EIS (staff / company)",
+    "colPcb": "PCB tax",
+    "colOther": "Other deductions",
+    "colCost": "Cost to company",
+    "hours_one": "{{count}} hour",
+    "hours_other": "{{count}} hours",
+    "ic": "IC {{ic}}",
+    "view": "View",
+    "viewFor": "View payslip for {{name}}",
+    "viewPayslip": "View payslip",
+    "change": "Change",
+    "changeFor": "Change pay for {{name}}",
+    "total_one": "Total ({{count}} staff)",
+    "total_other": "Total ({{count}} staff)",
+    "totalTakeHomeShort": "Total take-home ({{count}})",
+    "noneMatch": "No one matches \"{{query}}\". Check the spelling, or type part of the name or IC number.",
+    "clearSearch": "Clear search",
+    "noSlips": "No payslips in this run",
+    "badgeChanged": "Changed",
+    "badgeOptOut": "Opted out",
+    "badgeDaily": "Daily rate",
+    "badgeHourly": "Hourly rate",
+    "badgeBasicSet": "Basic pay set by hand",
+    "mistakeTitle": "Made a mistake?",
+    "mistakeBody": "You can undo this payroll run and run it again. Only do this before the bank pays staff.",
+    "undoRun": "Undo this payroll run",
+    "undoTitle": "Undo {{month}} payroll?",
+    "undoLose": "This cannot be reversed. You will lose:",
+    "undoLose1_one": "The {{month}} payroll run and its {{count}} payslip (total take-home pay {{amount}}).",
+    "undoLose1_other": "The {{month}} payroll run and its {{count}} payslips (total take-home pay {{amount}}).",
+    "undoLose2": "Staff can no longer see these payslips, and this month's bank, EPF, SOCSO, EIS and PCB files are removed.",
+    "undoLose3": "Claims paid by this run go back to \"approved\" and will be paid in the next run.",
+    "undoYtd": "Year-to-date figures are worked out again from the remaining payslips.",
+    "keep": "No, keep it",
+    "undoYes": "Yes, undo the run",
+    "startAgainTitle": "Need to start again?",
+    "startAgainBody": "You can run this month again from fresh figures, or throw this draft away. Nothing has been paid yet.",
+    "rerun": "Run this month again",
+    "discard": "Discard this draft",
+    "rerunTitle": "Run {{month}} payroll again?",
+    "rerunBody": "Every payslip in this draft is worked out again from today's staff, attendance and claims. Changes made with Change are lost.",
+    "rerunYes": "Yes, run it again",
+    "discardTitle": "Discard the {{month}} draft?",
+    "discardBody_one": "The draft and its {{count}} payslip are deleted. Nothing has been paid, so no money is affected.",
+    "discardBody_other": "The draft and its {{count}} payslips are deleted. Nothing has been paid, so no money is affected.",
+    "discardYes": "Yes, discard the draft",
+    "finalizeTitle": "Approve {{month}} payroll?",
+    "finalizeBody1_one": "This locks {{count}} payslip (total take-home pay {{amount}}). After this you cannot change one person's pay.",
+    "finalizeBody1_other": "This locks {{count}} payslips (total take-home pay {{amount}}). After this you cannot change one person's pay.",
+    "finalizeBody2": "Approved claims in this run are marked paid, and the bank file and the EPF, SOCSO, EIS and PCB files become ready. To change figures later, undo the run and start again.",
+    "finalizeYes": "Yes, approve",
+    "cancel": "Cancel",
+    "toastFinalized": "{{month}} payroll approved",
+    "toastFinalizedDesc": "Payslips are locked. The bank file and the EPF, SOCSO, EIS and PCB files are ready.",
+    "toastUndone": "{{month}} payroll undone",
+    "toastUndoFail": "Could not undo the {{month}} payroll",
+    "toastDiscarded": "{{month}} draft discarded",
+    "toastRerun": "{{month}} payroll worked out again",
+    "toastDownload": "Download started",
+    "colClaimsBack": "Claims paid back",
+    "claimsBackSub": "claims and other refunds paid with the salary"
+  },
+  "app": {
+    "hello": "Hello, {{name}}",
+    "leave": "Leave",
+    "attendance": "Attendance",
+    "clock": "Clock in/out",
+    "claims": "Claims",
+    "allPayslips": "All payslips",
+    "myPayslips": "My payslips",
+    "staff": "Staff",
+    "runPayroll": "Run payroll",
+    "reports": "Reports",
+    "holidays": "Public holidays",
+    "company": "Company",
+    "approvals": "Approvals",
+    "reviews": "Staff reviews",
+    "more": "More",
+    "allPages": "All pages",
+    "waitingSuffix_one": ", {{count}} waiting for you",
+    "waitingSuffix_other": ", {{count}} waiting for you",
+    "helloAlone": "Hello",
+    "goTo": "Go to"
+  },
+  "claimsPage": {
+    "reviewN_one": "Review {{count}} claim",
+    "reviewN_other": "Review {{count}} claims",
+    "notLinked": "This account is not linked to a staff record, so it has no claims of its own. Claims from your staff are under Approvals.",
+    "title": "Claims",
+    "introApprover": "Send expense claims and approve your staff’s claims. Approved claims are paid through payroll.",
+    "introStaff": "Send your expense claims with a photo of the receipt. Approved claims are paid through payroll.",
+    "claimedIn": "Claimed in {{month}}",
+    "decidedHint_one": "{{count}} claim decided; average time from sending to decision",
+    "decidedHint_other": "{{count}} claims decided; average time from sending to decision",
+    "waitingSentence_one": "{{count}} claim ({{amount}}) is waiting for your decision.",
+    "waitingSentence_other": "{{count}} claims ({{amount}}) are waiting for your decision.",
+    "byPersonTitle": "Claims waiting, by person",
+    "byPersonName": "Staff member",
+    "byPersonCount": "Claims",
+    "byPersonAmount": "Amount",
+    "byPersonOldest": "Waiting since",
+    "byPersonNone": "No claims are waiting for a decision.",
+    "thisMonth": "This month",
+    "byPersonLine_one": "{{count}} claim · {{amount}}",
+    "byPersonLine_other": "{{count}} claims · {{amount}}",
+    "waitingSince": "Waiting since {{date}}",
+    "review": "Review",
+    "reviewFor": "Review claims from {{name}}"
+  },
+  "staffList": {
+    "addStaff": "Add staff member",
+    "addOneForm": "Add with one form",
+    "searchLabel": "Find a staff member",
+    "searchPlaceholder": "Name, IC or staff number"
+  },
+  "msg": {
+    "namesMore": "{{names}} and {{count}} others",
+    "leaveApproved_one": "Leave approved for {{name}}: {{from}} to {{to}} ({{count}} day). Their leave balance is updated.",
+    "leaveApproved_other": "Leave approved for {{name}}: {{from}} to {{to}} ({{count}} days). Their leave balance is updated.",
+    "leaveRejected": "Leave rejected for {{name}}: {{from}} to {{to}}. Their leave balance is not changed.",
+    "leaveBulkApproved_one": "Leave approved for {{names}}. The leave balance is updated.",
+    "leaveBulkApproved_other": "{{count}} leave requests approved: {{names}}. Leave balances are updated.",
+    "claimApproved": "Claim approved for {{name}}: {{amount}}. It now waits to be paid through payroll.",
+    "claimsApproved_one": "{{count}} claim approved, {{amount}}. It now waits to be paid through payroll.",
+    "claimsApproved_other": "{{count}} claims approved, {{amount}} in total. They now wait to be paid through payroll.",
+    "claimRejected": "Claim rejected for {{name}}: {{amount}}. It will not be paid.",
+    "otApproved": "Overtime approved for {{name}}: {{hours}} h on {{date}}. It counts in the payroll run that covers {{date}}.",
+    "otRejected": "Overtime rejected for {{name}}: {{hours}} h on {{date}}. It will not be paid.",
+    "otBulkApproved_one": "{{count}} overtime record approved. It counts in the payroll run that covers its date.",
+    "otBulkApproved_other": "{{count}} overtime records approved. Each counts in the payroll run that covers its date.",
+    "claimToDraft": "Claim moved back to draft. Change it and submit it again when it is ready."
+  },
+  "leaveCal": {
+    "nobody": "No one is on leave on {{date}}."
+  },
+  "leavePage": {
+    "title": "Leave",
+    "introApprover": "See leave balances, apply for leave and approve your staff’s requests.",
+    "introStaff": "See how much leave you have left and apply for leave."
+  },
+  "probation": {
+    "title": "Probation to confirm",
+    "count_one": "{{count}} staff member",
+    "count_other": "{{count}} staff members",
+    "colName": "Staff member",
+    "colEnds": "Probation ends",
+    "colStatus": "Status",
+    "colActions": "Actions",
+    "overdue_one": "{{count}} day overdue",
+    "overdue_other": "{{count}} days overdue",
+    "left_one": "{{count}} day left",
+    "left_other": "{{count}} days left",
+    "extendedTo": "Extended to {{date}}",
+    "confirm": "Confirm",
+    "extend": "Extend…",
+    "history": "History",
+    "historyCount": "History ({{count}})"
+  },
+  "leaveBal": {
+    "colType": "Leave",
+    "colEntitled": "Entitled",
+    "colUsed": "Used",
+    "colLeft": "Left",
+    "colNote": "Note",
+    "annual": "Annual leave",
+    "sick": "Sick leave",
+    "hosp": "Hospitalisation",
+    "maternity": "Maternity",
+    "paternity": "Paternity",
+    "perConfinement": "{{count}} days each time"
+  },
+  "leaveQ": {
+    "pendingTitle": "Leave to approve",
+    "pendingIntro": "Approving takes the days off the person’s leave balance. The balance is checked again first.",
+    "ownDept": "Showing your department only.",
+    "none": "No leave requests are waiting for a decision.",
+    "colName": "Staff member",
+    "colType": "Leave",
+    "colDates": "Dates",
+    "colDays": "Days",
+    "colReason": "Reason",
+    "colActions": "Actions",
+    "colDecision": "Decision",
+    "range": "{{from}} to {{to}}",
+    "applied": "Applied {{date}}",
+    "halfDay": "half day",
+    "decidedBy": "by {{name}}, {{date}}",
+    "remark": "Remark: {{text}}",
+    "approve": "Approve",
+    "reject": "Reject",
+    "cancel": "Cancel leave",
+    "historyTitle": "Recent decisions",
+    "historyIntro": "Approved leave can be cancelled until its first day; the days go back to the balance.",
+    "historyNone": "No decisions yet.",
+    "showAll": "Show all ({{count}})",
+    "showFewer": "Show fewer",
+    "status_approved": "Approved",
+    "status_rejected": "Rejected",
+    "status_cancelled": "Cancelled",
+    "status_pending": "Waiting"
+  },
+  "approvals": {
+    "ownRequest": "Someone else must approve your own request"
+  }
+}

@@ -75,24 +75,24 @@ export default function JdSheet({
           </Button>
         </div>
 
-        <div className="space-y-5 text-stone-800 dark:text-stone-200">
+        <div className="space-y-5 text-foreground">
           <header className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-amber-700 dark:text-amber-400">
+              <p className="text-xs font-bold text-primary">
                 {companyName}
               </p>
               <h1 className="mt-1 text-2xl font-bold tracking-tight">{position.title}</h1>
-              <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+              <p className="mt-1 text-sm text-muted-foreground">
                 {department?.name ?? 'Unassigned'} · Grade {grade} · {LEVEL_LABEL[position.level]}
               </p>
             </div>
-            <div className="shrink-0 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-right dark:border-amber-900 dark:bg-amber-950/40">
-              <p className="text-[11px] uppercase tracking-wide text-amber-700 dark:text-amber-400">Salary band</p>
+            <div className="shrink-0 rounded-lg border border-warning/40 bg-warning-soft px-3 py-2 text-right">
+              <p className="text-xs text-primary font-bold">Salary band</p>
               <p className="text-sm font-semibold">
                 {fmtRM(position.minSalary)} – {fmtRM(position.maxSalary)}
               </p>
               {typeof benchmarkMedian === 'number' && (
-                <p className="text-[11px] text-stone-500 dark:text-stone-400">
+                <p className="text-xs text-muted-foreground">
                   Market median {fmtRM(benchmarkMedian)}
                 </p>
               )}
@@ -101,27 +101,27 @@ export default function JdSheet({
 
           <div className="grid grid-cols-2 gap-3 rounded-lg border p-3 text-sm sm:grid-cols-4">
             <div>
-              <p className="text-[11px] uppercase tracking-wide text-stone-500">Reports to</p>
+              <p className="text-xs text-muted-foreground font-bold">Reports to</p>
               <p className="font-medium">{reportsToTitle ?? '— (organisation root)'}</p>
             </div>
             <div>
-              <p className="text-[11px] uppercase tracking-wide text-stone-500">Department</p>
+              <p className="text-xs text-muted-foreground font-bold">Department</p>
               <p className="font-medium">{department?.name ?? '—'}</p>
             </div>
             <div>
-              <p className="text-[11px] uppercase tracking-wide text-stone-500">Headcount</p>
+              <p className="text-xs text-muted-foreground font-bold">Headcount</p>
               <p className="font-medium">
                 {actual} on board{typeof budget === 'number' ? ` / ${budget} budgeted` : ''}
               </p>
             </div>
             <div>
-              <p className="text-[11px] uppercase tracking-wide text-stone-500">Issued</p>
+              <p className="text-xs text-muted-foreground font-bold">Issued</p>
               <p className="font-medium">{fmtDate(new Date())}</p>
             </div>
           </div>
 
           <section>
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-amber-800 dark:text-amber-300">
+            <h2 className="text-sm font-bold text-warning">
               About the role
             </h2>
             <p className="mt-2 whitespace-pre-line text-sm leading-relaxed">
@@ -133,7 +133,7 @@ export default function JdSheet({
           <Separator />
 
           <section>
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-amber-800 dark:text-amber-300">
+            <h2 className="text-sm font-bold text-warning">
               Key responsibilities
             </h2>
             {profile && profile.responsibilities.length > 0 ? (
@@ -143,14 +143,14 @@ export default function JdSheet({
                 ))}
               </ul>
             ) : (
-              <p className="mt-2 text-sm text-stone-500">Not specified.</p>
+              <p className="mt-2 text-sm text-muted-foreground">Not specified.</p>
             )}
           </section>
 
           <Separator />
 
           <section>
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-amber-800 dark:text-amber-300">
+            <h2 className="text-sm font-bold text-warning">
               Requirements & qualifications
             </h2>
             {profile && profile.qualifications.length > 0 ? (
@@ -160,11 +160,11 @@ export default function JdSheet({
                 ))}
               </ul>
             ) : (
-              <p className="mt-2 text-sm text-stone-500">Not specified.</p>
+              <p className="mt-2 text-sm text-muted-foreground">Not specified.</p>
             )}
           </section>
 
-          <footer className="border-t pt-3 text-[11px] text-stone-500">
+          <footer className="border-t pt-3 text-xs text-muted-foreground">
             Generated from {companyName} organisation records on {fmtDate(new Date())}. Salary band is the
             approved range for this grade; the market median references the Malaysian 2025–26 benchmark
             dataset (Klang-Valley baseline, state-adjusted).

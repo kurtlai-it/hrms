@@ -1,24 +1,16 @@
 /**
- * Login page — split-screen layout (brand panel + form), warm stone/amber
- * design language. Demo accounts are one-click quick-fill chips.
- *
- * NOT YET ROUTED — the integration agent mounts this at /login and guards
- * the app shell with <RequireAuth> (see docs/auth-integration.md).
+ * Login page in the app style: the indigo band with the logo across the top,
+ * then a plain white page with the form. Sign in is the one amber action; the
+ * demo accounts are secondary buttons that fill the form.
  */
 import { useState, type FormEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import {
-  AlertCircle, Building2, CalendarCheck, Eye, EyeOff, Lock, ShieldCheck,
-  User, Wallet,
-} from 'lucide-react';
+import { AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/lib/useAuth';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Card, CardContent, CardDescription, CardHeader, CardTitle,
-} from '@/components/ui/card';
 
 interface DemoAccount {
   label: string;
@@ -33,12 +25,6 @@ const DEMO_ACCOUNTS: DemoAccount[] = [
   { label: 'HR', username: 'hr', password: 'hr123', hint: 'Full access' },
   { label: 'Manager', username: 'ahmad.faizal', password: 'manager123', hint: 'Engineering dept only' },
   { label: 'Employee', username: 'siti5', password: 'password123', hint: 'Own records only' },
-];
-
-const HIGHLIGHTS = [
-  { icon: Wallet, text: 'Payroll with EPF, SOCSO, EIS & PCB built in' },
-  { icon: CalendarCheck, text: 'Attendance, leave and claims in one place' },
-  { icon: ShieldCheck, text: 'Role-based views for Admin, HR, Managers & Employees' },
 ];
 
 export default function LoginPage() {
@@ -75,157 +61,111 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
-      {/* Brand panel (desktop) */}
-      <div className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-stone-900 p-12 text-stone-100 lg:flex">
-        <div
-          className="pointer-events-none absolute inset-0 opacity-40"
-          style={{
-            background:
-              'radial-gradient(600px circle at 20% 20%, rgba(245, 158, 11, 0.18), transparent 60%), radial-gradient(500px circle at 80% 90%, rgba(180, 83, 9, 0.15), transparent 60%)',
-          }}
+    <div className="min-h-screen bg-background text-foreground">
+      <header className="flex items-center gap-3 bg-bar px-4 py-3 text-bar-foreground sm:px-6">
+        <img
+          src={`${import.meta.env.BASE_URL}brand/asm-logo.png`}
+          alt=""
+          className="size-12 shrink-0 rounded-lg"
         />
-        <div className="relative flex items-center gap-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500 text-stone-900">
-            <Building2 className="h-5 w-5" />
-          </span>
-          <div>
-            <p className="text-lg font-semibold leading-tight">ASM Tech</p>
-            <p className="text-xs text-stone-400">Malaysian HRMS & Payroll</p>
+        <div className="min-w-0">
+          <p className="text-[1.15rem] font-bold leading-tight">ASM Tech HRMS</p>
+          <p className="text-bar-subtle">Malaysian HR and payroll</p>
+        </div>
+      </header>
+
+      <main className="mx-auto w-full max-w-md space-y-8 px-4 py-8 sm:py-12">
+        <section aria-labelledby="login-title" className="space-y-5">
+          <div className="space-y-1">
+            <h1 id="login-title" className="text-[1.6rem] font-bold leading-tight">Welcome back</h1>
+            <p className="text-muted-foreground">Sign in to your workspace to continue.</p>
           </div>
-        </div>
 
-        <div className="relative space-y-8">
-          <h1 className="max-w-md text-4xl font-semibold leading-tight tracking-tight">
-            Run payroll your whole team can{' '}
-            <span className="text-amber-400">trust</span>.
-          </h1>
-          <ul className="space-y-4">
-            {HIGHLIGHTS.map((h) => (
-              <li key={h.text} className="flex items-start gap-3 text-sm text-stone-300">
-                <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-stone-800 text-amber-400">
-                  <h.icon className="h-4 w-4" />
-                </span>
-                {h.text}
-              </li>
-            ))}
-          </ul>
-        </div>
+          <form onSubmit={submit} className="space-y-5" noValidate>
+            {error && (
+              <div
+                role="alert"
+                className="flex items-start gap-2 rounded-md border-2 border-destructive bg-danger-soft px-3 py-3 font-bold text-destructive"
+              >
+                <AlertCircle aria-hidden className="mt-0.5 h-5 w-5 shrink-0" />
+                {error}
+              </div>
+            )}
 
-        <p className="relative text-xs text-stone-500">
-          Demo build — accounts are seeded locally, no data leaves your browser.
-        </p>
-      </div>
-
-      {/* Form panel */}
-      <div className="flex flex-1 items-center justify-center px-4 py-10 sm:px-8">
-        <div className="w-full max-w-md space-y-6">
-          {/* Mobile brand mark */}
-          <div className="flex items-center gap-3 lg:hidden">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-              <Building2 className="h-4 w-4" />
-            </span>
-            <div>
-              <p className="font-semibold leading-tight">ASM Tech HRMS</p>
-              <p className="text-xs text-muted-foreground">Malaysian HRMS & Payroll</p>
+            <div className="space-y-2">
+              <Label htmlFor="username" className="text-base font-bold">Username</Label>
+              <Input
+                id="username"
+                autoComplete="username"
+                placeholder="e.g. admin"
+                className={cn(error && 'border-destructive')}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                autoFocus
+              />
             </div>
-          </div>
 
-          <Card className="rounded-xl border shadow-sm">
-            <CardHeader className="space-y-1">
-              <CardTitle className="text-2xl">Welcome back</CardTitle>
-              <CardDescription>Sign in to your workspace to continue.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={submit} className="space-y-4" noValidate>
-                {error && (
-                  <div
-                    role="alert"
-                    className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300"
-                  >
-                    <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-                    {error}
-                  </div>
-                )}
-
-                <div className="space-y-2">
-                  <Label htmlFor="username">Username</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="username"
-                      autoComplete="username"
-                      placeholder="e.g. admin"
-                      className={cn('pl-9', error && 'border-red-300 focus-visible:ring-red-300')}
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      autoFocus
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="password"
-                      type={showPassword ? 'text' : 'password'}
-                      autoComplete="current-password"
-                      placeholder="••••••••"
-                      className={cn('pl-9 pr-10', error && 'border-red-300 focus-visible:ring-red-300')}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword((s) => !s)}
-                      aria-label={showPassword ? 'Hide password' : 'Show password'}
-                      className="absolute right-2 top-1.5 rounded-md p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground"
-                    >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
-                </div>
-
-                <Button type="submit" className="w-full" disabled={submitting}>
-                  {submitting ? 'Signing in…' : 'Sign in'}
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-base font-bold">Password</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="current-password"
+                  className={cn(error && 'border-destructive')}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="shrink-0"
+                  aria-pressed={showPassword}
+                  onClick={() => setShowPassword((s) => !s)}
+                >
+                  {showPassword ? <EyeOff aria-hidden /> : <Eye aria-hidden />}
+                  {showPassword ? 'Hide' : 'Show'}
                 </Button>
-              </form>
-            </CardContent>
-          </Card>
+              </div>
+            </div>
 
-          {/* Demo quick-fill */}
-          <div className="space-y-2">
-            <p className="text-center text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Demo accounts — tap to fill
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              {DEMO_ACCOUNTS.map((acc) => (
+            <Button type="submit" className="w-full" disabled={submitting} disabledReason={false}>
+              {submitting ? 'Signing in…' : 'Sign in'}
+            </Button>
+          </form>
+        </section>
+
+        <section aria-labelledby="login-demo" className="space-y-3 border-t pt-6">
+          <h2 id="login-demo" className="text-[1.2rem] font-bold">Demo accounts: press one to fill the form</h2>
+          <ul className="grid gap-2 sm:grid-cols-2">
+            {DEMO_ACCOUNTS.map((acc) => (
+              <li key={acc.username}>
                 <button
-                  key={acc.username}
                   type="button"
                   onClick={() => fill(acc)}
+                  aria-pressed={username === acc.username}
                   className={cn(
-                    'rounded-xl border bg-card px-3 py-2.5 text-left transition-colors',
-                    'hover:border-amber-400/60 hover:bg-amber-50/60 dark:hover:bg-amber-950/20',
-                    username === acc.username && 'border-amber-500/70 bg-amber-50/60 dark:bg-amber-950/20',
+                    'min-h-12 w-full rounded-md border-2 border-primary bg-card px-3 py-2 text-left hover:bg-accent',
+                    username === acc.username && 'bg-accent',
                   )}
                 >
-                  <span className="block text-sm font-medium">{acc.label}</span>
-                  <span className="block text-xs text-muted-foreground">
+                  <span className="block font-bold text-primary">{acc.label}</span>
+                  <span className="block text-muted-foreground">
                     {acc.username} · {acc.hint}
                   </span>
                 </button>
-              ))}
-            </div>
-            <p className="text-center text-xs text-muted-foreground">
-              Every seeded employee can also sign in as{' '}
-              <span className="font-medium text-foreground">email-prefix / password123</span>
-            </p>
-          </div>
-        </div>
-      </div>
+              </li>
+            ))}
+          </ul>
+          <p className="text-muted-foreground">
+            Every seeded employee can also sign in as{' '}
+            <span className="font-bold text-foreground">email-prefix / password123</span>
+          </p>
+          <p className="text-muted-foreground">
+            Demo build: accounts are kept in this browser, no data leaves it.
+          </p>
+        </section>
+      </main>
     </div>
   );
 }

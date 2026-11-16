@@ -108,8 +108,8 @@ export default function DependentsTab({ employee, file, readOnly, actorName }: T
           variant="outline"
           className={
             hint.mismatch
-              ? 'border-transparent bg-amber-100 text-amber-800'
-              : 'border-transparent bg-lime-100 text-lime-800'
+              ? 'border-transparent bg-warning-soft text-warning'
+              : 'border-transparent bg-success-soft text-success'
           }
         >
           <Baby className="mr-1 h-3.5 w-3.5" />
@@ -117,7 +117,7 @@ export default function DependentsTab({ employee, file, readOnly, actorName }: T
           {hint.employeeChildren}
         </Badge>
         {hint.mismatch && (
-          <span className="text-xs text-amber-700">
+          <span className="text-xs text-primary">
             Child count differs from the Employee record (PCB relief) — ask HR to sync.
           </span>
         )}
@@ -135,7 +135,7 @@ export default function DependentsTab({ employee, file, readOnly, actorName }: T
                 <p className="flex flex-wrap items-center gap-2 text-sm font-medium">
                   {d.name}
                   {d.isChild && (
-                    <Badge variant="outline" className="border-transparent bg-amber-100 text-amber-800">
+                    <Badge variant="outline" className="border-transparent bg-warning-soft text-warning">
                       Child · PCB relief
                     </Badge>
                   )}
@@ -207,8 +207,8 @@ export default function DependentsTab({ employee, file, readOnly, actorName }: T
               Cancel
             </Button>
             <Button
-              className="bg-amber-600 text-white hover:bg-amber-700"
-              disabled={!form.name.trim() || !form.relation.trim()}
+              className="bg-primary text-primary-foreground hover:bg-primary"
+              disabled={!form.name.trim() || !form.relation.trim()} disabledReason="Fill in the required fields first."
               onClick={submit}
             >
               {editing ? 'Save changes' : 'Add dependent'}

@@ -101,7 +101,7 @@ export interface CompanyConfig {
 /** Visual identity shown in the app shell / payslips. */
 export interface CompanyBranding {
   logoText: string;         // short mark, e.g. 'ASM'
-  accentColor: string;      // hex color, e.g. '#b45309'
+  accentColor: string;      // hex color, e.g. '#2E2F70'
 }
 
 /**
@@ -346,6 +346,18 @@ export interface PayrollRun {
   cutoffDay?: number;
   /** ISO datetime when a draft run was finalized (absent while still draft). */
   finalizedAt?: string;
+  /** Payroll steps 4–5 marked done by HR/Admin (lib/payrollSteps.ts). */
+  stepsDone?: Partial<Record<PayrollRunStep, PayrollRunStepMark>>;
+}
+
+/** Steps after finalising that the system cannot see happen (bank / statutory payments). */
+export type PayrollRunStep = 'staffPaid' | 'statutoryPaid';
+
+export interface PayrollRunStepMark {
+  /** Display name of the person who marked it. */
+  by: string;
+  /** ISO datetime. */
+  at: string;
 }
 
 export type PayslipLineKind = 'earning' | 'deduction' | 'employer' | 'info';
@@ -661,6 +673,8 @@ export interface Settings {
   paydayDay: number;      // day of month wages are paid (EA: ≤ 7th after wage period)
   standardDailyHours: number;  // default 8
   standardWeeklyHours: number; // default 45
+  /** HR support phone / extension shown in the Home help strip (optional). */
+  hrSupportPhone?: string;
 }
 
 export interface AuditLog {

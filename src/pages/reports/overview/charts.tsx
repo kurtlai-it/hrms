@@ -6,10 +6,11 @@
  *  - ClaimsDonut           — donut, claim amounts by category
  */
 import { useMemo, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
-  Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Line, LineChart,
-  Pie, PieChart, XAxis, YAxis,
+  Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, LabelList, Line, LineChart, Pie, PieChart, XAxis, YAxis,
 } from 'recharts';
+import { pieValueLabel, valueLabel } from '@/lib/chartText';
 import { BarChart3, CalendarClock, Donut, TrendingUp } from 'lucide-react';
 import { useAuth } from '@/lib/useAuth';
 import { useCollection } from '@/lib/db';
@@ -20,7 +21,7 @@ import {
   ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent,
   type ChartConfig,
 } from '@/components/ui/chart';
-import { addDays, estimateMonthlyEmployerCost, isoOf, shortDate, shortMonth } from '../lib';
+import { addDays, estimateMonthlyEmployerCost, isoOf, shortDate, shortMonth } from '@/pages/dashboard/lib';
 
 function ChartCard({
   title, description, icon: Icon, children,
@@ -34,7 +35,7 @@ function ChartCard({
     <Card className="rounded-xl">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
-          <Icon className="h-4 w-4 text-amber-600" />
+          <Icon className="h-4 w-4 text-primary" />
           {title}
         </CardTitle>
         <CardDescription>{description}</CardDescription>
@@ -47,7 +48,7 @@ function ChartCard({
 function EmptyChart({ note }: { note: string }) {
   return (
     <div className="flex h-[240px] flex-col items-center justify-center gap-2 rounded-lg border border-dashed text-center">
-      <BarChart3 className="h-6 w-6 text-muted-foreground/50" />
+      <BarChart3 className="h-6 w-6 text-muted-foreground" />
       <p className="max-w-[26ch] text-sm text-muted-foreground">{note}</p>
     </div>
   );
@@ -55,11 +56,11 @@ function EmptyChart({ note }: { note: string }) {
 
 // ── Headcount by department (bar) ────────────────────────────────────────────
 
-const headcountConfig = {
-  count: { label: 'Employees', color: '#d97706' },
-} satisfies ChartConfig;
-
 export function HeadcountByDepartment() {
+  const { t } = useTranslation();
+  const headcountConfig = {
+    count: { label: t('dash.charts.employees'), color: 'hsl(var(--chart-1))' },
+  } satisfies ChartConfig;
   const { scopeEmployees } = useAuth();
   const { items: employees } = useCollection<Employee>('employees');
   const { items: departments } = useCollection<Department>('departments');
@@ -74,20 +75,24 @@ export function HeadcountByDepartment() {
 
   return (
     <ChartCard
-      title="Headcount by department"
-      description="Active and probation employees"
+      title={t('dash.charts.headcountTitle')}
+      description={t('dash.charts.headcountDesc')}
       icon={BarChart3}
     >
       {data.every((d) => d.count === 0) ? (
-        <EmptyChart note="No active employees yet — add employees to see the distribution." />
+        <EmptyChart note={t('dash.charts.headcountEmpty')} />
       ) : (
-        <ChartContainer config={headcountConfig} className="h-[240px] w-full">
-          <BarChart data={data} margin={{ left: -16, right: 8, top: 4 }}>
-            <CartesianGrid vertical={false} />
-            <XAxis dataKey="name" tickLine={false} axisLine={false} interval={0} angle={-18} textAnchor="end" height={54} />
-            <YAxis allowDecimals={false} tickLine={false} axisLine={false} width={32} />
+        // Horizontal bars: department names stay level and whole, and each bar
+        // has its number written at the end (not colour or length alone).
+        <ChartContainer config={headcountConfig} className="w-full" style={{ height: Math.max(160, data.length * 44 + 24) }}>
+          <BarChart data={data} layout="vertical" margin={{ left: 8, right: 40, top: 4, bottom: 4 }}>
+            <CartesianGrid horizontal={false} />
+            <XAxis type="number" allowDecimals={false} tickLine={false} axisLine={false} />
+            <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} width={190} interval={0} />
             <ChartTooltip content={<ChartTooltipContent />} />
-            <Bar dataKey="count" fill="var(--color-count)" radius={[6, 6, 0, 0]} maxBarSize={44} />
+            <Bar dataKey="count" fill="var(--color-count)" radius={[0, 6, 6, 0]} maxBarSize={30}>
+              <LabelList dataKey="count" position="right" className="fill-foreground font-bold" />
+            </Bar>
           </BarChart>
         </ChartContainer>
       )}
@@ -97,11 +102,11 @@ export function HeadcountByDepartment() {
 
 // ── 6-month payroll cost trend (line) ────────────────────────────────────────
 
-const trendConfig = {
-  cost: { label: 'Employer cost', color: '#b45309' },
-} satisfies ChartConfig;
-
 export function PayrollTrend() {
+  const { t } = useTranslation();
+  const trendConfig = {
+    cost: { label: t('dash.charts.employerCost'), color: 'hsl(var(--chart-1))' },
+  } satisfies ChartConfig;
   const { items: runs } = useCollection<PayrollRun>('payrollRuns');
   const { items: employees } = useCollection<Employee>('employees');
 
@@ -117,19 +122,17 @@ export function PayrollTrend() {
 
   return (
     <ChartCard
-      title="Payroll cost trend"
-      description="Total employer cost from finalized runs (last 6)"
+      title={t('dash.charts.payrollTitle')}
+      description={t('dash.charts.payrollDesc')}
       icon={TrendingUp}
     >
       {data.length === 0 ? (
         <EmptyChart
-          note={`No payroll runs yet — the trend appears after the first run. Estimated current cost: ${fmtRM(
-            estimateMonthlyEmployerCost(employees),
-          )} / month.`}
+          note={t('dash.charts.payrollEmpty', { amount: fmtRM(estimateMonthlyEmployerCost(employees)) })}
         />
       ) : (
         <ChartContainer config={trendConfig} className="h-[240px] w-full">
-          <LineChart data={data} margin={{ left: 8, right: 12, top: 4 }}>
+          <LineChart data={data} margin={{ left: 8, right: 24, top: 28 }}>
             <CartesianGrid vertical={false} />
             <XAxis dataKey="month" tickLine={false} axisLine={false} />
             <YAxis
@@ -147,7 +150,9 @@ export function PayrollTrend() {
               stroke="var(--color-cost)"
               strokeWidth={2}
               dot={{ r: 3, fill: 'var(--color-cost)' }}
-            />
+            >
+              <LabelList content={valueLabel((v) => `${Math.round(v / 1000)}k`)} />
+            </Line>
           </LineChart>
         </ChartContainer>
       )}
@@ -157,11 +162,11 @@ export function PayrollTrend() {
 
 // ── Attendance rate, last 14 days (area) ─────────────────────────────────────
 
-const attendanceConfig = {
-  rate: { label: 'Attendance rate', color: '#f59e0b' },
-} satisfies ChartConfig;
-
 export function AttendanceRate() {
+  const { t } = useTranslation();
+  const attendanceConfig = {
+    rate: { label: t('dash.charts.attendanceRate'), color: 'hsl(var(--chart-2))' },
+  } satisfies ChartConfig;
   const { scopeByEmployee } = useAuth();
   const { items: attendance } = useCollection<AttendanceRecord>('attendance');
 
@@ -190,18 +195,19 @@ export function AttendanceRate() {
 
   return (
     <ChartCard
-      title="Attendance rate"
-      description="Share of scheduled staff present, last 14 days"
+      title={t('dash.charts.attendanceTitle')}
+      description={t('dash.charts.attendanceDesc')}
       icon={CalendarClock}
     >
       {!anyData ? (
-        <EmptyChart note="No attendance records in the last 14 days." />
+        <EmptyChart note={t('dash.charts.attendanceEmpty')} />
       ) : (
         <ChartContainer config={attendanceConfig} className="h-[240px] w-full">
-          <AreaChart data={data} margin={{ left: -8, right: 12, top: 4 }}>
+          <AreaChart data={data} margin={{ left: 8, right: 12, top: 4 }}>
             <CartesianGrid vertical={false} />
             <XAxis dataKey="day" tickLine={false} axisLine={false} interval={2} />
-            <YAxis domain={[0, 100]} unit="%" tickLine={false} axisLine={false} width={44} />
+            {/* Wide enough for "100%" at the chart text size. */}
+            <YAxis domain={[0, 100]} unit="%" tickLine={false} axisLine={false} width={64} />
             <ChartTooltip
               content={<ChartTooltipContent formatter={(value) => `${Number(value)}%`} />}
             />
@@ -223,17 +229,21 @@ export function AttendanceRate() {
 
 // ── Claims by category (donut) ───────────────────────────────────────────────
 
-const claimsConfig = {
-  travel: { label: 'Travel', color: '#92400e' },
-  meal: { label: 'Meals', color: '#b45309' },
-  medical: { label: 'Medical', color: '#d97706' },
-  parking: { label: 'Parking', color: '#f59e0b' },
-  telephone: { label: 'Telephone', color: '#fbbf24' },
-  training: { label: 'Training', color: '#a8a29e' },
-  other: { label: 'Other', color: '#d6d3d1' },
-} satisfies ChartConfig;
+const CLAIM_COLORS: Record<Claim['category'], string> = {
+  travel: 'hsl(var(--chart-1))',
+  meal: 'hsl(var(--chart-2))',
+  medical: 'hsl(var(--chart-3))',
+  parking: 'hsl(var(--chart-4))',
+  telephone: 'hsl(var(--chart-6))',
+  training: 'hsl(var(--chart-5))',
+  other: 'hsl(var(--chart-grid))',
+};
 
 export function ClaimsDonut() {
+  const { t } = useTranslation();
+  const claimsConfig = Object.fromEntries(
+    Object.entries(CLAIM_COLORS).map(([cat, color]) => [cat, { label: t(`claimCategory.${cat}`), color }]),
+  ) satisfies ChartConfig;
   const { scopeByEmployee } = useAuth();
   const { items: claims } = useCollection<Claim>('claims');
 
@@ -256,14 +266,18 @@ export function ClaimsDonut() {
 
   return (
     <ChartCard
-      title="Claims by category"
-      description={`${visibleCount} claims on record, all statuses`}
+      title={t('dash.charts.claimsTitle')}
+      description={t('dash.charts.claimsDesc', { count: visibleCount })}
       icon={Donut}
     >
       {data.length === 0 ? (
-        <EmptyChart note="No claims yet — submitted expenses will be grouped here." />
+        <EmptyChart note={t('dash.charts.claimsEmpty')} />
       ) : (
-        <div className="relative">
+        <div>
+          <p className="text-center">
+            <span className="text-xs font-bold text-muted-foreground">{t('dash.charts.total')}</span>{' '}
+            <span className="text-lg font-semibold">{fmtRM(total)}</span>
+          </p>
           <ChartContainer config={claimsConfig} className="mx-auto h-[240px] w-full">
             <PieChart>
               <ChartTooltip
@@ -282,18 +296,21 @@ export function ClaimsDonut() {
                 innerRadius="58%"
                 outerRadius="85%"
                 strokeWidth={2}
+                label={pieValueLabel}
+                labelLine={false}
               >
                 {data.map((d) => (
-                  <Cell key={d.category} fill={d.fill} />
+                  // Recharts draws each slice as role="img"; name it for screen readers.
+                  <Cell
+                    key={d.category}
+                    fill={d.fill}
+                    aria-label={`${t(`claimCategory.${d.category}`)}: ${fmtRM(d.amount)}`}
+                  />
                 ))}
               </Pie>
               <ChartLegend content={<ChartLegendContent nameKey="category" />} />
             </PieChart>
           </ChartContainer>
-          <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center pb-8">
-            <span className="text-xs text-muted-foreground">Total</span>
-            <span className="text-lg font-semibold">{fmtRM(total)}</span>
-          </div>
         </div>
       )}
     </ChartCard>

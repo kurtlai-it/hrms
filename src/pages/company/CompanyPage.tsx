@@ -18,7 +18,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTenant } from '@/lib/useTenant';
 import { cn } from '@/lib/utils';
-import { useCompanyBranding } from './branding';
+import { brandSwatchHex, useCompanyBranding } from './branding';
 import BrandingSection from './sections/BrandingSection';
 import CustomFieldsSection from './sections/CustomFieldsSection';
 import ModulesSection from './sections/ModulesSection';
@@ -36,8 +36,8 @@ const TABS = [
 type TabValue = (typeof TABS)[number]['value'];
 
 const PLAN_CLS: Record<string, string> = {
-  enterprise: 'border-transparent bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300',
-  pro: 'border-transparent bg-stone-200 text-stone-700 dark:bg-stone-800 dark:text-stone-300',
+  enterprise: 'border-transparent bg-warning-soft text-warning',
+  pro: 'border-transparent bg-secondary text-foreground',
   free: 'border-transparent bg-muted text-muted-foreground',
 };
 
@@ -72,8 +72,9 @@ export default function CompanyPage() {
               {companies.map((c) => (
                 <Button key={c.id} variant="outline" onClick={() => setActiveCompany(c.id)}>
                   <span
-                    className="mr-2 flex h-5 w-5 items-center justify-center rounded text-[10px] font-bold text-white"
-                    style={{ backgroundColor: c.branding.accentColor }}
+                    // colors-ok: white text on the guarded tenant color (4.5:1)
+                    className="mr-2 flex h-7 w-7 items-center justify-center rounded text-xs font-bold text-white"
+                    style={{ backgroundColor: brandSwatchHex(c.branding.accentColor) }}
                   >
                     {c.branding.logoText.slice(0, 2)}
                   </span>
@@ -83,7 +84,7 @@ export default function CompanyPage() {
             </div>
             <p className="text-xs text-muted-foreground">
               New companies are provisioned from the{' '}
-              <Link to="/superadmin" className="font-medium text-amber-700 hover:underline underline-offset-4">
+              <Link to="/superadmin" className="font-medium text-primary hover:underline underline-offset-4">
                 SuperAdmin console
               </Link>
               .
@@ -98,13 +99,14 @@ export default function CompanyPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
         <span
+          // colors-ok: white text on the guarded tenant color (4.5:1)
           className="flex h-10 w-10 items-center justify-center rounded-xl text-sm font-bold text-white"
-          style={{ backgroundColor: activeCompany.branding.accentColor }}
+          style={{ backgroundColor: brandSwatchHex(activeCompany.branding.accentColor) }}
         >
           {activeCompany.branding.logoText.slice(0, 3).toUpperCase()}
         </span>
         <div className="min-w-0 flex-1 space-y-1">
-          <h1 className="truncate text-2xl font-semibold tracking-tight">Company Setup</h1>
+          <h1 className="break-words text-2xl font-semibold tracking-tight">Company Setup</h1>
           <p className="text-sm text-muted-foreground">
             Customization for <span className="font-medium text-foreground">{activeCompany.name}</span> — changes are
             scoped to this company only and recorded in its audit log.

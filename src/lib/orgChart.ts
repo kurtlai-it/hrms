@@ -57,7 +57,7 @@ export interface DepartmentProfile {
   departmentId: string;
   /** Cost centre / GL code for finance rollups, e.g. 'CC-100'. */
   costCenter?: string;
-  /** Hex colour used on chart nodes, badges and tables, e.g. '#b45309'. */
+  /** Hex colour used on chart nodes, badges and tables, e.g. '#2E2F70'. */
   color?: string;
   updatedAt: string;
 }

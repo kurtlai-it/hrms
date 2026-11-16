@@ -68,10 +68,10 @@ function ScorePicker({
             'h-8 w-8 rounded-lg border text-sm font-medium transition-colors',
             value === n
               ? tone === 'self'
-                ? 'border-stone-400 bg-stone-600 text-white'
-                : 'border-amber-500 bg-amber-500 text-white'
+                ? 'border-input bg-muted-foreground text-background'
+                : 'border-warning bg-primary text-primary-foreground'
               : 'bg-background hover:bg-muted',
-            disabled && 'cursor-not-allowed opacity-50',
+            disabled && 'cursor-not-allowed border-dashed text-muted-foreground',
           )}
           aria-label={`Score ${n}`}
         >
@@ -300,10 +300,10 @@ export default function ReviewCycle() {
   }
 
   const stageChip = (r: ReviewExt, kpiCount: number) => {
-    if (r.status === 'acknowledged') return { label: 'Acknowledged', cls: 'bg-emerald-100 text-emerald-800 border-emerald-200' };
-    if (r.status === 'submitted') return { label: 'Awaiting acknowledgment', cls: 'bg-lime-100 text-lime-800 border-lime-200' };
-    if (!selfDoneOf(r, kpiCount)) return { label: 'Self-review pending', cls: 'bg-stone-200 text-stone-700 border-stone-300' };
-    return { label: 'Manager review pending', cls: 'bg-amber-100 text-amber-800 border-amber-200' };
+    if (r.status === 'acknowledged') return { label: 'Acknowledged', cls: 'bg-success-soft text-success border-success/40' };
+    if (r.status === 'submitted') return { label: 'Awaiting acknowledgment', cls: 'bg-success-soft text-success border-success/40' };
+    if (!selfDoneOf(r, kpiCount)) return { label: 'Self-review pending', cls: 'bg-secondary text-foreground border-border' };
+    return { label: 'Manager review pending', cls: 'bg-warning-soft text-warning border-warning/40' };
   };
 
   if (reviews.length > 0 && cycleReviews.length === 0) {
@@ -330,10 +330,10 @@ export default function ReviewCycle() {
           <Link to="/kpi"><ArrowLeft className="mr-1 h-4 w-4" /> Back to KPI</Link>
         </Button>
         <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
-          <ClipboardCheck className="h-6 w-6 text-amber-600" />
+          <ClipboardCheck className="h-6 w-6 text-primary" />
           {cycleName}
           {scoringLockedByCycle && (
-            <Badge variant="secondary" className="border bg-stone-200 text-stone-700 border-stone-300">
+            <Badge variant="secondary" className="border bg-secondary text-foreground border-border">
               <Lock className="mr-1 h-3 w-3" /> Closed
             </Badge>
           )}
@@ -379,7 +379,7 @@ export default function ReviewCycle() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b text-left text-xs uppercase tracking-wide text-muted-foreground">
+                  <tr className="border-b text-left text-xs text-muted-foreground font-bold">
                     <th className="px-4 py-3 font-medium">Employee</th>
                     <th className="px-4 py-3 font-medium">Reviewer</th>
                     <th className="px-4 py-3 font-medium">Weights</th>
@@ -417,9 +417,9 @@ export default function ReviewCycle() {
                         <td className="px-4 py-3 text-muted-foreground">{empOf(r.reviewerId)?.name ?? '—'}</td>
                         <td className="px-4 py-3">
                           {w === 100 ? (
-                            <Badge variant="secondary" className="border bg-lime-100 text-lime-800 border-lime-200">100%</Badge>
+                            <Badge variant="secondary" className="border bg-success-soft text-success border-success/40">100%</Badge>
                           ) : (
-                            <Badge variant="secondary" className="border bg-orange-100 text-orange-800 border-orange-200">
+                            <Badge variant="secondary" className="border bg-warning-soft text-warning border-warning/40">
                               <AlertTriangle className="mr-1 h-3 w-3" />{w}%
                             </Badge>
                           )}
@@ -474,7 +474,7 @@ export default function ReviewCycle() {
                         {initialsOf(emp?.name ?? '?')}
                       </span>
                       <div className="min-w-0 flex-1">
-                        <div className="truncate font-medium">{emp?.name ?? r.employeeId}</div>
+                        <div className="break-words font-medium">{emp?.name ?? r.employeeId}</div>
                         <div className="text-xs text-muted-foreground">{deptName(emp?.departmentId)} · reviewer {empOf(r.reviewerId)?.name ?? '—'}</div>
                       </div>
                       {b && <Badge variant="outline" className={b.badge}>{b.label}</Badge>}
@@ -511,7 +511,7 @@ export default function ReviewCycle() {
             <>
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
-                  <User className="h-5 w-5 text-amber-600" />
+                  <User className="h-5 w-5 text-primary" />
                   {empOf(scoring.employeeId)?.name ?? scoring.employeeId}
                 </DialogTitle>
                 <DialogDescription>
@@ -520,7 +520,7 @@ export default function ReviewCycle() {
               </DialogHeader>
 
               {reviewLocked && (
-                <div className="flex items-start gap-2 rounded-lg border border-stone-300 bg-stone-100 px-3 py-2 text-xs text-stone-700">
+                <div className="flex items-start gap-2 rounded-lg border border-border bg-muted px-3 py-2 text-xs text-foreground">
                   <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                   {scoring.status === 'acknowledged'
                     ? 'This review has been acknowledged and is locked.'
@@ -531,7 +531,7 @@ export default function ReviewCycle() {
               )}
 
               {weights !== 100 && !reviewLocked && (
-                <div className="flex items-start gap-2 rounded-lg border border-orange-200 bg-orange-50 px-3 py-2 text-xs text-orange-800">
+                <div className="flex items-start gap-2 rounded-lg border border-warning/40 bg-warning-soft px-3 py-2 text-xs text-warning">
                   <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                   KPI weights total {weights}% — they must equal 100% before the manager review can be submitted. Fix weights in the KPI Library tab.
                 </div>
@@ -676,7 +676,7 @@ export default function ReviewCycle() {
             <>
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
-                  <MessageSquare className="h-5 w-5 text-amber-600" />
+                  <MessageSquare className="h-5 w-5 text-primary" />
                   1:1 check-ins — {empOf(checkinReview.employeeId)?.name ?? checkinReview.employeeId}
                 </DialogTitle>
                 <DialogDescription>
@@ -695,7 +695,7 @@ export default function ReviewCycle() {
                       key={c.id}
                       className={cn(
                         'rounded-xl border px-3 py-2.5',
-                        c.authorRole === 'manager' ? 'border-amber-200 bg-amber-50/60' : 'border-stone-200 bg-stone-50',
+                        c.authorRole === 'manager' ? 'border-warning/40 bg-warning-soft' : 'border-border bg-muted',
                       )}
                     >
                       <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
@@ -716,7 +716,7 @@ export default function ReviewCycle() {
                     onChange={(e) => setCheckinNote(e.target.value)}
                     placeholder="Add a dated check-in note…"
                   />
-                  <Button size="icon" onClick={postCheckin} disabled={!checkinNote.trim()} aria-label="Post check-in">
+                  <Button size="icon" onClick={postCheckin} disabled={!checkinNote.trim()} disabledReason="Fill in the required fields first." aria-label="Post check-in">
                     <Send className="h-4 w-4" />
                   </Button>
                 </div>

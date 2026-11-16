@@ -38,7 +38,7 @@ export default function AcademicsStep({ form, patch, errors }: Props) {
       </StepIntro>
 
       {errors.academics && (
-        <p className="text-xs text-red-600 dark:text-red-400">{errors.academics}</p>
+        <p className="text-xs text-destructive">{errors.academics}</p>
       )}
 
       <div className="space-y-4">
@@ -51,7 +51,7 @@ export default function AcademicsStep({ form, patch, errors }: Props) {
                 variant="ghost"
                 size="sm"
                 onClick={() => removeRow(i)}
-                className="text-red-600 hover:text-red-700"
+                className="text-destructive hover:text-destructive"
               >
                 <Trash2 className="mr-1 h-3.5 w-3.5" /> Remove
               </Button>

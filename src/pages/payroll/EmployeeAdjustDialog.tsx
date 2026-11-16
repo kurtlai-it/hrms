@@ -19,7 +19,7 @@
  */
 import { useMemo, useState } from 'react';
 import {
-  AlertTriangle, CircleMinus, Info, Plus, RotateCcw, Trash2,
+  AlertTriangle, Check, CircleMinus, Info, Plus, RotateCcw, Trash2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -367,7 +367,7 @@ export default function EmployeeAdjustDialog({
                 </SelectContent>
               </Select>
               {(employee.salaryType ?? 'monthly') !== basic.salaryType && (
-                <p className="text-[11px] text-amber-700 dark:text-amber-500">
+                <p className="text-xs text-primary">
                   Overrides the employee default ({SALARY_TYPE_LABELS[employee.salaryType ?? 'monthly']})
                   for this run only.
                 </p>
@@ -384,7 +384,7 @@ export default function EmployeeAdjustDialog({
                 value={basic.rate}
                 onChange={(e) => setBasic((cur) => ({ ...cur, rate: e.target.value }))}
               />
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 Blank = default RM {defaultRateFor(employee, basic.salaryType).toFixed(2)}
                 {basic.salaryType === 'daily' && !employee.dailyRate ? ' (base ÷ 26)' : ''}
                 {basic.salaryType === 'hourly' && !employee.hourlyRate ? ' (base ÷ 26 ÷ 8)' : ''}.
@@ -401,7 +401,7 @@ export default function EmployeeAdjustDialog({
                 value={basic.workedQty}
                 onChange={(e) => setBasic((cur) => ({ ...cur, workedQty: e.target.value }))}
               />
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 {basic.salaryType === 'monthly'
                   ? 'Blank = joiner/leaver proration. Enter a months fraction (e.g. 0.5) to override it.'
                   : `Blank = attendance count in the cut-off window (${live.workedQty ?? '—'} ${workedUnit}).`}
@@ -418,7 +418,7 @@ export default function EmployeeAdjustDialog({
                 value={basic.fullAmount}
                 onChange={(e) => setBasic((cur) => ({ ...cur, fullAmount: e.target.value }))}
               />
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 Directly replaces the computed basic for this run — audit-logged and badged as
                 overridden on the payslip.
               </p>
@@ -446,10 +446,10 @@ export default function EmployeeAdjustDialog({
                   return (
                     <li key={a.id} className="space-y-1.5 rounded-lg border px-2.5 py-2">
                       <div className="flex items-center gap-1.5">
-                        <span className="min-w-0 flex-1 truncate text-sm">{a.label}</span>
-                        {a.nonCash && <Badge variant="secondary" className="text-[10px]">non-cash</Badge>}
+                        <span className="min-w-0 flex-1 break-words text-sm">{a.label}</span>
+                        {a.nonCash && <Badge variant="secondary" className="text-xs">non-cash</Badge>}
                         {a.nonStatutory && !a.nonCash && (
-                          <Badge variant="secondary" className="text-[10px]">reimbursement</Badge>
+                          <Badge variant="secondary" className="text-xs">reimbursement</Badge>
                         )}
                         <Input
                           type="number"
@@ -467,7 +467,7 @@ export default function EmployeeAdjustDialog({
                           size="sm"
                           className="h-7 px-1.5"
                           title={preset ? 'Apply recommended tags' : 'Custom line — no preset recommendation'}
-                          disabled={!preset}
+                          disabled={!preset} disabledReason="Choose an option first."
                           onClick={() => patchAdjustment(a.id, applyRecommendedTags(a))}
                         >
                           <RotateCcw className="h-3.5 w-3.5" />
@@ -505,7 +505,7 @@ export default function EmployeeAdjustDialog({
                           </Tooltip>
                         )}
                         {a.additionalRemuneration && (
-                          <span className="ml-1 text-[10px] text-muted-foreground">additional remuneration</span>
+                          <span className="ml-1 text-xs text-muted-foreground">additional remuneration</span>
                         )}
                       </div>
                     </li>
@@ -528,7 +528,7 @@ export default function EmployeeAdjustDialog({
                   </SelectContent>
                 </Select>
                 {earnPreset && (
-                  <p className="text-[11px] text-muted-foreground">{earnPreset.advice}</p>
+                  <p className="text-xs text-muted-foreground">{earnPreset.advice}</p>
                 )}
               </div>
               <div className="grid grid-cols-[1fr_96px_auto] items-end gap-2">
@@ -582,12 +582,12 @@ export default function EmployeeAdjustDialog({
                             {fmtRM(b.amount)} · {BENEFIT_TREATMENT_LABELS[b.treatment]}
                           </span>
                         </Label>
-                        {excluded && <Badge variant="outline" className="text-[10px]">skipped this run</Badge>}
+                        {excluded && <Badge variant="outline" className="text-xs">skipped this run</Badge>}
                       </li>
                     );
                   })}
                 </ul>
-                <p className="text-[11px] text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   Managed under Loans &amp; Benefits — skipping here never edits the benefit itself.
                 </p>
               </div>
@@ -626,7 +626,7 @@ export default function EmployeeAdjustDialog({
                       {na ? (
                         <Badge
                           variant="outline"
-                          className="border-amber-400 text-[10px] text-amber-700 dark:text-amber-500"
+                          className="border-warning text-xs text-warning"
                         >
                           Not applicable
                         </Badge>
@@ -635,14 +635,14 @@ export default function EmployeeAdjustDialog({
                       )}
                     </div>
                     {na && (
-                      <p className="rounded-md bg-stone-50 p-2 text-[11px] text-muted-foreground dark:bg-stone-900/40">
+                      <p className="rounded-md bg-muted p-2 text-xs text-muted-foreground">
                         {na} — standing rule on the employee record (Edit employee → Statutory).
                         Applies to every run; distinct from a per-run opt-out.
                       </p>
                     )}
                     {!na && excluded && (
-                      <div className="space-y-1.5 rounded-md border border-amber-300 bg-amber-50 p-2 dark:border-amber-900/40 dark:bg-amber-950/30">
-                        <p className="flex items-start gap-1.5 text-[11px] text-amber-800 dark:text-amber-500">
+                      <div className="space-y-1.5 rounded-md border border-warning/40 bg-warning-soft p-2">
+                        <p className="flex items-start gap-1.5 text-xs text-warning">
                           <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0" />
                           {s.warning}
                         </p>
@@ -669,8 +669,8 @@ export default function EmployeeAdjustDialog({
                     key={a.id}
                     className="flex items-center justify-between gap-2 rounded-lg border px-3 py-1.5 text-sm"
                   >
-                    <span className="min-w-0 flex-1 truncate">{adjustmentLabel(a)}</span>
-                    <Money className="text-red-600 dark:text-red-400">−{fmtRM(a.amount)}</Money>
+                    <span className="min-w-0 flex-1 break-words">{adjustmentLabel(a)}</span>
+                    <Money className="text-destructive">−{fmtRM(a.amount)}</Money>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -696,7 +696,7 @@ export default function EmployeeAdjustDialog({
                     ))}
                   </SelectContent>
                 </Select>
-                <p className="text-[11px] text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   {DEDUCTION_PRESETS.find((p) => p.value === dedPreset)?.hint}
                 </p>
               </div>
@@ -742,18 +742,18 @@ export default function EmployeeAdjustDialog({
               <PanelRow label="Reimbursements" value={`+${fmtRM(liveReimbursements)}`} />
             )}
             {(live.adjustmentNonCash ?? 0) > 0 && (
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 BIK/VOLA {fmtRM(live.adjustmentNonCash!)} feeds PCB only — not paid in cash.
               </p>
             )}
-            <div className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 dark:border-amber-900/40 dark:bg-amber-950/30">
+            <div className="rounded-lg border border-warning/40 bg-warning-soft px-3 py-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Net pay</span>
                 <Money className="text-base font-bold">{fmtRM(live.netPay)}</Money>
               </div>
             </div>
             <div className="space-y-1 border-t pt-2">
-              <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+              <p className="text-xs font-bold text-muted-foreground">
                 Employer contributions
               </p>
               <PanelRow
@@ -791,7 +791,7 @@ export default function EmployeeAdjustDialog({
           </Button>
           <Button
             variant="ghost"
-            className="text-red-600 hover:text-red-600 dark:text-red-400"
+            className="text-destructive hover:text-destructive"
             onClick={exclude}
             title="Remove this employee from the draft run"
           >
@@ -799,7 +799,7 @@ export default function EmployeeAdjustDialog({
           </Button>
           <span className="flex-1" />
           <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
-          <Button onClick={save} disabled={!dirty}>Save adjustments</Button>
+          <Button onClick={save} disabled={!dirty} disabledReason="No changes yet.">Save adjustments</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -832,13 +832,15 @@ function TagChip({
         <button
           type="button"
           onClick={onToggle}
+          aria-pressed={on}
           className={cn(
-            'rounded-md border px-1.5 py-0.5 text-[10px] font-semibold tracking-wide transition-colors',
+            'inline-flex items-center gap-0.5 rounded-md border px-1.5 py-0.5 text-xs font-semibold tracking-wide transition-colors',
             on
-              ? 'border-amber-500 bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-400'
-              : 'border-border text-muted-foreground opacity-60 hover:opacity-100',
+              ? 'border-warning/40 bg-warning-soft text-warning'
+              : 'border-border text-muted-foreground',
           )}
         >
+          {on && <Check className="size-3.5" aria-hidden="true" />}
           {tag.toUpperCase()}
         </button>
       </TooltipTrigger>
@@ -859,15 +861,15 @@ function PanelRow({
 }) {
   return (
     <div className="flex items-center justify-between gap-2">
-      <span className={cn('text-muted-foreground', small ? 'text-[11px]' : 'text-xs')}>
+      <span className={cn('text-muted-foreground', small ? 'text-xs' : 'text-xs')}>
         {label}
         {badge && (
-          <Badge variant="outline" className="ml-1.5 border-amber-400 text-[10px] text-amber-700 dark:text-amber-500">
+          <Badge variant="outline" className="ml-1.5 border-warning text-xs text-warning">
             {badge}
           </Badge>
         )}
       </span>
-      <Money className={cn(small ? 'text-xs' : 'text-sm', strong && 'font-semibold', muted && 'line-through opacity-60')}>
+      <Money className={cn(small ? 'text-xs' : 'text-sm', strong && 'font-semibold', muted && 'line-through text-muted-foreground')}>
         {value}
       </Money>
     </div>

@@ -2,6 +2,7 @@
  * Tenant-aware company label shared by the TopBar brand and the mobile "More"
  * sheet header. Extracted from AppLayout's TopBar so both stay in sync.
  */
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/lib/useAuth';
 import { useTenant } from '@/lib/useTenant';
 import { useCollection } from '@/lib/db';
@@ -13,11 +14,12 @@ import type { Settings as CompanySettings } from '@/lib/types';
  * resolves.
  */
 export function useCompanyLabel(): string {
+  const { t } = useTranslation();
   const { isSuperAdmin } = useAuth();
   const { activeCompany, isSystemView } = useTenant();
   const { items: settingsItems } = useCollection<CompanySettings>('settings');
   const company = settingsItems[0];
   return isSystemView && isSuperAdmin
-    ? 'System view'
-    : activeCompany?.name ?? company?.companyName ?? 'MY HRMS';
+    ? t('shell.systemView')
+    : activeCompany?.name ?? company?.companyName ?? t('shell.brand');
 }

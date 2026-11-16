@@ -172,14 +172,14 @@ export default function GenerateLinkDialog({ open, onOpenChange, actorName, comp
           </div>
         ) : (
           <div className="grid gap-4 py-2">
-            <div className="flex items-center gap-2 rounded-xl border bg-stone-50 p-3 dark:bg-stone-900/40">
+            <div className="flex items-center gap-2 rounded-xl border p-3">
               <Link2 className="h-4 w-4 shrink-0 text-muted-foreground" />
               <code className="flex-1 break-all text-xs">{url}</code>
             </div>
             <div className="flex flex-wrap gap-2">
               <Button onClick={copy} variant="outline" size="sm">
                 {copied ? (
-                  <Check className="mr-1.5 h-4 w-4 text-lime-600" />
+                  <Check className="mr-1.5 h-4 w-4 text-success" />
                 ) : (
                   <Copy className="mr-1.5 h-4 w-4" />
                 )}
@@ -200,7 +200,7 @@ export default function GenerateLinkDialog({ open, onOpenChange, actorName, comp
                 </a>
               </Button>
             </div>
-            <p className="rounded-lg bg-amber-50 p-3 text-xs text-amber-900 dark:bg-amber-950/30 dark:text-amber-200">
+            <p className="rounded-lg bg-warning-soft p-3 text-xs text-warning">
               Expires {created.expiresAt.slice(0, 10)} · Anyone with this link can submit the form
               once — share it privately with {created.label}.
             </p>
@@ -215,8 +215,8 @@ export default function GenerateLinkDialog({ open, onOpenChange, actorName, comp
               </Button>
               <Button
                 onClick={submit}
-                disabled={!label.trim()}
-                className="bg-amber-600 text-white hover:bg-amber-700"
+                disabled={!label.trim()} disabledReason="Fill in the required fields first."
+                className="bg-primary text-primary-foreground hover:bg-primary"
               >
                 Generate link
               </Button>

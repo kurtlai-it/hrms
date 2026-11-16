@@ -48,7 +48,6 @@ const OnboardingPage = lazy(() => import('@/pages/onboarding/OnboardingPage'));
 const OffboardingPage = lazy(() => import('@/pages/offboarding/OffboardingPage'));
 const SuperAdminPage = lazy(() => import('@/pages/superadmin/SuperAdminPage'));
 const OrgPage = lazy(() => import('@/pages/org/OrgPage'));
-const OrgChartPage = lazy(() => import('@/pages/org/OrgChartPage'));
 const CompanyPage = lazy(() => import('@/pages/company/CompanyPage'));
 // These three live behind named re-exports in their module meta.ts files.
 const ContractsPage = lazy(() =>
@@ -63,6 +62,8 @@ const OnboardFormPage = lazy(() =>
 const LoansPage = lazy(() =>
   import('@/pages/loans/meta').then((m) => ({ default: m.LoansPage })),
 );
+const GroupPage = lazy(() => import('@/pages/group/GroupPage'));
+const MorePage = lazy(() => import('@/pages/more/MorePage'));
 const NotFound = lazy(() => import('@/pages/NotFound'));
 
 /** Shared suspense fallback for lazy route pages. */
@@ -100,6 +101,10 @@ const routeRegistry: RouteDef[] = [
   // (read-only); approver roles get the full decision queues. Spans the
   // leave/claims/attendance modules, so no single-module gate either.
   { path: '/approvals', title: 'Approvals', element: <ApprovalsPage /> },
+  // Home's big buttons open a group page listing that area's pages (nav.ts
+  // HOME_GROUPS); the page itself hides groups/pages the role cannot use.
+  { path: '/go/:groupKey', title: 'Group', element: <GroupPage /> },
+  { path: '/more', title: 'All pages', element: <MorePage /> },
   { path: '/employees', title: 'Employees', element: <EmployeesPage />, roles: ['Admin', 'HR'] },
   { path: '/employees/:id', title: 'Employee Detail', element: <EmployeeDetailPage /> },
   // All roles may open the route — the records page self-gates (Employee →
@@ -110,7 +115,8 @@ const routeRegistry: RouteDef[] = [
   // always-on for Admin/HR.
   { path: '/contracts', title: 'Contracts', element: <ContractsPage />, roles: ['Admin', 'HR'] },
   { path: '/org', title: 'Organization', element: <OrgPage />, roles: ['Admin', 'HR'] },
-  { path: '/org/chart', title: 'Org Chart', element: <OrgChartPage />, roles: ['Admin', 'HR'] },
+  // The org chart is a tab of the Departments page; /org/chart opens that tab.
+  { path: '/org/chart', title: 'Org Chart', element: <OrgPage />, roles: ['Admin', 'HR'] },
   { path: '/attendance', title: 'Attendance', element: <AttendancePage />, module: 'attendance' },
   { path: '/attendance/shifts', title: 'Shifts', element: <ShiftsPage />, module: 'attendance' },
   { path: '/leave', title: 'Leave', element: <LeavePage />, module: 'leave' },
@@ -173,8 +179,8 @@ function ModuleDisabledCard({ module }: { module: ModuleKey }) {
   return (
     <div className="flex min-h-[50vh] items-center justify-center">
       <div className="w-full max-w-md rounded-xl border border-dashed bg-card p-8 text-center">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-950">
-          <AppWindow className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-warning-soft">
+          <AppWindow className="h-6 w-6 text-primary" />
         </div>
         <h2 className="text-lg font-semibold">{label} is disabled</h2>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -190,7 +196,7 @@ function ModuleDisabledCard({ module }: { module: ModuleKey }) {
           </Link>
           <Link
             to="/company?tab=modules"
-            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
+            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
             Manage modules
           </Link>

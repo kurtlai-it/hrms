@@ -37,11 +37,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { EmptyBlock, Field, RemoveButton, SectionCard, type TabProps } from './shared';
 
 const TYPE_BADGE: Record<DisciplineType, string> = {
-  'verbal-warning': 'bg-stone-100 text-stone-700',
-  'written-warning': 'bg-amber-100 text-amber-800',
-  'show-cause': 'bg-orange-100 text-orange-800',
-  suspension: 'bg-red-100 text-red-800',
-  other: 'bg-stone-100 text-stone-600',
+  'verbal-warning': 'bg-muted text-foreground',
+  'written-warning': 'bg-warning-soft text-warning',
+  'show-cause': 'bg-warning-soft text-warning',
+  suspension: 'bg-danger-soft text-destructive',
+  other: 'bg-muted text-muted-foreground',
 };
 
 export default function DisciplineTab({ employee, file, readOnly, actorName }: TabProps) {
@@ -123,12 +123,12 @@ export default function DisciplineTab({ employee, file, readOnly, actorName }: T
                     {DISCIPLINE_TYPE_LABELS[d.type]}
                   </Badge>
                   {d.acknowledgedAt ? (
-                    <Badge variant="outline" className="border-transparent bg-lime-100 text-lime-800">
+                    <Badge variant="outline" className="border-transparent bg-success-soft text-success">
                       <BadgeCheck className="mr-1 h-3.5 w-3.5" />
                       Acknowledged {fmtDate(d.acknowledgedAt)}
                     </Badge>
                   ) : (
-                    <Badge variant="outline" className="border-transparent bg-stone-100 text-stone-600">
+                    <Badge variant="outline" className="border-transparent bg-muted text-muted-foreground">
                       Awaiting acknowledgement
                     </Badge>
                   )}
@@ -211,8 +211,8 @@ export default function DisciplineTab({ employee, file, readOnly, actorName }: T
               Cancel
             </Button>
             <Button
-              className="bg-amber-600 text-white hover:bg-amber-700"
-              disabled={!form.subject.trim() || !form.detail.trim() || !form.date}
+              className="bg-primary text-primary-foreground hover:bg-primary"
+              disabled={!form.subject.trim() || !form.detail.trim() || !form.date} disabledReason="Fill in the required fields first."
               onClick={submit}
             >
               {editing ? 'Save changes' : 'Issue record'}

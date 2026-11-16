@@ -4,16 +4,9 @@
  * Service (independent contractors/consultants) with expiry watch, renewal
  * workflow, consultant fee logs and printable contract letters.
  */
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import {
-  AlertTriangle,
-  Briefcase,
-  FileClock,
-  FilePlus2,
-  FileText,
-  Search,
-  ScrollText,
-} from 'lucide-react';
+import { SummaryLine } from '@/components/ui/summary-line';
+import { useEffect, useMemo, useState } from 'react';
+import { FilePlus2, FileText, Search } from 'lucide-react';
 import type { Employee } from '@/lib/types';
 import { useCollection } from '@/lib/db';
 import { useAuth } from '@/lib/useAuth';
@@ -134,39 +127,21 @@ export default function ContractsPage() {
             setEditTarget(null);
             setEditorOpen(true);
           }}
-          className="bg-amber-600 text-white hover:bg-amber-700"
+          className="bg-primary text-primary-foreground hover:bg-primary"
         >
           <FilePlus2 className="mr-1.5 h-4 w-4" /> New contract
         </Button>
       </div>
 
-      {/* ── Stat strip ── */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          icon={<ScrollText className="h-5 w-5" />}
-          tone="bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-400"
-          value={stats.activeOfService}
-          label="Active of-service"
-        />
-        <StatCard
-          icon={<Briefcase className="h-5 w-5" />}
-          tone="bg-stone-200/70 text-stone-700 dark:bg-stone-800 dark:text-stone-300"
-          value={stats.activeForService}
-          label="Active for-service"
-        />
-        <StatCard
-          icon={<FileClock className="h-5 w-5" />}
-          tone="bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-400"
-          value={stats.expiringSoon}
-          label="Expiring ≤ 60 days"
-        />
-        <StatCard
-          icon={<AlertTriangle className="h-5 w-5" />}
-          tone="bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-400"
-          value={stats.expiredUnrenewed}
-          label="Expired, unrenewed"
-        />
-      </div>
+      {/* ── Summary ── */}
+      <SummaryLine
+        items={[
+          { label: 'Contracts of service in force', value: stats.activeOfService },
+          { label: 'Contracts for service in force', value: stats.activeForService },
+          { label: 'Ending within 60 days', value: stats.expiringSoon },
+          { label: 'Ended, not renewed', value: stats.expiredUnrenewed },
+        ]}
+      />
 
       {/* ── Filters ── */}
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -210,7 +185,7 @@ export default function ContractsPage() {
       {visible.length === 0 ? (
         <Card className="rounded-xl">
           <CardContent className="py-12 text-center">
-            <FileText className="mx-auto mb-3 h-8 w-8 text-muted-foreground/50" />
+            <FileText className="mx-auto mb-3 h-8 w-8 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">
               {contracts.length === 0
                 ? 'No contracts yet — register the first employment contract or consultant engagement.'
@@ -266,7 +241,7 @@ export default function ContractsPage() {
                           {c.kind === 'of-service' ? 'Of Service' : 'For Service'}
                         </Badge>
                       </TableCell>
-                      <TableCell className="max-w-48 truncate">{c.title}</TableCell>
+                      <TableCell className="max-w-48 break-words">{c.title}</TableCell>
                       <TableCell className="whitespace-nowrap text-sm">
                         {fmtDate(c.startDate)} → {c.endDate ? fmtDate(c.endDate) : 'indefinite'}
                       </TableCell>
@@ -331,26 +306,3 @@ function contractStatusRank(s: ContractStatus): number {
   }
 }
 
-function StatCard({
-  icon,
-  tone,
-  value,
-  label,
-}: {
-  icon: ReactNode;
-  tone: string;
-  value: number;
-  label: string;
-}) {
-  return (
-    <Card className="rounded-xl">
-      <CardContent className="flex items-center gap-3 p-4">
-        <div className={`rounded-lg p-2 ${tone}`}>{icon}</div>
-        <div>
-          <p className="text-2xl font-semibold">{value}</p>
-          <p className="text-xs text-muted-foreground">{label}</p>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}

@@ -104,7 +104,7 @@ function InfoCard({ title, icon: Icon, children }: {
     <Card className="rounded-xl">
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-base">
-          <Icon className="h-4 w-4 text-amber-600" />
+          <Icon className="h-4 w-4 text-primary" />
           {title}
         </CardTitle>
       </CardHeader>
@@ -262,11 +262,11 @@ export default function EmployeeDetailPage() {
     const diff = emp.baseSalary - benchmark.median;
     const pct = Math.round((diff / benchmark.median) * 100);
     if (Math.abs(pct) <= 5) {
-      benchChip = { label: `At market median (${fmtRM(benchmark.median)})`, cls: 'bg-stone-100 text-stone-700', icon: Scale };
+      benchChip = { label: `At market median (${fmtRM(benchmark.median)})`, cls: 'bg-muted text-foreground', icon: Scale };
     } else if (pct < 0) {
-      benchChip = { label: `${Math.abs(pct)}% below median (${fmtRM(benchmark.median)})`, cls: 'bg-amber-100 text-amber-800', icon: TrendingDown };
+      benchChip = { label: `${Math.abs(pct)}% below median (${fmtRM(benchmark.median)})`, cls: 'bg-warning-soft text-warning', icon: TrendingDown };
     } else {
-      benchChip = { label: `${pct}% above median (${fmtRM(benchmark.median)})`, cls: 'bg-lime-100 text-lime-800', icon: TrendingUp };
+      benchChip = { label: `${pct}% above median (${fmtRM(benchmark.median)})`, cls: 'bg-success-soft text-success', icon: TrendingUp };
     }
   }
 
@@ -291,7 +291,7 @@ export default function EmployeeDetailPage() {
           <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center">
             <EmployeeAvatar name={emp.name} size="lg" />
             <div className="min-w-0 flex-1 space-y-1.5">
-              <h1 className="truncate text-xl font-semibold tracking-tight">{emp.name}</h1>
+              <h1 className="break-words text-xl font-semibold tracking-tight">{emp.name}</h1>
               <p className="text-sm text-muted-foreground">
                 {position} · {department} · {stateInfo(emp.state).name}
               </p>
@@ -299,7 +299,7 @@ export default function EmployeeDetailPage() {
                 <StatusBadge status={emp.status} />
                 <TypeBadge type={emp.employmentType} />
                 {emp.isForeignWorker && (
-                  <Badge variant="outline" className="border-transparent bg-orange-100 text-orange-800">
+                  <Badge variant="outline" className="border-transparent bg-warning-soft text-warning">
                     Foreign worker
                   </Badge>
                 )}
@@ -308,7 +308,7 @@ export default function EmployeeDetailPage() {
                     variant="outline"
                     className={cn(
                       'border-transparent',
-                      daysLeft < 0 ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800',
+                      daysLeft < 0 ? 'bg-danger-soft text-destructive' : 'bg-warning-soft text-warning',
                     )}
                   >
                     {daysLeft < 0
@@ -371,7 +371,7 @@ export default function EmployeeDetailPage() {
             </Row>
             <Row label="Children (PCB relief)">{emp.children}</Row>
             <Row label="Email">
-              <a className="text-amber-700 hover:underline underline-offset-4" href={`mailto:${emp.email}`}>
+              <a className="text-primary hover:underline underline-offset-4" href={`mailto:${emp.email}`}>
                 {emp.email}
               </a>
             </Row>
@@ -403,11 +403,11 @@ export default function EmployeeDetailPage() {
                     No account
                   </Badge>
                 ) : statusOf(account) === 'active' ? (
-                  <Badge variant="outline" className="border-transparent bg-lime-100 text-lime-800 dark:bg-lime-950/40 dark:text-lime-400">
+                  <Badge variant="outline" className="border-transparent bg-success-soft text-success">
                     Active · {account.username}
                   </Badge>
                 ) : (
-                  <Badge variant="outline" className="border-transparent bg-orange-100 text-orange-800 dark:bg-orange-950/40 dark:text-orange-400">
+                  <Badge variant="outline" className="border-transparent bg-warning-soft text-warning">
                     Revoked · {account.username}
                   </Badge>
                 )}
@@ -420,7 +420,7 @@ export default function EmployeeDetailPage() {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="h-7 px-2 text-xs text-orange-700 hover:text-orange-800"
+                    className="h-7 px-2 text-xs text-primary hover:text-warning"
                     onClick={() => setAccountRevokeOpen(true)}
                   >
                     Revoke
@@ -444,10 +444,10 @@ export default function EmployeeDetailPage() {
             )}
           </InfoCard>
           {emp.status === 'probation' && (
-            <Card className="rounded-xl border-amber-200 bg-amber-50/60">
+            <Card className="rounded-xl border-warning/40 bg-warning-soft">
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <BadgeCheck className="h-4 w-4 text-amber-600" />
+                  <BadgeCheck className="h-4 w-4 text-primary" />
                   Probation
                 </CardTitle>
               </CardHeader>
@@ -460,19 +460,19 @@ export default function EmployeeDetailPage() {
                     ? '(extended — see history below)'
                     : `(${probationMonthsOf(emp)}-month policy from join date)`}
                   {daysLeft !== null && (
-                    <span className={daysLeft < 0 ? 'font-medium text-red-700' : 'font-medium text-amber-700'}>
+                    <span className={daysLeft < 0 ? 'font-medium text-destructive' : 'font-medium text-primary'}>
                       {' '}— {daysLeft < 0 ? `${Math.abs(daysLeft)} days overdue for confirmation` : `${daysLeft} days remaining`}
                     </span>
                   )}
                 </p>
                 {emp.probationExtendedTo && (
-                  <p className="flex items-center gap-1.5 text-xs text-amber-800">
+                  <p className="flex items-center gap-1.5 text-xs text-warning">
                     <CalendarClock className="h-3.5 w-3.5" />
                     Extended to {fmtDate(emp.probationExtendedTo)}
                   </p>
                 )}
                 {(emp.probationHistory?.length ?? 0) > 0 && (
-                  <div className="rounded-lg border border-amber-200/70 bg-white/60 p-3">
+                  <div className="rounded-lg border border-warning/40 bg-card/60 p-3">
                     <ProbationTimeline entries={emp.probationHistory ?? []} />
                   </div>
                 )}
@@ -483,11 +483,11 @@ export default function EmployeeDetailPage() {
                       variant="outline"
                       onClick={() => confirmProbationAction(emp, actorName)}
                     >
-                      <BadgeCheck className="mr-1.5 h-3.5 w-3.5 text-lime-700" />
+                      <BadgeCheck className="mr-1.5 h-3.5 w-3.5 text-success" />
                       Confirm employment
                     </Button>
                     <Button size="sm" variant="outline" onClick={() => setExtendOpen(true)}>
-                      <CalendarClock className="mr-1.5 h-3.5 w-3.5 text-amber-700" />
+                      <CalendarClock className="mr-1.5 h-3.5 w-3.5 text-primary" />
                       Extend probation…
                     </Button>
                   </div>
@@ -519,8 +519,8 @@ export default function EmployeeDetailPage() {
                     variant={applicable ? 'secondary' : 'outline'}
                     className={
                       applicable
-                        ? 'bg-lime-100 text-lime-800 hover:bg-lime-100 dark:bg-lime-950/40 dark:text-lime-400'
-                        : 'border-amber-400 text-amber-700 dark:text-amber-500'
+                        ? 'bg-success-soft text-success hover:bg-success-soft'
+                        : 'border-warning text-warning'
                     }
                   >
                     {applicable ? 'Applicable' : 'Not applicable'}
@@ -540,8 +540,8 @@ export default function EmployeeDetailPage() {
             </p>
           </InfoCard>
           {emp.isForeignWorker && (
-            <Card className="rounded-xl border-orange-200 bg-orange-50/60">
-              <CardContent className="flex items-start gap-2.5 p-4 text-sm text-orange-900">
+            <Card className="rounded-xl border-warning/40 bg-warning-soft">
+              <CardContent className="flex items-start gap-2.5 p-4 text-sm text-warning">
                 <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
                 <p>
                   Foreign-worker EPF applies: <strong>2% employee + 2% employer</strong>, mandatory
@@ -581,7 +581,7 @@ export default function EmployeeDetailPage() {
               <Row key={a.name} label={`Allowance — ${a.name}`}>{fmtRM(a.amount)}</Row>
             ))}
             <Row label="Total fixed package">
-              <span className="text-amber-800">{fmtRM(emp.baseSalary + allowanceTotal)} / month</span>
+              <span className="text-warning">{fmtRM(emp.baseSalary + allowanceTotal)} / month</span>
             </Row>
           </InfoCard>
 
@@ -589,8 +589,8 @@ export default function EmployeeDetailPage() {
           <EmployeeLoansCard employeeId={emp.id} />
 
           {belowMinimumWage(emp.baseSalary) && emp.employmentType !== 'part-time' && (
-            <Card className="rounded-xl border-red-200 bg-red-50/60">
-              <CardContent className="flex items-start gap-2.5 p-4 text-sm text-red-900">
+            <Card className="rounded-xl border-destructive/40 bg-danger-soft">
+              <CardContent className="flex items-start gap-2.5 p-4 text-sm text-destructive">
                 <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
                 <p>
                   Base salary is below the {fmtRM(MINIMUM_WAGE)} national minimum wage
@@ -601,8 +601,8 @@ export default function EmployeeDetailPage() {
           )}
 
           {belowMinimumWage(emp.baseSalary) && emp.employmentType === 'part-time' && (
-            <Card className="rounded-xl border-amber-200 bg-amber-50/60">
-              <CardContent className="flex items-start gap-2.5 p-4 text-sm text-amber-900">
+            <Card className="rounded-xl border-warning/40 bg-warning-soft">
+              <CardContent className="flex items-start gap-2.5 p-4 text-sm text-warning">
                 <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
                 <p>
                   Part-time pay is below the {fmtRM(MINIMUM_WAGE)} monthly minimum wage.
@@ -617,7 +617,7 @@ export default function EmployeeDetailPage() {
             <Card className="rounded-xl">
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <Scale className="h-4 w-4 text-amber-600" />
+                  <Scale className="h-4 w-4 text-primary" />
                   Market benchmark
                 </CardTitle>
               </CardHeader>
@@ -639,7 +639,7 @@ export default function EmployeeDetailPage() {
                       ['P75', benchmark.percentile75],
                     ] as const
                   ).map(([label, value]) => (
-                    <div key={label} className="rounded-lg bg-stone-50 p-3">
+                    <div key={label} className="rounded-lg bg-muted p-3">
                       <dt className="text-xs text-muted-foreground">{label}</dt>
                       <dd className="mt-0.5 text-sm font-semibold">{fmtRM(value)}</dd>
                     </div>
@@ -676,7 +676,7 @@ export default function EmployeeDetailPage() {
             <Card className="rounded-xl">
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <HeartPulse className="h-4 w-4 text-amber-600" />
+                  <HeartPulse className="h-4 w-4 text-primary" />
                   Leave balances · {balance.year}
                 </CardTitle>
               </CardHeader>
@@ -728,7 +728,7 @@ export default function EmployeeDetailPage() {
             <Card className="rounded-xl">
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <FileText className="h-4 w-4 text-amber-600" />
+                  <FileText className="h-4 w-4 text-primary" />
                   Payslip history
                 </CardTitle>
               </CardHeader>
@@ -737,7 +737,7 @@ export default function EmployeeDetailPage() {
                   <Link
                     key={p.id}
                     to={`/payroll/payslip/${p.id}`}
-                    className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border p-3 transition-colors hover:border-amber-300 hover:bg-stone-50"
+                    className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border p-3 transition-colors hover:border-warning/40 hover:bg-muted"
                   >
                     <div>
                       <p className="text-sm font-medium">{fmtDate(`${p.monthKey}-01`)}</p>
@@ -784,7 +784,7 @@ export default function EmployeeDetailPage() {
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction className="bg-orange-600 text-white hover:bg-orange-700" onClick={confirmRevokeAccount}>
+              <AlertDialogAction className="bg-primary text-primary-foreground hover:bg-primary" onClick={confirmRevokeAccount}>
                 Revoke access
               </AlertDialogAction>
             </AlertDialogFooter>

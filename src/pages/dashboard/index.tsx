@@ -1,63 +1,29 @@
 /**
- * HRMS home dashboard (route '/').
- *
- * Composes: headline stat cards → quick actions → analytics charts →
- * compliance/holiday/alert widgets. Every figure is derived from
- * useCollection plus the shared lib engines (statutory, holidays,
- * payroll) — no rate or date is hardcoded in this module.
- *
- * Role gating (via useAuth):
- *  - Admin / HR → full company dashboard.
- *  - Manager    → department-scoped cards/charts and alerts; payroll-cost
- *                 widgets (StatCards payroll card, PayrollTrend) withheld.
- *  - Employee   → personal view only: own attendance/leave/claims cards,
- *                 self quick actions, holidays and the statutory calendar.
- *                 No org charts, no payroll figures, no alerts naming others.
+ * Home screen (route '/'). The greeting and the company name are in the
+ * header band (AppLayout). The page leads with the work:
+ *  1. "Waiting for you · <date>" — the page heading, up to 3 jobs, most
+ *     urgent first, each with a button that says what it does (useHomeTodos).
+ *  2. "My numbers" — Employee and Manager only, one plain line.
+ *  3. "Go to" and the icon grid (AppGrid): most pages one press away, the
+ *     rest behind "More".
+ * The old dashboard figures and charts live on the Reports page
+ * (pages/reports/overview).
  */
-import { useAuth } from '@/lib/useAuth';
-import { fmtDate } from '@/lib/utils';
-import { StatCards } from './components/stat-cards';
-import { QuickActions } from './components/quick-actions';
-import { AttendanceRate, ClaimsDonut, HeadcountByDepartment, PayrollTrend } from './components/charts';
-import { ComplianceDeadlines } from './components/compliance-deadlines';
-import { UpcomingHolidays } from './components/upcoming-holidays';
-import { AlertsPanel } from './components/alerts-panel';
-import { todayISO } from './lib';
+import { useTranslation } from 'react-i18next';
+import { AppGrid } from './components/app-grid';
+import { HomeTodo } from './components/home-todo';
+import { MyNumbers } from './components/my-numbers';
 
 export default function DashboardPage() {
-  const { role } = useAuth();
-  const isEmployee = role === 'Employee';
-  // Company payroll spend is Admin/HR-only — Managers never see it.
-  const canSeePayroll = role === 'Admin' || role === 'HR';
-
+  const { t } = useTranslation();
   return (
-    <div className="space-y-6">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">
-          {isEmployee
-            ? `Your attendance, leave and claims at a glance · ${fmtDate(todayISO())}`
-            : `Workforce, payroll and statutory compliance at a glance · ${fmtDate(todayISO())}`}
-        </p>
-      </div>
-
-      <StatCards />
-      <QuickActions />
-
-      {!isEmployee && (
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <HeadcountByDepartment />
-          {canSeePayroll && <PayrollTrend />}
-          <AttendanceRate />
-          <ClaimsDonut />
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <ComplianceDeadlines />
-        <UpcomingHolidays />
-        {!isEmployee && <AlertsPanel />}
-      </div>
+    <div className="mx-auto flex max-w-[1100px] flex-col gap-6">
+      <HomeTodo />
+      <MyNumbers />
+      <section aria-labelledby="home-goto" className="space-y-3 pt-2">
+        <h2 id="home-goto" className="border-b pb-2 text-[1.2rem] font-bold">{t('app.goTo')}</h2>
+        <AppGrid />
+      </section>
     </div>
   );
 }

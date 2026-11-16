@@ -251,18 +251,18 @@ export default function BenefitsTab({ isHR, ownEmployeeId, employees }: Props) {
                   return (
                     <div
                       key={c.id}
-                      className={`rounded-lg border p-3 ${c.active ? '' : 'opacity-60'}`}
+                      className={`rounded-lg border p-3 ${c.active ? '' : 'border-dashed bg-muted'}`}
                     >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex items-center gap-2">
-                          <span className="flex h-8 w-8 items-center justify-center rounded-md bg-amber-100 text-amber-700 dark:bg-amber-950/50">
+                      <div className="flex flex-wrap items-start justify-between gap-2">
+                        <div className="flex min-w-[min(12rem,100%)] flex-1 items-center gap-2">
+                          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-warning-soft text-warning">
                             <Icon className="h-4 w-4" />
                           </span>
-                          <div>
+                          <div className="min-w-0">
                             <p className="text-sm font-medium leading-tight">
                               {c.name}
                               {c.custom && (
-                                <span className="ml-1.5 text-[10px] uppercase tracking-wide text-muted-foreground">
+                                <span className="ml-1.5 text-xs text-muted-foreground font-bold">
                                   custom
                                 </span>
                               )}
@@ -277,9 +277,10 @@ export default function BenefitsTab({ isHR, ownEmployeeId, employees }: Props) {
                             <button
                               type="button"
                               aria-label={`Statutory advice for ${c.name}`}
-                              className="text-muted-foreground hover:text-foreground"
+                              className="inline-flex h-12 min-h-12 shrink-0 items-center gap-1.5 rounded-md px-3 font-bold text-primary hover:bg-accent"
                             >
-                              <Info className="h-4 w-4" />
+                              <Info className="h-5 w-5" />
+                              <span aria-hidden>Advice</span>
                             </button>
                           </TooltipTrigger>
                           <TooltipContent className="max-w-xs">
@@ -361,7 +362,7 @@ export default function BenefitsTab({ isHR, ownEmployeeId, employees }: Props) {
         <CardContent>
           {visible.length === 0 ? (
             <div className="flex flex-col items-center gap-2 py-12 text-center">
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950/50">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-warning-soft text-warning">
                 <HeartPulse className="h-6 w-6" />
               </span>
               <p className="font-medium">{isHR ? 'No recurring benefits yet' : 'No benefits'}</p>
@@ -383,7 +384,7 @@ export default function BenefitsTab({ isHR, ownEmployeeId, employees }: Props) {
                   <TableHead>Treatment</TableHead>
                   <TableHead>Period</TableHead>
                   <TableHead>Status</TableHead>
-                  {isHR && <TableHead />}
+                  {isHR && <TableHead><span className="sr-only">Actions</span></TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -738,7 +739,7 @@ function AssignBenefitDialog({ open, onOpenChange, employees, categories, editin
               </SelectContent>
             </Select>
             {/* Statutory advice panel — per treatment (payItems advice style). */}
-            <div className="rounded-lg border bg-muted/40 p-3 text-xs text-muted-foreground">
+            <div className="rounded-lg border p-3 text-xs text-muted-foreground">
               <p className="flex items-start gap-1.5">
                 <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                 <span>{BENEFIT_TREATMENT_ADVICE[treatment]}</span>
@@ -773,7 +774,7 @@ function AssignBenefitDialog({ open, onOpenChange, employees, categories, editin
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={submit} disabled={!valid}>{editing ? 'Save changes' : 'Assign benefit'}</Button>
+          <Button onClick={submit} disabled={!valid} disabledReason="Fill in the required fields first.">{editing ? 'Save changes' : 'Assign benefit'}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -906,7 +907,7 @@ function CategoryFormDialog({ open, onOpenChange, editing, actor }: CategoryDial
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={submit} disabled={!name.trim()}>{editing ? 'Save changes' : 'Create category'}</Button>
+          <Button onClick={submit} disabled={!name.trim()} disabledReason="Fill in the required fields first.">{editing ? 'Save changes' : 'Create category'}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

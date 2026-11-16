@@ -78,7 +78,7 @@ export default function LoansPage() {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="space-y-1">
           <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
-            <HandCoins className="h-6 w-6 text-amber-600" /> Loans &amp; Benefits
+            <HandCoins className="h-6 w-6 text-primary" /> Loans &amp; Benefits
           </h1>
           <p className="text-sm text-muted-foreground">
             {isHR
@@ -169,7 +169,7 @@ export default function LoansPage() {
             <CardContent>
               {visibleLoans.length === 0 ? (
                 <div className="flex flex-col items-center gap-2 py-12 text-center">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950/50">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-warning-soft text-warning">
                     <HandCoins className="h-6 w-6" />
                   </span>
                   <p className="font-medium">{isHR ? 'No loans yet' : 'No loans'}</p>

@@ -7,7 +7,7 @@ import { useMemo } from 'react';
 import { CalendarX2, Clock3, Hourglass, UserCheck, UserX, Palmtree } from 'lucide-react';
 import { useCollection } from '@/lib/db';
 import type { Employee, LeaveRequest } from '@/lib/types';
-import { avatarTone, cn, initialsOf } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { isHoliday, isWeekend } from '@/lib/holidays';
 import {
   isLate, isScheduledWorkDay, nowHHmm, hhmmToMin, shiftEndMin, shiftForEmployee, todayISO,
@@ -27,11 +27,11 @@ interface Row {
 }
 
 const STATUS_CHIP: Record<BoardStatus, { label: string; cls: string }> = {
-  in: { label: 'In', cls: 'bg-emerald-100 text-emerald-800' },
-  late: { label: 'Late', cls: 'bg-amber-100 text-amber-800' },
-  absent: { label: 'Absent', cls: 'bg-rose-100 text-rose-800' },
+  in: { label: 'In', cls: 'bg-success-soft text-success' },
+  late: { label: 'Late', cls: 'bg-warning-soft text-warning' },
+  absent: { label: 'Absent', cls: 'bg-danger-soft text-destructive' },
   awaiting: { label: 'Not in yet', cls: 'bg-muted text-muted-foreground' },
-  leave: { label: 'On leave', cls: 'bg-stone-200 text-stone-700' },
+  leave: { label: 'On leave', cls: 'bg-secondary text-foreground' },
   off: { label: 'Off day', cls: 'bg-muted text-muted-foreground' },
 };
 
@@ -147,19 +147,11 @@ export default function TodayBoard() {
           {rows.map((r) => (
             <div
               key={r.emp.id}
-              className="flex items-center gap-3 rounded-xl border bg-card px-3 py-2.5"
+              className="flex flex-wrap items-center gap-3 rounded-xl border bg-card px-3 py-2.5"
             >
-              <span
-                className={cn(
-                  'flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold',
-                  avatarTone(r.emp.name),
-                )}
-              >
-                {initialsOf(r.emp.name)}
-              </span>
-              <div className="min-w-0 flex-1">
-                <div className="truncate text-sm font-medium">{r.emp.name}</div>
-                <div className="truncate text-xs text-muted-foreground">{r.shiftLabel}</div>
+              <div className="min-w-[min(100%,10rem)] flex-1">
+                <div className="break-words text-sm font-medium">{r.emp.name}</div>
+                <div className="break-words text-xs text-muted-foreground">{r.shiftLabel}</div>
               </div>
               {r.clockIn && <span className="text-xs text-muted-foreground">{r.clockIn}</span>}
               <Badge className={cn('border-transparent', STATUS_CHIP[r.status].cls)}>

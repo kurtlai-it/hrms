@@ -287,7 +287,7 @@ export function EmployeeFormDialog({ open, onOpenChange, employee, onSaved }: Em
                             onChange={(e) => patchCustom(f.id, e.target.value)}
                           />
                         )}
-                        {errors[errKey] ? <p className="text-xs text-red-600">{errors[errKey]}</p> : null}
+                        {errors[errKey] ? <p className="text-xs text-destructive">{errors[errKey]}</p> : null}
                       </div>
                     );
                   })}

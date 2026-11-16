@@ -81,11 +81,11 @@ export interface BandInfo {
 }
 
 export const BANDS: BandInfo[] = [
-  { label: 'Outstanding', min5: 4.5, badge: 'bg-emerald-100 text-emerald-800 border-emerald-200', dot: 'bg-emerald-500', increment: [8, 12] },
-  { label: 'Exceeds Expectations', min5: 3.5, badge: 'bg-lime-100 text-lime-800 border-lime-200', dot: 'bg-lime-500', increment: [5, 8] },
-  { label: 'Meets Expectations', min5: 2.5, badge: 'bg-amber-100 text-amber-800 border-amber-200', dot: 'bg-amber-500', increment: [3, 5] },
-  { label: 'Below Expectations', min5: 1.5, badge: 'bg-orange-100 text-orange-800 border-orange-200', dot: 'bg-orange-500', increment: [0, 2] },
-  { label: 'Poor', min5: 0, badge: 'bg-red-100 text-red-800 border-red-200', dot: 'bg-red-500', increment: [0, 0] },
+  { label: 'Outstanding', min5: 4.5, badge: 'bg-success-soft text-success border-success/40', dot: 'bg-success text-success-foreground', increment: [8, 12] },
+  { label: 'Exceeds Expectations', min5: 3.5, badge: 'bg-success-soft text-success border-success/40', dot: 'bg-success text-success-foreground', increment: [5, 8] },
+  { label: 'Meets Expectations', min5: 2.5, badge: 'bg-warning-soft text-warning border-warning/40', dot: 'bg-primary text-primary-foreground', increment: [3, 5] },
+  { label: 'Below Expectations', min5: 1.5, badge: 'bg-warning-soft text-warning border-warning/40', dot: 'bg-primary text-primary-foreground', increment: [0, 2] },
+  { label: 'Poor', min5: 0, badge: 'bg-danger-soft text-destructive border-destructive/40', dot: 'bg-destructive text-destructive-foreground', increment: [0, 0] },
 ];
 
 /** Band for a 0–100 weighted score (band thresholds are on the 1–5 scale). */
@@ -96,11 +96,11 @@ export function bandFor100(score100: number): BandInfo {
 
 /** Forced-distribution guide (calibration target mix). */
 export const FORCED_DISTRIBUTION: { band: string; pct: number; dot: string }[] = [
-  { band: 'Outstanding', pct: 10, dot: 'bg-emerald-500' },
-  { band: 'Exceeds Expectations', pct: 20, dot: 'bg-lime-500' },
-  { band: 'Meets Expectations', pct: 40, dot: 'bg-amber-500' },
-  { band: 'Below Expectations', pct: 20, dot: 'bg-orange-500' },
-  { band: 'Poor', pct: 10, dot: 'bg-red-500' },
+  { band: 'Outstanding', pct: 10, dot: 'bg-success text-success-foreground' },
+  { band: 'Exceeds Expectations', pct: 20, dot: 'bg-success text-success-foreground' },
+  { band: 'Meets Expectations', pct: 40, dot: 'bg-primary text-primary-foreground' },
+  { band: 'Below Expectations', pct: 20, dot: 'bg-primary text-primary-foreground' },
+  { band: 'Poor', pct: 10, dot: 'bg-destructive text-destructive-foreground' },
 ];
 
 /** Manager-bias flag threshold on the 1–5 scale. */
@@ -111,14 +111,14 @@ export const BIAS_THRESHOLD_5 = 0.5;
 export function categoryBadge(c?: KpiCategory): string {
   switch (c) {
     case 'Financial':
-      return 'bg-amber-100 text-amber-800 border-amber-200';
+      return 'bg-warning-soft text-warning border-warning/40';
     case 'Customer':
-      return 'bg-orange-100 text-orange-800 border-orange-200';
+      return 'bg-warning-soft text-warning border-warning/40';
     case 'People':
-      return 'bg-lime-100 text-lime-800 border-lime-200';
+      return 'bg-success-soft text-success border-success/40';
     case 'Process':
     default:
-      return 'bg-stone-200 text-stone-700 border-stone-300';
+      return 'bg-secondary text-foreground border-border';
   }
 }
 

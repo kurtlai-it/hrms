@@ -285,7 +285,7 @@ export default function IncrementSimulator() {
                     key={p}
                     variant="outline"
                     size="sm"
-                    disabled={!emp}
+                    disabled={!emp} disabledReason="Choose a staff member first."
                     onClick={() => emp && setSalaryInput(String(Math.round(emp.baseSalary * (1 + p / 100))))}
                   >
                     +{p}%
@@ -303,7 +303,7 @@ export default function IncrementSimulator() {
                   <Badge
                     className={cn(
                       'ml-auto border-transparent tabular-nums',
-                      pct >= 0 ? 'bg-green-100 text-green-800 hover:bg-green-100' : 'bg-red-100 text-red-800 hover:bg-red-100',
+                      pct >= 0 ? 'bg-success-soft text-success hover:bg-success-soft' : 'bg-danger-soft text-destructive hover:bg-danger-soft',
                     )}
                   >
                     {pct >= 0 ? '+' : ''}
@@ -314,7 +314,7 @@ export default function IncrementSimulator() {
             )}
 
             {belowMinWage && (
-              <div className="flex items-start gap-2 rounded-lg bg-red-50 px-3 py-2.5 text-xs text-red-800">
+              <div className="flex items-start gap-2 rounded-lg bg-danger-soft px-3 py-2.5 text-xs text-destructive">
                 <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                 <p>
                   Below the national minimum wage of {fmtRM(MINIMUM_WAGE)}/month for full-time
@@ -338,29 +338,29 @@ export default function IncrementSimulator() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div className="space-y-1 rounded-xl border px-4 py-3">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Wallet className="h-3.5 w-3.5 text-amber-600" /> Employer cost
+                    <Wallet className="h-3.5 w-3.5 text-primary" /> Employer cost
                   </div>
                   <p className="text-xl font-semibold tabular-nums">{signedRM(costDelta)}</p>
                   <p className="text-xs text-muted-foreground">per month</p>
                 </div>
                 <div className="space-y-1 rounded-xl border px-4 py-3">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <PiggyBank className="h-3.5 w-3.5 text-amber-600" /> Employee take-home
+                    <PiggyBank className="h-3.5 w-3.5 text-primary" /> Employee take-home
                   </div>
                   <p className="text-xl font-semibold tabular-nums">{signedRM(netDelta)}</p>
                   <p className="text-xs text-muted-foreground">per month, after EPF/SOCSO/EIS/PCB</p>
                 </div>
-                <div className="space-y-1 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
-                  <div className="flex items-center gap-2 text-xs text-amber-800">
+                <div className="space-y-1 rounded-xl border border-warning/40 bg-warning-soft px-4 py-3">
+                  <div className="flex items-center gap-2 text-xs text-warning">
                     <Calculator className="h-3.5 w-3.5" /> Annualised cost
                   </div>
                   <p className="text-xl font-semibold tabular-nums">{signedRM(round2(costDelta * 12))}</p>
-                  <p className="text-xs text-amber-800/80">per year to the company</p>
+                  <p className="text-xs text-warning">per year to the company</p>
                 </div>
               </div>
             ) : (
               <div className="flex flex-col items-center gap-2 py-10 text-center">
-                <Calculator className="h-6 w-6 text-amber-500" />
+                <Calculator className="h-6 w-6 text-primary" />
                 <p className="text-sm font-medium">Enter a proposed salary</p>
                 <p className="max-w-xs text-sm text-muted-foreground">
                   The simulator computes EPF, SOCSO, EIS, PCB and HRD levy for current vs proposed
@@ -411,9 +411,9 @@ export default function IncrementSimulator() {
                           className={cn(
                             'text-right tabular-nums',
                             d === 0 && 'text-muted-foreground',
-                            d > 0 && r.tone === 'net' && 'font-medium text-green-700',
-                            d > 0 && r.tone === 'cost' && 'font-medium text-amber-700',
-                            d < 0 && 'text-red-600',
+                            d > 0 && r.tone === 'net' && 'font-medium text-success',
+                            d > 0 && r.tone === 'cost' && 'font-medium text-primary',
+                            d < 0 && 'text-destructive',
                           )}
                         >
                           {d === 0 ? '—' : signedRM(d)}

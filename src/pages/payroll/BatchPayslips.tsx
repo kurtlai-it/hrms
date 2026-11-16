@@ -13,7 +13,7 @@
  * Draft runs are never offered: payslips are official only once finalized.
  */
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import {
   ArrowLeft, BadgeCheck, CheckSquare, FileDown, Loader2, Receipt, Send, Square,
   Undo2, Users, Wallet,
@@ -59,7 +59,9 @@ export default function BatchPayslips() {
     [runs],
   );
 
-  const [runId, setRunId] = useState<string>('');
+  // ?run=<id> (from the Payroll run page's "Print all payslips") preselects that run.
+  const [params] = useSearchParams();
+  const [runId, setRunId] = useState<string>(() => params.get('run') ?? '');
   const run = finalizedRuns.find((r) => r.id === runId) ?? finalizedRuns[0];
 
   const empMap = useMemo(() => empById(employees), [employees]);
@@ -152,7 +154,7 @@ export default function BatchPayslips() {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="space-y-1">
           <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
-            <Send className="h-6 w-6 text-amber-600" /> Batch payslip distribution
+            <Send className="h-6 w-6 text-primary" /> Batch payslip distribution
           </h1>
           <p className="text-sm text-muted-foreground">
             Export a finalized run's payslips as one multi-page PDF and track who has
@@ -170,7 +172,7 @@ export default function BatchPayslips() {
         <Card className="rounded-xl">
           <CardContent>
             <div className="flex flex-col items-center gap-3 py-12 text-center">
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950/50">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-warning-soft text-warning">
                 <Wallet className="h-6 w-6" />
               </span>
               <div>
@@ -205,7 +207,7 @@ export default function BatchPayslips() {
                 </SelectContent>
               </Select>
 
-              <div className="min-w-56 flex-1">
+              <div className="min-w-[min(14rem,100%)] flex-1">
                 <div className="flex items-center justify-between text-sm">
                   <span className="font-medium">
                     {progress.distributed} of {progress.total} distributed
@@ -247,7 +249,7 @@ export default function BatchPayslips() {
                 </Button>
                 <Button
                   size="sm"
-                  disabled={selectedSlips.length === 0 || generating}
+                  disabled={selectedSlips.length === 0 || generating} disabledReason="Select payslips first."
                   onClick={handleDownloadPdf}
                 >
                   {generating ? (
@@ -260,7 +262,7 @@ export default function BatchPayslips() {
                 <Button
                   variant="outline"
                   size="sm"
-                  disabled={selectedSlips.length === 0}
+                  disabled={selectedSlips.length === 0} disabledReason="Select payslips first."
                   onClick={() => markDistributed(selectedSlips, true)}
                 >
                   <BadgeCheck className="h-4 w-4" /> Mark as distributed ({selectedSlips.length})
@@ -279,7 +281,7 @@ export default function BatchPayslips() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-10"></TableHead>
+                      <TableHead className="w-10"><span className="sr-only">Select</span></TableHead>
                       <TableHead>Employee</TableHead>
                       <TableHead>Payslip no.</TableHead>
                       <TableHead className="text-right">Gross</TableHead>
@@ -295,11 +297,13 @@ export default function BatchPayslips() {
                       return (
                         <TableRow key={p.id}>
                           <TableCell>
-                            <Checkbox
-                              aria-label={`Select ${emp?.name ?? p.employeeId}`}
-                              checked={selected.has(p.id)}
-                              onCheckedChange={(v) => toggle(p.id, v === true)}
-                            />
+                            <label className="flex min-h-12 min-w-12 shrink-0 cursor-pointer items-center justify-center">
+                              <Checkbox
+                                aria-label={`Select ${emp?.name ?? p.employeeId}`}
+                                checked={selected.has(p.id)}
+                                onCheckedChange={(v) => toggle(p.id, v === true)}
+                              />
+                            </label>
                           </TableCell>
                           <TableCell className="font-medium">
                             {emp?.name ?? p.employeeId}
@@ -312,7 +316,7 @@ export default function BatchPayslips() {
                           <TableCell className="text-muted-foreground">
                             <Link
                               to={`/payroll/payslip/${p.id}`}
-                              className="text-amber-700 underline-offset-4 hover:underline dark:text-amber-500"
+                              className="text-primary underline-offset-4 hover:underline"
                             >
                               {p.refNo ?? p.id}
                             </Link>

@@ -290,7 +290,7 @@ export default function ShiftsPage() {
                     <Pencil className="h-4 w-4" />
                   </Button>
                   <Button size="icon" variant="ghost" aria-label="Delete shift" onClick={() => setDeleteId(s.id)}>
-                    <Trash2 className="h-4 w-4 text-rose-600" />
+                    <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
                 </div>
               )}
@@ -301,7 +301,7 @@ export default function ShiftsPage() {
                   <Badge
                     key={d}
                     variant={s.workDays.includes(i) ? 'default' : 'outline'}
-                    className={i === s.restDay ? 'ring-2 ring-amber-400' : ''}
+                    className={i === s.restDay ? 'ring-2 ring-primary' : ''}
                   >
                     {d}
                   </Badge>
@@ -339,7 +339,7 @@ export default function ShiftsPage() {
       <Card className="rounded-xl">
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <CardTitle className="flex items-center gap-2 text-base">
-            <RefreshCcw className="h-4 w-4 text-amber-600" /> Rotating shift patterns
+            <RefreshCcw className="h-4 w-4 text-primary" /> Rotating shift patterns
           </CardTitle>
           {canManage && (
             <Button variant="outline" size="sm" className="gap-1 rounded-lg" onClick={() => setRotOpen(true)}>
@@ -357,7 +357,7 @@ export default function ShiftsPage() {
             const current = currentShiftOfPlan(p);
             return (
               <div key={p.id} className="flex flex-wrap items-center gap-3 rounded-xl border p-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-100 text-amber-800">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-warning-soft text-warning">
                   <CalendarRange className="h-4 w-4" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -372,10 +372,10 @@ export default function ShiftsPage() {
                     ))}
                   </div>
                 </div>
-                {current && <Badge className="border-transparent bg-emerald-100 text-emerald-800">This week: {current.name}</Badge>}
+                {current && <Badge className="border-transparent bg-success-soft text-success">This week: {current.name}</Badge>}
                 {canManage && (
                   <Button size="icon" variant="ghost" aria-label="Delete rotation" onClick={() => deleteRotation(p.id)}>
-                    <Trash2 className="h-4 w-4 text-rose-600" />
+                    <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
                 )}
               </div>
@@ -447,7 +447,7 @@ export default function ShiftsPage() {
             </div>
             <p className="text-xs text-muted-foreground sm:col-span-2">{restDayHint(hintState)}</p>
             {formError && (
-              <p className="rounded-lg border border-rose-300 bg-rose-50 p-2 text-xs text-rose-800 sm:col-span-2">
+              <p className="rounded-lg border border-destructive/40 bg-danger-soft p-2 text-xs text-destructive sm:col-span-2">
                 {formError}
               </p>
             )}
@@ -493,7 +493,7 @@ export default function ShiftsPage() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteId(null)}>Cancel</Button>
             <Button
-              className="bg-rose-600 text-white hover:bg-rose-700"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive"
               onClick={confirmDelete}
             >
               <Trash2 className="mr-1 h-4 w-4" /> Delete shift
@@ -523,7 +523,7 @@ export default function ShiftsPage() {
                     onCheckedChange={(v) => assignShiftId && toggleAssign(assignShiftId, e.id, v === true)}
                   />
                   <span className="flex-1">{e.name}</span>
-                  {elsewhere && <span className="text-[11px] text-muted-foreground">from {elsewhere.name}</span>}
+                  {elsewhere && <span className="text-xs text-muted-foreground">from {elsewhere.name}</span>}
                 </label>
               );
             })}
@@ -555,7 +555,7 @@ export default function ShiftsPage() {
                   <Badge key={`${id}-${i}`} variant="secondary" className="gap-1">
                     {i + 1}. {shifts.find((s) => s.id === id)?.name ?? id}
                     <button
-                      className="ml-1 text-muted-foreground hover:text-rose-600"
+                      className="ml-1 text-muted-foreground hover:text-destructive"
                       onClick={() => setRotShiftIds(rotShiftIds.filter((_, j) => j !== i))}
                       aria-label="Remove shift"
                     >×</button>

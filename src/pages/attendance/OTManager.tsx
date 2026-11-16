@@ -8,6 +8,9 @@
  * The 104h/month OT cap (Employment (Limitation of Overtime Work)
  * Regulations 1980) is enforced HARD at both request and approval time.
  */
+import i18n from '@/i18n';
+import { OwnRequestNote } from '@/components/OwnRequestNote';
+import { otDecidedMessage } from '@/lib/decisionMessages';
 import { useMemo, useState } from 'react';
 import { AlertTriangle, Check, Hourglass, Timer, X } from 'lucide-react';
 import { toast } from 'sonner';
@@ -240,8 +243,8 @@ export default function OTManager() {
     if (!canApprove) return;
     // Self-approval is never allowed — a second pair of eyes must decide.
     if (selfId && rec.employeeId === selfId) {
-      setNotice('You cannot approve or reject your own OT request — another manager or HR must decide.');
-      toast.error('You cannot approve or reject your own OT request.');
+      setNotice(i18n.t('approvals.ownRequest'));
+      toast.error(i18n.t('approvals.ownRequest'));
       return;
     }
     // B3 fix: re-check the 104h monthly cap at approval time, per employee.
@@ -263,11 +266,7 @@ export default function OTManager() {
       entityId: rec.id,
       detail: `${empName(rec.employeeId)} ${rec.otHours}h OT on ${rec.date} ${approve ? 'approved' : 'rejected'}`,
     });
-    toast.success(
-      approve
-        ? `OT approved for ${empName(rec.employeeId)} — ${rec.otHours}h on ${fmtDate(rec.date)}`
-        : `OT rejected for ${empName(rec.employeeId)} — ${rec.otHours}h on ${fmtDate(rec.date)}`,
-    );
+    toast.success(otDecidedMessage(empName(rec.employeeId), approve, rec.otHours, rec.date));
   };
 
   if (employees.length === 0) {
@@ -284,7 +283,7 @@ export default function OTManager() {
       <Card className="rounded-xl">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
-            <Timer className="h-4 w-4 text-amber-600" /> Request overtime
+            <Timer className="h-4 w-4 text-primary" /> Request overtime
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -320,14 +319,14 @@ export default function OTManager() {
                 onChange={(e) => setDate(e.target.value)}
               />
               {futureDate && (
-                <p className="text-xs text-amber-700">Future dates are not allowed for OT requests.</p>
+                <p className="text-xs text-primary">Future dates are not allowed for OT requests.</p>
               )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="ot-hours">OT hours</Label>
               <Input id="ot-hours" type="number" min={0.5} max={MAX_OT_HOURS_DAY} step={0.5} value={hours} onChange={(e) => setHours(e.target.value)} />
               {rawHrs > MAX_OT_HOURS_DAY && (
-                <p className="text-xs text-amber-700">
+                <p className="text-xs text-primary">
                   Clamped to {MAX_OT_HOURS_DAY}h — the EA 1955 s.60A daily work ceiling.
                 </p>
               )}
@@ -361,7 +360,7 @@ export default function OTManager() {
             </div>
             <div className="flex justify-between border-t pt-1.5">
               <span className="font-medium">Estimated OT pay</span>
-              <span className="font-semibold text-amber-700">{fmtRM(preview)}</span>
+              <span className="font-semibold text-primary">{fmtRM(preview)}</span>
             </div>
           </div>
 
@@ -378,7 +377,7 @@ export default function OTManager() {
           </div>
 
           {wouldExceedCap && (
-            <Alert className="border-rose-300 bg-rose-50 text-rose-900">
+            <Alert className="border-destructive/40 bg-danger-soft text-destructive">
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>Monthly OT cap reached</AlertTitle>
               <AlertDescription>
@@ -388,7 +387,7 @@ export default function OTManager() {
               </AlertDescription>
             </Alert>
           )}
-          {notice && <p className="text-sm text-emerald-700">{notice}</p>}
+          {notice && <p className="text-sm text-success">{notice}</p>}
 
           <Button
             className="w-full rounded-xl"
@@ -405,7 +404,7 @@ export default function OTManager() {
         <Card className="rounded-xl">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Hourglass className="h-4 w-4 text-amber-600" /> Approval queue
+              <Hourglass className="h-4 w-4 text-warning" /> Approval queue
               <Badge variant="secondary" className="ml-auto">{pendingQueue.length} pending</Badge>
             </CardTitle>
           </CardHeader>
@@ -432,13 +431,11 @@ export default function OTManager() {
                         <div className="mt-1 text-xs text-muted-foreground">“{r.otRequestReason}”</div>
                       )}
                     </div>
-                    <div className="text-right text-sm font-semibold text-amber-700">{fmtRM(pay)}</div>
+                    <div className="text-right text-sm font-semibold text-primary">{fmtRM(pay)}</div>
                   </div>
                   {canApprove ? (
                     isSelf ? (
-                      <p className="mt-2 text-[11px] text-muted-foreground">
-                        Your own request — another manager or HR must decide (no self-approval).
-                      </p>
+                      <OwnRequestNote className="mt-2" />
                     ) : (
                       <>
                         <div className="mt-3 flex gap-2">
@@ -455,7 +452,7 @@ export default function OTManager() {
                           </Button>
                         </div>
                         {capBlocked && (
-                          <p className="mt-2 flex items-start gap-1 text-[11px] text-rose-700">
+                          <p className="mt-2 flex items-start gap-1 text-xs text-destructive">
                             <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0" />
                             Approving {r.otHours}h would exceed the {MAX_OT_HOURS_MONTH}h monthly OT cap — reject or wait for next month.
                           </p>
@@ -463,7 +460,7 @@ export default function OTManager() {
                       </>
                     )
                   ) : (
-                    <p className="mt-2 text-[11px] text-muted-foreground">Waiting for a Manager/HR/Admin decision.</p>
+                    <p className="mt-2 text-xs text-muted-foreground">Waiting for a Manager/HR/Admin decision.</p>
                   )}
                 </div>
               );
@@ -481,9 +478,9 @@ export default function OTManager() {
                 <div key={r.id} className="flex items-center justify-between rounded-lg border px-3 py-2 text-sm">
                   <span>{empName(r.employeeId)} · {fmtDate(r.date)} · {r.otHours}h</span>
                   {r.otApproved ? (
-                    <Badge className="border-transparent bg-emerald-100 text-emerald-800">Approved → payroll</Badge>
+                    <Badge className="border-transparent bg-success-soft text-success">Approved → payroll</Badge>
                   ) : (
-                    <Badge className="border-transparent bg-rose-100 text-rose-800">Rejected</Badge>
+                    <Badge className="border-transparent bg-danger-soft text-destructive">Rejected</Badge>
                   )}
                 </div>
               ))}

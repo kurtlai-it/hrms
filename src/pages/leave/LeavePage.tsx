@@ -1,6 +1,7 @@
 /**
  * /leave — Leave hub: balances (EA 1955 entitlements), apply, approvals, team calendar.
  */
+import { useTranslation } from 'react-i18next';
 import { useMemo } from 'react';
 import { CalendarDays, ClipboardCheck, Plane, Wallet } from 'lucide-react';
 import { useCollection } from '@/lib/db';
@@ -16,6 +17,7 @@ import type { LeaveRequestEx } from './leaveLogic';
 import { useAuthScope } from './useAuthScope';
 
 export default function LeavePage() {
+  const { t } = useTranslation();
   const { canApprove, scopeByEmployee } = useAuthScope();
   const { items: employees } = useCollection<Employee>('employees');
   const leavesApi = useCollection<LeaveRequestEx>('leaves');
@@ -46,28 +48,32 @@ export default function LeavePage() {
   return (
     <div className="space-y-6">
       <div className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Leave</h1>
-        <p className="text-sm text-muted-foreground">
-          Balances follow EA 1955 s.60E/60F tiers (part-time: 2010 Regulations), computed from
-          each employee&apos;s join date. Public holidays and rest days never consume leave balance.
-        </p>
+        <h1 className="text-2xl font-semibold tracking-tight">{t('leavePage.title')}</h1>
+        <p className="text-muted-foreground">{canApprove ? t('leavePage.introApprover') : t('leavePage.introStaff')}</p>
       </div>
 
-      <Tabs defaultValue="balances" className="space-y-6">
+      {/* Open on the job: approvers with requests waiting see Approvals, staff see Apply. */}
+      <Tabs
+        defaultValue={canApprove && pendingCount > 0 ? 'approvals' : canApprove ? 'balances' : 'apply'}
+        className="space-y-6"
+      >
         <TabsList className="flex w-full flex-wrap justify-start gap-1 sm:w-auto">
-          <TabsTrigger value="balances" className="gap-1.5">
-            <Wallet className="h-4 w-4" /> Balances
-          </TabsTrigger>
+          {/* Task order: approvers see Approvals first; staff see Apply first. */}
+          {canApprove && (
+            <TabsTrigger value="approvals" className="gap-1.5">
+              <ClipboardCheck className="h-4 w-4" /> Approvals
+              {pendingCount > 0 && (
+                <Badge variant="secondary" className="ml-1 bg-warning-soft text-warning">
+                  {pendingCount}
+                </Badge>
+              )}
+            </TabsTrigger>
+          )}
           <TabsTrigger value="apply" className="gap-1.5">
             <Plane className="h-4 w-4" /> Apply
           </TabsTrigger>
-          <TabsTrigger value="approvals" className="gap-1.5" disabled={!canApprove}>
-            <ClipboardCheck className="h-4 w-4" /> Approvals
-            {canApprove && pendingCount > 0 && (
-              <Badge variant="secondary" className="ml-1 bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200">
-                {pendingCount}
-              </Badge>
-            )}
+          <TabsTrigger value="balances" className="gap-1.5">
+            <Wallet className="h-4 w-4" /> Balances
           </TabsTrigger>
           <TabsTrigger value="calendar" className="gap-1.5">
             <CalendarDays className="h-4 w-4" /> Team calendar

@@ -10,8 +10,9 @@ import {
   Sparkles, Users, type LucideIcon,
 } from 'lucide-react';
 import {
-  Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, XAxis, YAxis,
+  Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, XAxis, YAxis, LabelList,
 } from 'recharts';
+import { pieValueLabel, valueLabel } from '@/lib/chartText';
 import { useTenant } from '@/lib/useTenant';
 import { fmtRM } from '@/lib/utils';
 import {
@@ -37,7 +38,7 @@ function ChartCard(props: {
     <Card className="rounded-xl">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
-          <Icon className="h-4 w-4 text-amber-600" />
+          <Icon className="h-4 w-4 text-primary" />
           {title}
         </CardTitle>
         <CardDescription>{description}</CardDescription>
@@ -48,13 +49,13 @@ function ChartCard(props: {
 }
 
 const headcountConfig = {
-  count: { label: 'Employees', color: '#d97706' },
+  count: { label: 'Employees', color: 'hsl(var(--chart-1))' },
 } satisfies ChartConfig;
 
 const planConfig = {
-  free: { label: PLAN_LABELS.free, color: '#a8a29e' },
-  pro: { label: PLAN_LABELS.pro, color: '#d97706' },
-  enterprise: { label: PLAN_LABELS.enterprise, color: '#92400e' },
+  free: { label: PLAN_LABELS.free, color: 'hsl(var(--chart-3))' },
+  pro: { label: PLAN_LABELS.pro, color: 'hsl(var(--chart-2))' },
+  enterprise: { label: PLAN_LABELS.enterprise, color: 'hsl(var(--chart-1))' },
 } satisfies ChartConfig;
 
 export default function OverviewSection() {
@@ -132,28 +133,28 @@ export default function OverviewSection() {
           label="Employees"
           value={String(stats.totalEmployees)}
           sub="non-resigned, all tenants"
-          tone="bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-300"
+          tone="bg-warning-soft text-warning"
         />
         <StatCard
           icon={Activity}
           label="Active"
           value={String(stats.active)}
           sub="billed tenants"
-          tone="bg-lime-100 text-lime-700 dark:bg-lime-950 dark:text-lime-300"
+          tone="bg-success-soft text-success"
         />
         <StatCard
           icon={Sparkles}
           label="Trial"
           value={String(stats.trial)}
           sub="evaluating"
-          tone="bg-yellow-100 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300"
+          tone="bg-warning-soft text-warning"
         />
         <StatCard
           icon={PauseCircle}
           label="Suspended"
           value={String(stats.suspended)}
           sub="access on hold"
-          tone="bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300"
+          tone="bg-danger-soft text-destructive"
         />
         <StatCard
           icon={CircleDollarSign}
@@ -164,7 +165,7 @@ export default function OverviewSection() {
               ? 'live from billing subscriptions (Billing tab)'
               : `estimate — no subscriptions yet · Free RM0 · Pro RM${PLAN_RATES.pro} · Ent. RM${PLAN_RATES.enterprise} /emp/mo`
           }
-          tone="bg-stone-200 text-stone-700 dark:bg-stone-800 dark:text-stone-300"
+          tone="bg-secondary text-foreground"
         />
       </div>
 
@@ -188,7 +189,9 @@ export default function OverviewSection() {
               />
               <YAxis allowDecimals={false} tickLine={false} axisLine={false} width={32} />
               <ChartTooltip content={<ChartTooltipContent />} />
-              <Bar dataKey="count" fill="var(--color-count)" radius={[6, 6, 0, 0]} maxBarSize={44} />
+              <Bar dataKey="count" fill="var(--color-count)" radius={[6, 6, 0, 0]} maxBarSize={44}>
+                <LabelList content={valueLabel()} />
+              </Bar>
             </BarChart>
           </ChartContainer>
         </ChartCard>
@@ -211,6 +214,8 @@ export default function OverviewSection() {
                   innerRadius="58%"
                   outerRadius="85%"
                   strokeWidth={2}
+                  label={pieValueLabel}
+                  labelLine={false}
                 >
                   {planData.map((d) => (
                     <Cell key={d.plan} fill={d.fill} />

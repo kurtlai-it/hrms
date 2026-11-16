@@ -53,9 +53,9 @@ const MATRIX: MatrixRow[] = [
 
 function MatrixCell({ on }: { on: boolean }) {
   return on ? (
-    <Check className="mx-auto h-4 w-4 text-lime-600" />
+    <Check className="mx-auto h-4 w-4 text-success" />
   ) : (
-    <Minus className="mx-auto h-4 w-4 text-muted-foreground/40" />
+    <Minus className="mx-auto h-4 w-4 text-muted-foreground" />
   );
 }
 
@@ -122,7 +122,7 @@ export default function SystemSection() {
         </div>
 
         {target ? (
-          <div className="rounded-lg border bg-stone-50 p-3 text-sm dark:bg-stone-900/40">
+          <div className="rounded-lg border p-3 text-sm">
             <p className="font-medium">{target.name}</p>
             <p className="text-xs text-muted-foreground">
               {headcountOf(target.id)} employees on record ·{' '}
@@ -143,7 +143,7 @@ export default function SystemSection() {
             {feedback === 'working' ? 'Reseeding…' : 'Reseed tenant'}
           </Button>
           {feedback === 'done' && (
-            <span className="text-sm text-lime-700 dark:text-lime-400">
+            <span className="text-sm text-success">
               Reseed complete — data refreshed.
             </span>
           )}

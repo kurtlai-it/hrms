@@ -184,7 +184,7 @@ export default function ContractDetailSheet({
               <>
                 <Button
                   size="sm"
-                  className="bg-amber-600 text-white hover:bg-amber-700"
+                  className="bg-primary text-primary-foreground hover:bg-primary"
                   onClick={renew}
                 >
                   <RefreshCcw className="mr-1.5 h-4 w-4" /> Renew as v{c.version + 1} draft
@@ -197,7 +197,7 @@ export default function ContractDetailSheet({
           </div>
 
           {!c.statutoryApplies && c.kind === 'of-service' && (
-            <p className="flex items-start gap-1.5 rounded-lg bg-amber-50 p-2 text-xs text-amber-800 dark:bg-amber-950/40 dark:text-amber-400">
+            <p className="flex items-start gap-1.5 rounded-lg bg-warning-soft p-2 text-xs text-warning">
               <ShieldAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" />
               Statutory coverage has been switched off for this contract of service — verify the
               arrangement does not create EPF/SOCSO/EA exposure.
@@ -242,7 +242,7 @@ export default function ContractDetailSheet({
           </Card>
 
           {c.notes && (
-            <p className="rounded-xl bg-stone-100 p-3 text-sm text-muted-foreground dark:bg-stone-900">
+            <p className="rounded-xl bg-muted p-3 text-sm text-muted-foreground">
               {c.notes}
             </p>
           )}
@@ -262,8 +262,8 @@ export default function ContractDetailSheet({
                         onClick={() => onOpenContract(v.id)}
                         className={`flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors ${
                           current
-                            ? 'border-amber-500 bg-amber-50/70 dark:border-amber-700 dark:bg-amber-950/30'
-                            : 'border-stone-200 hover:border-stone-300 dark:border-stone-800'
+                            ? 'border-warning/40 bg-warning-soft'
+                            : 'border-border hover:border-border'
                         }`}
                       >
                         <span className="font-medium">v{v.version}</span>
@@ -330,19 +330,19 @@ export default function ContractDetailSheet({
               </div>
 
               {fees.length === 0 ? (
-                <p className="rounded-xl border border-dashed border-stone-300 py-6 text-center text-sm text-muted-foreground dark:border-stone-700">
-                  <FileText className="mx-auto mb-2 h-6 w-6 text-muted-foreground/50" />
+                <p className="rounded-xl border border-dashed border-border py-6 text-center text-sm text-muted-foreground">
+                  <FileText className="mx-auto mb-2 h-6 w-6 text-muted-foreground" />
                   No fee payments logged for this engagement yet.
                 </p>
               ) : (
                 <>
-                  <ul className="divide-y divide-stone-200 rounded-xl border border-stone-200 dark:divide-stone-800 dark:border-stone-800">
+                  <ul className="divide-y divide-border rounded-xl border border-border">
                     {fees.map((p) => (
                       <li key={p.id} className="flex items-center gap-3 px-3 py-2 text-sm">
                         <span className="whitespace-nowrap text-muted-foreground">
                           {fmtDate(p.date)}
                         </span>
-                        <span className="min-w-0 flex-1 truncate">{p.reference}</span>
+                        <span className="min-w-0 flex-1 break-words">{p.reference}</span>
                         <span className="font-medium">{fmtRM(p.amount)}</span>
                         <button
                           type="button"
@@ -356,8 +356,8 @@ export default function ContractDetailSheet({
                             variant="secondary"
                             className={
                               p.status === 'paid'
-                                ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400'
-                                : 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-400'
+                                ? 'bg-success-soft text-success'
+                                : 'bg-warning-soft text-warning'
                             }
                           >
                             {p.status === 'paid' ? 'Paid' : 'Pending'}
@@ -438,7 +438,7 @@ export default function ContractDetailSheet({
               <Button variant="outline" onClick={() => setTerminateOpen(false)}>
                 Cancel
               </Button>
-              <Button variant="destructive" onClick={terminate} disabled={!termDate || !termReason}>
+              <Button variant="destructive" onClick={terminate} disabled={!termDate || !termReason} disabledReason="Fill in the required fields first.">
                 Terminate contract
               </Button>
             </DialogFooter>

@@ -239,15 +239,15 @@ function ContractEditorForm({
                 onClick={() => pickKind(k)}
                 className={`rounded-xl border p-3 text-left transition-colors ${
                   selected
-                    ? 'border-amber-500 bg-amber-50/70 dark:border-amber-700 dark:bg-amber-950/30'
-                    : 'border-stone-200 hover:border-stone-300 dark:border-stone-800 dark:hover:border-stone-700'
+                    ? 'border-warning/40 bg-warning-soft'
+                    : 'border-border hover:border-border'
                 }`}
               >
                 <p className="flex items-center gap-2 text-sm font-semibold">
                   {k === 'of-service' ? (
-                    <ScrollText className="h-4 w-4 text-amber-700 dark:text-amber-500" />
+                    <ScrollText className="h-4 w-4 text-primary" />
                   ) : (
-                    <Briefcase className="h-4 w-4 text-stone-600 dark:text-stone-400" />
+                    <Briefcase className="h-4 w-4 text-muted-foreground" />
                   )}
                   {k === 'of-service' ? 'Contract OF Service' : 'Contract FOR Service'}
                 </p>
@@ -265,12 +265,12 @@ function ContractEditorForm({
         </div>
 
         {/* ── Statutory toggle ── */}
-        <div className="rounded-xl border border-stone-200 p-3 dark:border-stone-800">
-          <div className="flex items-center justify-between gap-3">
+        <div className="rounded-xl border border-border p-3">
+          <label htmlFor="ct-statutory" className="flex items-center justify-between gap-3 cursor-pointer">
             <div>
-              <Label htmlFor="ct-statutory" className="text-sm font-medium">
+              <span className="text-sm font-medium block font-medium">
                 Statutory coverage applies (EA 1955 · EPF · SOCSO · EIS · PCB/MTD)
-              </Label>
+              </span>
               <p className="mt-0.5 text-xs text-muted-foreground">
                 Auto-set from the contract kind.
               </p>
@@ -280,9 +280,9 @@ function ContractEditorForm({
               checked={statutoryApplies}
               onCheckedChange={setStatutoryApplies}
             />
-          </div>
+          </label>
           {statutoryOverridden && (
-            <p className="mt-2 flex items-start gap-1.5 rounded-lg bg-amber-50 p-2 text-xs text-amber-800 dark:bg-amber-950/40 dark:text-amber-400">
+            <p className="mt-2 flex items-start gap-1.5 rounded-lg bg-warning-soft p-2 text-xs text-warning">
               <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
               Override: statutory coverage no longer matches the contract kind. Misclassifying an
               employee as an independent contractor can attract EPF/SOCSO arrears and EA penalties —
@@ -568,8 +568,8 @@ function ContractEditorForm({
         </Button>
         <Button
           onClick={submit}
-          disabled={!valid}
-          className="bg-amber-600 text-white hover:bg-amber-700"
+          disabled={!valid} disabledReason="Fill in the required fields first."
+          className="bg-primary text-primary-foreground hover:bg-primary"
         >
           {existing ? 'Save changes' : 'Create contract'}
         </Button>

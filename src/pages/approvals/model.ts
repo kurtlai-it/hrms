@@ -2,7 +2,7 @@
  * Unified approvals inbox — pure aggregation, scoping and OT-cap logic.
  *
  * SINGLE source of truth for "what is waiting for a decision" across the
- * three approvable modules; both the /approvals page and the NotificationBell
+ * three approvable modules; both the /approvals page and Home's to-do list
  * consume it (via ./usePendingApprovals) so their counts always match
  * (audit-business-value.md quick win). Every rule is mirrored from the source
  * module, never forked:

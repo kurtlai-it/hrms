@@ -12,11 +12,10 @@
  * printable JD sheet. Extras persist to positionProfiles — lib/types.ts is
  * untouched.
  */
-import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import {
-  Building2, CircleAlert, FileText, GitBranch, Pencil, Plus, Search, Trash2, Users,
-} from 'lucide-react';
+import { SummaryLine } from '@/components/ui/summary-line';
+import { lazy, Suspense, useMemo, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { FileText, GitBranch, Pencil, Plus, Search, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { logAudit, useCollection } from '@/lib/db';
 import { useTenant } from '@/lib/useTenant';
@@ -63,7 +62,12 @@ const LEVEL_LABEL: Record<Position['level'], string> = {
   junior: 'Junior', senior: 'Senior', lead: 'Lead', manager: 'Manager', exec: 'Executive',
 };
 
+// The org chart (React Flow) is heavy — load it only when its tab opens.
+const OrgChartPage = lazy(() => import('./OrgChartPage'));
+
 export default function OrgPage() {
+  // /org/chart opens this page on the "Org chart" tab.
+  const { pathname } = useLocation();
   const auth = useAuthScope();
   const { activeCompany } = useTenant();
   const departments = useCollection<Department>('departments');
@@ -252,38 +256,27 @@ export default function OrgPage() {
       </div>
 
       {/* Summary */}
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-1.5"><Building2 className="h-3.5 w-3.5" /> Departments</CardDescription>
-            <CardTitle className="text-2xl">{departments.items.length}</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-1.5"><FileText className="h-3.5 w-3.5" /> Positions</CardDescription>
-            <CardTitle className="text-2xl">{positions.items.length}</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5" /> Active headcount</CardDescription>
-            <CardTitle className="text-2xl">{active.length}</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-1.5"><CircleAlert className="h-3.5 w-3.5" /> Open vacancies</CardDescription>
-            <CardTitle className="text-2xl">{totalVacancies}</CardTitle>
-          </CardHeader>
-        </Card>
-      </div>
+      <SummaryLine
+        items={[
+          { label: 'Departments', value: departments.items.length },
+          { label: 'Positions', value: positions.items.length },
+          { label: 'Active headcount', value: active.length },
+          { label: 'Open vacancies', value: totalVacancies },
+        ]}
+      />
 
-      <Tabs defaultValue="departments">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
+      <Tabs defaultValue={pathname === '/org/chart' ? 'chart' : 'departments'}>
+        <TabsList>
           <TabsTrigger value="departments">Departments</TabsTrigger>
           <TabsTrigger value="positions">Positions & JDs</TabsTrigger>
+          <TabsTrigger value="chart">Org chart</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="chart">
+          <Suspense fallback={<div className="p-8 text-muted-foreground">Loading…</div>}>
+            <OrgChartPage embedded />
+          </Suspense>
+        </TabsContent>
 
         {/* ── Departments ─────────────────────────────────────────────── */}
         <TabsContent value="departments">
@@ -372,13 +365,13 @@ export default function OrgPage() {
                 <CardTitle className="text-lg">Positions & job descriptions</CardTitle>
                 <CardDescription>Grades, reporting lines, salary bands and headcount budgets.</CardDescription>
               </div>
-              <Button onClick={() => setPosDialog({ open: true })} disabled={departments.items.length === 0}>
+              <Button onClick={() => setPosDialog({ open: true })} disabled={departments.items.length === 0} disabledReason="Add a department first.">
                 <Plus className="mr-1.5 h-4 w-4" /> Add position
               </Button>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex flex-wrap gap-2">
-                <div className="relative min-w-56 flex-1">
+                <div className="relative min-w-[min(14rem,100%)] flex-1">
                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search titles…" className="pl-8" />
                 </div>
@@ -427,10 +420,10 @@ export default function OrgPage() {
                         <TableCell>
                           <p className="font-medium leading-tight">{p.title}</p>
                           <div className="mt-1 flex flex-wrap gap-1">
-                            <Badge variant="secondary" className="text-[11px]">{effectiveGrade(p, profile)}</Badge>
-                            <Badge variant="outline" className="text-[11px]">{LEVEL_LABEL[p.level]}</Badge>
+                            <Badge variant="secondary" className="text-xs">{effectiveGrade(p, profile)}</Badge>
+                            <Badge variant="outline" className="text-xs">{LEVEL_LABEL[p.level]}</Badge>
                             {vacant && (
-                              <Badge className="border border-dashed border-amber-500 bg-amber-50 text-[11px] text-amber-800 hover:bg-amber-50 dark:bg-amber-950/40 dark:text-amber-300">
+                              <Badge className="border border-dashed border-warning/40 bg-warning-soft text-xs text-warning hover:bg-warning-soft">
                                 Vacant ×{vacancyCount(profile, actual)}
                               </Badge>
                             )}
@@ -438,7 +431,7 @@ export default function OrgPage() {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-1.5 text-sm">
-                            <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: dept ? deptColor(dept.id, deptProfiles.items) : '#a8a29e' }} />
+                            <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: dept ? deptColor(dept.id, deptProfiles.items) : 'hsl(var(--chart-4))' }} />
                             {dept?.name ?? '—'}
                           </div>
                         </TableCell>

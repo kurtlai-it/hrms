@@ -89,7 +89,7 @@ export function ResetPasswordDialog({ account, open, onOpenChange, actorName }: 
 
         {done ? (
           <>
-            <div className="flex items-center justify-between gap-2 rounded-lg border border-lime-200 bg-lime-50/60 p-4 dark:border-lime-900 dark:bg-lime-950/30">
+            <div className="flex items-center justify-between gap-2 rounded-lg border border-success/40 bg-success-soft p-4">
               <span className="text-sm text-muted-foreground">New password</span>
               <code className="rounded bg-background px-1.5 py-0.5 text-sm font-medium">{password}</code>
             </div>
@@ -114,7 +114,7 @@ export function ResetPasswordDialog({ account, open, onOpenChange, actorName }: 
                 onToggleShow={setShowPassword}
               />
               {error && (
-                <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-300">
+                <p className="mt-3 rounded-lg bg-danger-soft px-3 py-2 text-sm text-destructive">
                   {error}
                 </p>
               )}
@@ -123,7 +123,7 @@ export function ResetPasswordDialog({ account, open, onOpenChange, actorName }: 
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button onClick={submit} disabled={!password}>
+              <Button onClick={submit} disabled={!password} disabledReason="Fill in the required fields first.">
                 Reset password
               </Button>
             </DialogFooter>

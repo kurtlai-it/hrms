@@ -92,12 +92,12 @@ export default function AuditSection() {
                     <TableCell className="whitespace-nowrap text-muted-foreground">{fmtDateTime(l.at)}</TableCell>
                     <TableCell className="font-medium">{l.actorName}</TableCell>
                     <TableCell>
-                      <Badge variant="secondary" className="font-mono text-[11px]">
+                      <Badge variant="secondary" className="font-mono text-xs">
                         {l.action}
                       </Badge>
                     </TableCell>
                     <TableCell>{l.entity}</TableCell>
-                    <TableCell className="max-w-[280px] truncate text-muted-foreground">{l.detail ?? '—'}</TableCell>
+                    <TableCell className="max-w-[280px] break-words text-muted-foreground">{l.detail ?? '—'}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -109,7 +109,7 @@ export default function AuditSection() {
             {shown.map((l) => (
               <div key={l.id} className="rounded-lg border p-3">
                 <div className="flex items-center justify-between gap-2">
-                  <Badge variant="secondary" className="font-mono text-[11px]">
+                  <Badge variant="secondary" className="font-mono text-xs">
                     {l.action}
                   </Badge>
                   <span className="text-xs text-muted-foreground">{fmtDateTime(l.at)}</span>

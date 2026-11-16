@@ -33,7 +33,7 @@ export default function EmergencyStep({ form, patch, errors }: Props) {
       </StepIntro>
 
       {errors.emergency && (
-        <p className="text-xs text-red-600 dark:text-red-400">{errors.emergency}</p>
+        <p className="text-xs text-destructive">{errors.emergency}</p>
       )}
 
       <div className="space-y-4">
@@ -47,7 +47,7 @@ export default function EmergencyStep({ form, patch, errors }: Props) {
                   variant="ghost"
                   size="sm"
                   onClick={() => removeRow(i)}
-                  className="text-red-600 hover:text-red-700"
+                  className="text-destructive hover:text-destructive"
                 >
                   <Trash2 className="mr-1 h-3.5 w-3.5" /> Remove
                 </Button>

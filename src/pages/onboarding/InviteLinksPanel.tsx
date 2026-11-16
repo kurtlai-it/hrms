@@ -103,9 +103,9 @@ export default function InviteLinksPanel({ actorName }: Props) {
         </p>
         <Button
           onClick={() => setGenerateOpen(true)}
-          disabled={!companyId}
+          disabled={!companyId} disabledReason="Choose a company first."
           title={companyId ? undefined : 'Select a company first'}
-          className="shrink-0 bg-amber-600 text-white hover:bg-amber-700"
+          className="shrink-0 bg-primary text-primary-foreground hover:bg-primary"
         >
           <Plus className="mr-1.5 h-4 w-4" /> Generate invite link
         </Button>
@@ -114,7 +114,7 @@ export default function InviteLinksPanel({ actorName }: Props) {
       {sorted.length === 0 ? (
         <Card className="rounded-xl">
           <CardContent className="py-12 text-center">
-            <Link2 className="mx-auto mb-3 h-8 w-8 text-muted-foreground/50" />
+            <Link2 className="mx-auto mb-3 h-8 w-8 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">
               No invite links yet — generate one and share it with your next hire.
             </p>
@@ -163,7 +163,7 @@ export default function InviteLinksPanel({ actorName }: Props) {
                           <Button
                             size="sm"
                             variant="outline"
-                            className="border-amber-500/60 text-amber-700 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-950/30"
+                            className="border-warning text-warning hover:bg-warning-soft"
                             onClick={() => setReviewTarget(sub)}
                           >
                             <Eye className="mr-1 h-3.5 w-3.5" /> Review
@@ -194,7 +194,7 @@ export default function InviteLinksPanel({ actorName }: Props) {
                               onClick={() => void copy(link)}
                             >
                               {copiedId === link.id ? (
-                                <Check className="h-4 w-4 text-lime-600" />
+                                <Check className="h-4 w-4 text-success" />
                               ) : (
                                 <Copy className="h-4 w-4" />
                               )}
@@ -217,7 +217,7 @@ export default function InviteLinksPanel({ actorName }: Props) {
                               size="sm"
                               variant="ghost"
                               title="Revoke link"
-                              className="text-red-600 hover:text-red-700"
+                              className="text-destructive hover:text-destructive"
                               onClick={() => setRevokeTarget(link)}
                             >
                               <XCircle className="h-4 w-4" />

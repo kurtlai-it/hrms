@@ -197,8 +197,8 @@ export default function InitiateOffboardingDialog({
 
           {/* ── EA s.12 calculator ── */}
           {calc && employee && (
-            <div className="rounded-xl border border-amber-200/70 bg-amber-50/60 p-3 dark:border-amber-900/40 dark:bg-amber-950/20">
-              <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-500">
+            <div className="rounded-xl border border-warning/40 bg-warning-soft p-3">
+              <p className="mb-2 flex items-center gap-1.5 text-xs font-bold text-primary">
                 <Calculator className="h-3.5 w-3.5" /> EA 1955 s.12 notice calculator
               </p>
               <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
@@ -216,7 +216,7 @@ export default function InitiateOffboardingDialog({
 
           {/* ── Retrenchment benefit hint ── */}
           {retrenchment && (
-            <div className="rounded-xl border border-stone-200 bg-stone-50 p-3 text-xs text-muted-foreground dark:border-stone-800 dark:bg-stone-900/50">
+            <div className="rounded-xl border border-border p-3 text-xs text-muted-foreground">
               <p className="mb-1 font-medium text-foreground">
                 Termination &amp; Lay-Off Benefits Regulations 1980 (Reg. 6)
               </p>
@@ -249,8 +249,8 @@ export default function InitiateOffboardingDialog({
           </Button>
           <Button
             onClick={submit}
-            disabled={!employee || !noticeDate}
-            className="bg-amber-600 text-white hover:bg-amber-700"
+            disabled={!employee || !noticeDate} disabledReason="Fill in the required fields first."
+            className="bg-primary text-primary-foreground hover:bg-primary"
           >
             Create case
           </Button>

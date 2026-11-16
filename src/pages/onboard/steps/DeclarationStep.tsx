@@ -20,7 +20,7 @@ export default function DeclarationStep({ form, patch, errors, company }: Props)
       <StepIntro title="Declaration">Almost done — please review and confirm.</StepIntro>
 
       {/* Summary read-back */}
-      <dl className="grid grid-cols-1 gap-x-6 gap-y-2 rounded-xl border bg-stone-50/60 p-4 text-sm dark:bg-stone-900/30 sm:grid-cols-2">
+      <dl className="grid grid-cols-1 gap-x-6 gap-y-2 rounded-xl border p-4 text-sm sm:grid-cols-2">
         <div className="flex justify-between gap-3">
           <dt className="text-muted-foreground">Name</dt>
           <dd className="text-right font-medium">{form.name || '—'}</dd>
@@ -31,7 +31,7 @@ export default function DeclarationStep({ form, patch, errors, company }: Props)
         </div>
         <div className="flex justify-between gap-3">
           <dt className="text-muted-foreground">Email</dt>
-          <dd className="max-w-[60%] truncate text-right font-medium">{form.email || '—'}</dd>
+          <dd className="max-w-[60%] break-words text-right font-medium">{form.email || '—'}</dd>
         </div>
         <div className="flex justify-between gap-3">
           <dt className="text-muted-foreground">Phone</dt>
@@ -58,7 +58,7 @@ export default function DeclarationStep({ form, patch, errors, company }: Props)
       <Field error={errors.declaration}>
         <label
           htmlFor="ob-declare"
-          className="flex cursor-pointer items-start gap-3 rounded-xl border p-4 text-sm leading-relaxed hover:bg-stone-50 dark:hover:bg-stone-900/40"
+          className="flex cursor-pointer items-start gap-3 rounded-xl border p-4 text-sm leading-relaxed hover:bg-muted"
         >
           <Checkbox
             id="ob-declare"

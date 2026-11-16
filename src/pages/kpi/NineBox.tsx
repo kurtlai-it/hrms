@@ -40,9 +40,9 @@ const BOX_LABELS: string[][] = [
 ];
 
 const BOX_TONES: string[][] = [
-  ['bg-orange-50 border-orange-100', 'bg-lime-50 border-lime-100', 'bg-emerald-50 border-emerald-100'],
-  ['bg-orange-50/60 border-orange-100/80', 'bg-stone-50 border-stone-100', 'bg-lime-50 border-lime-100'],
-  ['bg-red-50 border-red-100', 'bg-stone-50 border-stone-100', 'bg-amber-50 border-amber-100'],
+  ['bg-warning-soft border-warning/40', 'bg-success-soft border-success/40', 'bg-success-soft border-success/40'],
+  ['bg-warning-soft border-warning/40', 'bg-muted border-border', 'bg-success-soft border-success/40'],
+  ['bg-danger-soft border-destructive/40', 'bg-muted border-border', 'bg-warning-soft border-warning/40'],
 ];
 
 const AXIS_LOW_MID_HIGH = ['Low', 'Moderate', 'High'];
@@ -90,7 +90,7 @@ export default function NineBox({ employees, departments, reviews }: Props) {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">
-          <Grid3X3 className="h-4 w-4 text-amber-600" />
+          <Grid3X3 className="h-4 w-4 text-primary" />
           <h2 className="text-base font-semibold">9-box talent grid</h2>
         </div>
         <Select value={activePeriod} onValueChange={setPeriod}>
@@ -122,7 +122,7 @@ export default function NineBox({ employees, departments, reviews }: Props) {
             <div className="flex gap-3">
               {/* Y axis label */}
               <div className="flex w-6 items-center justify-center">
-                <span className="-rotate-90 whitespace-nowrap text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <span className="-rotate-90 whitespace-nowrap text-xs font-bold text-muted-foreground">
                   Potential →
                 </span>
               </div>
@@ -137,7 +137,7 @@ export default function NineBox({ employees, departments, reviews }: Props) {
                             key={`${rowIdx}-${colIdx}`}
                             className={cn('flex min-h-28 flex-col rounded-xl border p-2.5', BOX_TONES[rowIdx][colIdx])}
                           >
-                            <span className="text-[10px] font-medium uppercase tracking-wide text-stone-500">
+                            <span className="text-xs font-bold text-muted-foreground">
                               {label}
                             </span>
                             <div className="mt-auto flex flex-wrap gap-1.5 pt-2">
@@ -148,9 +148,9 @@ export default function NineBox({ employees, departments, reviews }: Props) {
                                     <TooltipTrigger asChild>
                                       <span
                                         className={cn(
-                                          'flex h-8 w-8 cursor-default items-center justify-center rounded-full text-[11px] font-semibold ring-2 ring-card',
+                                          'flex h-8 w-8 cursor-default items-center justify-center rounded-full text-xs font-semibold ring-2 ring-card',
                                           avatarTone(emp?.name ?? '?'),
-                                          !hasPotential && 'opacity-60 ring-dashed',
+                                          !hasPotential && 'ring-dashed',
                                         )}
                                       >
                                         {initialsOf(emp?.name ?? '?')}

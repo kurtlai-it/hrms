@@ -31,10 +31,10 @@ function RestrictedNotice() {
     <div className="flex min-h-[50vh] items-center justify-center">
       <Card className="w-full max-w-md rounded-xl border-dashed">
         <CardHeader className="items-center text-center">
-          <div className="rounded-full bg-red-100 p-3 dark:bg-red-950">
-            <ShieldAlert className="h-6 w-6 text-red-600 dark:text-red-400" />
+          <div className="rounded-full bg-danger-soft p-3">
+            <ShieldAlert className="h-6 w-6 text-destructive" />
           </div>
-          <CardTitle>Restricted area</CardTitle>
+          <CardTitle><h1 className="text-xl font-bold">Restricted area</h1></CardTitle>
           <CardDescription>
             The Super Admin console is only available to the system SuperAdmin account.
             Your session does not have cross-company privileges.
@@ -60,7 +60,7 @@ export default function SuperAdminPage() {
     <div className="space-y-6">
       <div className="space-y-1">
         <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
-          <ShieldCheck className="h-6 w-6 text-amber-600" />
+          <ShieldCheck className="h-6 w-6 text-primary" />
           Super Admin
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -70,7 +70,7 @@ export default function SuperAdminPage() {
       </div>
 
       <Tabs defaultValue="overview">
-        <TabsList className="grid w-full grid-cols-5 sm:inline-flex sm:w-auto">
+        <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="companies">Companies</TabsTrigger>
           <TabsTrigger value="billing">Billing</TabsTrigger>

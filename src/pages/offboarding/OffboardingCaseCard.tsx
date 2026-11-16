@@ -29,20 +29,20 @@ import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 
 const REASON_STYLES: Record<OffboardingCase['reason'], string> = {
-  resignation: 'border-stone-300 text-stone-600',
-  retirement: 'border-lime-600 bg-lime-50 text-lime-700 dark:bg-lime-950/40',
-  retrenchment: 'border-red-400 bg-red-50 text-red-700 dark:bg-red-950/40',
-  termination: 'border-orange-500 bg-orange-50 text-orange-700 dark:bg-orange-950/40',
-  vss: 'border-amber-500 bg-amber-50 text-amber-700 dark:bg-amber-950/40',
-  'contract-end': 'border-stone-400 bg-stone-50 text-stone-600 dark:bg-stone-900/40',
-  absconded: 'border-red-500 bg-red-50 text-red-800 dark:bg-red-950/40',
+  resignation: 'border-border text-muted-foreground',
+  retirement: 'border-success bg-success-soft text-success',
+  retrenchment: 'border-destructive bg-danger-soft text-destructive',
+  termination: 'border-warning/40 bg-warning-soft text-warning',
+  vss: 'border-warning/40 bg-warning-soft text-warning',
+  'contract-end': 'border-input bg-muted text-muted-foreground',
+  absconded: 'border-destructive bg-danger-soft text-destructive',
 };
 
 const STATUS_STYLES: Record<OffboardingCase['status'], string> = {
-  'notice-given': 'border-amber-500 bg-amber-50 text-amber-700 dark:bg-amber-950/40',
-  'clearance-in-progress': 'border-amber-500 bg-amber-50 text-amber-700 dark:bg-amber-950/40',
-  cleared: 'border-lime-600 bg-lime-50 text-lime-700 dark:bg-lime-950/40',
-  exited: 'border-stone-300 text-stone-500',
+  'notice-given': 'border-warning/40 bg-warning-soft text-warning',
+  'clearance-in-progress': 'border-warning/40 bg-warning-soft text-warning',
+  cleared: 'border-success bg-success-soft text-success',
+  exited: 'border-border text-muted-foreground',
 };
 
 function daysUntil(iso: string): number {
@@ -140,7 +140,7 @@ export default function OffboardingCaseCard({ kase, employee, actorName }: Props
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="truncate font-medium">{employee?.name ?? 'Unknown employee'}</span>
+              <span className="break-words font-medium">{employee?.name ?? 'Unknown employee'}</span>
               <Badge variant="outline" className={cn('text-xs', REASON_STYLES[kase.reason])}>
                 {OFFBOARDING_REASON_LABELS[kase.reason]}
               </Badge>
@@ -152,7 +152,7 @@ export default function OffboardingCaseCard({ kase, employee, actorName }: Props
               <CalendarClock className="h-3 w-3" />
               Notice {fmtDate(kase.noticeDate)} · LWD {fmtDate(kase.lastWorkingDay)}
               {kase.status !== 'exited' && (
-                <span className={cn('font-medium', lwdIn < 0 ? 'text-red-600' : 'text-amber-700 dark:text-amber-500')}>
+                <span className={cn('font-medium', lwdIn < 0 ? 'text-destructive' : 'text-primary')}>
                   {' '}
                   ({lwdIn < 0 ? `${-lwdIn}d overdue` : lwdIn === 0 ? 'today' : `${lwdIn}d left`})
                 </span>
@@ -180,10 +180,10 @@ export default function OffboardingCaseCard({ kase, employee, actorName }: Props
               className={cn(
                 'rounded-xl',
                 kase.status === 'exited'
-                  ? 'border-stone-200'
+                  ? 'border-border'
                   : cp22aIn < 0
-                    ? 'border-red-300 bg-red-50/60 dark:border-red-900/50 dark:bg-red-950/20'
-                    : 'border-amber-300 bg-amber-50/60 dark:border-amber-900/50 dark:bg-amber-950/20',
+                    ? 'border-destructive/40 bg-danger-soft'
+                    : 'border-warning/40 bg-warning-soft',
               )}
             >
               <FileWarning className="h-4 w-4" />
@@ -193,7 +193,7 @@ export default function OffboardingCaseCard({ kase, employee, actorName }: Props
                 <span className="font-medium text-foreground">{fmtDate(kase.cp22aDueDate)}</span>
                 {kase.status !== 'exited' &&
                   (cp22aIn < 0 ? (
-                    <span className="font-medium text-red-600"> — overdue by {-cp22aIn} day{-cp22aIn === 1 ? '' : 's'}, file immediately</span>
+                    <span className="font-medium text-destructive"> — overdue by {-cp22aIn} day{-cp22aIn === 1 ? '' : 's'}, file immediately</span>
                   ) : (
                     <span> — {cp22aIn} day{cp22aIn === 1 ? '' : 's'} remaining</span>
                   ))}
@@ -203,7 +203,7 @@ export default function OffboardingCaseCard({ kase, employee, actorName }: Props
 
             {/* ── Retrenchment schedule hint ── */}
             {retrenchment && (
-              <Alert className="rounded-xl border-stone-200 bg-stone-50 dark:border-stone-800 dark:bg-stone-900/50">
+              <Alert className="rounded-xl border-border bg-muted">
                 <AlertTriangle className="h-4 w-4" />
                 <AlertTitle className="text-sm">Lay-off benefit schedule (Reg. 6, 1980)</AlertTitle>
                 <AlertDescription className="text-xs">
@@ -226,7 +226,7 @@ export default function OffboardingCaseCard({ kase, employee, actorName }: Props
 
             {/* ── VSS package (when present) ── */}
             {kase.vssPackage && (
-              <Alert className="rounded-xl border-amber-300 bg-amber-50/60 dark:border-amber-900/50 dark:bg-amber-950/20">
+              <Alert className="rounded-xl border-warning/40 bg-warning-soft">
                 <HandCoins className="h-4 w-4" />
                 <AlertTitle className="text-sm">VSS ex-gratia package</AlertTitle>
                 <AlertDescription className="text-xs">
@@ -247,7 +247,7 @@ export default function OffboardingCaseCard({ kase, employee, actorName }: Props
 
             {/* ── Separation notes (e.g. absconded flag) ── */}
             {kase.notes && (
-              <Alert className="rounded-xl border-stone-200 bg-stone-50 dark:border-stone-800 dark:bg-stone-900/50">
+              <Alert className="rounded-xl border-border bg-muted">
                 <FileText className="h-4 w-4" />
                 <AlertTitle className="text-sm">Separation notes</AlertTitle>
                 <AlertDescription className="text-xs">{kase.notes}</AlertDescription>
@@ -258,7 +258,7 @@ export default function OffboardingCaseCard({ kase, employee, actorName }: Props
             <div className="space-y-4">
               {grouped.map(([category, items]) => (
                 <div key={category}>
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-500">
+                  <p className="mb-2 text-xs font-bold text-primary">
                     {category}
                   </p>
                   <ul className="space-y-2">
@@ -293,8 +293,8 @@ export default function OffboardingCaseCard({ kase, employee, actorName }: Props
             </div>
 
             {/* ── Final pay preview ── */}
-            <div className="rounded-xl border border-stone-200 p-4 dark:border-stone-800">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-500">
+            <div className="rounded-xl border border-border p-4">
+              <p className="mb-3 text-xs font-bold text-primary">
                 Final pay preview
               </p>
               <dl className="space-y-1.5 text-sm">
@@ -316,12 +316,12 @@ export default function OffboardingCaseCard({ kase, employee, actorName }: Props
                 </div>
                 <div className="flex justify-between gap-4">
                   <dt className="text-muted-foreground">Deductions</dt>
-                  <dd className="font-medium text-red-600">−{fmtRM(fp.deductions)}</dd>
+                  <dd className="font-medium text-destructive">−{fmtRM(fp.deductions)}</dd>
                 </div>
                 <Separator className="my-2" />
                 <div className="flex justify-between gap-4">
                   <dt className="font-semibold">Estimated total</dt>
-                  <dd className="font-semibold text-amber-700 dark:text-amber-500">
+                  <dd className="font-semibold text-primary">
                     {fmtRM(fp.estimatedTotal)}
                   </dd>
                 </div>
@@ -345,7 +345,7 @@ export default function OffboardingCaseCard({ kase, employee, actorName }: Props
                   variant={kase.status === 'cleared' ? 'default' : 'outline'}
                   onClick={markResigned}
                   className={cn(
-                    kase.status === 'cleared' && 'bg-amber-600 text-white hover:bg-amber-700',
+                    kase.status === 'cleared' && 'bg-primary text-primary-foreground hover:bg-primary',
                   )}
                 >
                   <UserMinus className="mr-1.5 h-4 w-4" /> Mark employee resigned

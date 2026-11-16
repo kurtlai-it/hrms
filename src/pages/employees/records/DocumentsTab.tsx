@@ -53,15 +53,15 @@ import {
 import { EmptyBlock, Field, RemoveButton, SectionCard, type TabProps } from './shared';
 
 const KIND_BADGE: Record<DocumentKind, string> = {
-  IC: 'bg-stone-200 text-stone-700',
-  Passport: 'bg-amber-100 text-amber-800',
-  'Work Permit': 'bg-orange-100 text-orange-800',
-  'Academic Certificate': 'bg-lime-100 text-lime-800',
-  CV: 'bg-stone-100 text-stone-700',
-  'Bank Statement': 'bg-yellow-100 text-yellow-800',
-  Medical: 'bg-red-100 text-red-800',
-  Contract: 'bg-amber-100 text-amber-800',
-  Other: 'bg-stone-100 text-stone-600',
+  IC: 'bg-secondary text-foreground',
+  Passport: 'bg-warning-soft text-warning',
+  'Work Permit': 'bg-warning-soft text-warning',
+  'Academic Certificate': 'bg-success-soft text-success',
+  CV: 'bg-muted text-foreground',
+  'Bank Statement': 'bg-warning-soft text-warning',
+  Medical: 'bg-danger-soft text-destructive',
+  Contract: 'bg-warning-soft text-warning',
+  Other: 'bg-muted text-muted-foreground',
 };
 
 function ExpiryBadge({ doc }: { doc: RecordDocument }) {
@@ -69,20 +69,20 @@ function ExpiryBadge({ doc }: { doc: RecordDocument }) {
   if (ex.status === 'none') return null;
   if (ex.status === 'expired') {
     return (
-      <Badge variant="outline" className="border-transparent bg-red-100 text-red-800">
+      <Badge variant="outline" className="border-transparent bg-danger-soft text-destructive">
         Expired {fmtDate(doc.expiryDate!)}
       </Badge>
     );
   }
   if (ex.status === 'expiring') {
     return (
-      <Badge variant="outline" className="border-transparent bg-amber-100 text-amber-800">
+      <Badge variant="outline" className="border-transparent bg-warning-soft text-warning">
         Expires in {ex.daysToExpiry}d
       </Badge>
     );
   }
   return (
-    <Badge variant="outline" className="border-transparent bg-lime-100 text-lime-800">
+    <Badge variant="outline" className="border-transparent bg-success-soft text-success">
       Valid until {fmtDate(doc.expiryDate!)}
     </Badge>
   );
@@ -145,7 +145,7 @@ function DocumentRow({
   return (
     <li className="flex items-center gap-3 py-3">
       {loading ? (
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-stone-100 text-stone-400">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin" aria-label="Loading document" />
         </div>
       ) : isImage ? (
@@ -155,13 +155,13 @@ function DocumentRow({
           className="h-12 w-12 shrink-0 rounded-lg border border-border object-cover"
         />
       ) : (
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-stone-100 text-stone-500">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
           <FileText className="h-5 w-5" />
         </div>
       )}
       <div className="min-w-0 flex-1">
         <p className="flex flex-wrap items-center gap-2 text-sm font-medium">
-          <span className="truncate">{d.fileName}</span>
+          <span className="break-words">{d.fileName}</span>
           <Badge variant="outline" className={cn('border-transparent', KIND_BADGE[d.kind])}>
             {d.kind}
           </Badge>
@@ -302,13 +302,13 @@ export default function DocumentsTab({ employee, file, readOnly, actorName }: Ta
       }
     >
       {/* Tenant document-storage usage */}
-      <div className="mb-4 flex items-center gap-2.5 rounded-lg border border-border/60 bg-stone-50 px-3 py-2 text-xs text-muted-foreground dark:bg-stone-900/40">
+      <div className="mb-4 flex items-center gap-2.5 rounded-lg border border-border/60 bg-muted px-3 py-2 text-xs text-muted-foreground">
         <HardDrive className="h-3.5 w-3.5 shrink-0" />
         <Progress
           value={usage.percent}
           className={cn(
-            'h-1.5 w-28 bg-stone-200 dark:bg-stone-800 [&>div]:bg-amber-600',
-            usage.percent >= 80 && '[&>div]:bg-red-500',
+            'h-1.5 w-28 bg-secondary [&>div]:bg-primary',
+            usage.percent >= 80 && '[&>div]:bg-destructive',
           )}
         />
         <span>
@@ -326,7 +326,7 @@ export default function DocumentsTab({ employee, file, readOnly, actorName }: Ta
             variant={kindFilter === k ? 'default' : 'outline'}
             className={cn(
               'h-7 px-2.5 text-xs',
-              kindFilter === k && 'bg-amber-600 text-white hover:bg-amber-700',
+              kindFilter === k && 'bg-primary text-primary-foreground hover:bg-primary',
             )}
             onClick={() => setKindFilter(k)}
           >
@@ -398,7 +398,7 @@ export default function DocumentsTab({ employee, file, readOnly, actorName }: Ta
           </div>
 
           {picked && (
-            <div className="flex items-center gap-3 rounded-lg border border-border bg-stone-50 p-3">
+            <div className="flex items-center gap-3 rounded-lg border border-border p-3">
               {picked.dataUrl.startsWith('data:image/') ? (
                 <img
                   src={picked.dataUrl}
@@ -406,13 +406,13 @@ export default function DocumentsTab({ employee, file, readOnly, actorName }: Ta
                   className="h-12 w-12 rounded-lg border border-border object-cover"
                 />
               ) : (
-                <FileText className="h-5 w-5 text-stone-500" />
+                <FileText className="h-5 w-5 text-muted-foreground" />
               )}
               <div className="min-w-0 text-sm">
-                <p className="truncate font-medium">{picked.fileName}</p>
+                <p className="break-words font-medium">{picked.fileName}</p>
                 <p className="text-xs text-muted-foreground">{fmtFileSize(picked.sizeBytes)}</p>
               </div>
-              <Upload className="ml-auto h-4 w-4 text-amber-600" />
+              <Upload className="ml-auto h-4 w-4 text-primary" />
             </div>
           )}
 
@@ -428,7 +428,7 @@ export default function DocumentsTab({ employee, file, readOnly, actorName }: Ta
               Cancel
             </Button>
             <Button
-              className="bg-amber-600 text-white hover:bg-amber-700"
+              className="bg-primary text-primary-foreground hover:bg-primary"
               disabled={!picked || saving}
               onClick={() => void submit()}
             >

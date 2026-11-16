@@ -64,10 +64,10 @@ const emptyKr = (): KrForm => ({ id: uid(), title: '', target: '', current: '0',
 const defaultPeriod = () => `${new Date().getFullYear()}-H1`;
 
 function progressTone(pct: number): string {
-  if (pct >= 80) return 'text-emerald-700';
-  if (pct >= 50) return 'text-lime-700';
-  if (pct >= 25) return 'text-amber-700';
-  return 'text-stone-600';
+  if (pct >= 80) return 'text-success';
+  if (pct >= 50) return 'text-success';
+  if (pct >= 25) return 'text-primary';
+  return 'text-muted-foreground';
 }
 
 export default function Objectives({ employees, departments }: Props) {
@@ -209,7 +209,7 @@ export default function Objectives({ employees, departments }: Props) {
           return (
             <li key={kr.id} className="space-y-1">
               <div className="flex items-center justify-between gap-2 text-sm">
-                <span className="min-w-0 truncate">{kr.title}</span>
+                <span className="min-w-0 break-words">{kr.title}</span>
                 <span className={cn('shrink-0 text-xs font-semibold', progressTone(pct))}>{pct}%</span>
               </div>
               <div className="flex items-center gap-2">
@@ -244,18 +244,18 @@ export default function Objectives({ employees, departments }: Props) {
     const kids = childObjectives(inPeriod, o.id);
     const isCollapsed = collapsed[o.id];
     return (
-      <div className={cn('space-y-2', depth > 0 && 'ml-4 border-l-2 border-amber-200 pl-3 sm:ml-6 sm:pl-4')}>
-        <Card className={cn('rounded-xl', o.status === 'completed' && 'opacity-70')}>
+      <div className={cn('space-y-2', depth > 0 && 'ml-4 border-l-2 border-warning/40 pl-3 sm:ml-6 sm:pl-4')}>
+        <Card className={cn('rounded-xl', o.status === 'completed' && 'border-dashed')}>
           <CardContent className="space-y-3 p-4">
             <div className="flex items-start gap-2.5">
-              {depth > 0 && <CornerDownRight className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />}
+              {depth > 0 && <CornerDownRight className="mt-0.5 h-4 w-4 shrink-0 text-primary" />}
               <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold', avatarTone(emp?.name ?? '?'))}>
                 {initialsOf(emp?.name ?? '?')}
               </span>
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="font-medium">{o.title}</span>
-                  {o.status === 'completed' && <Badge variant="secondary" className="border bg-emerald-100 text-emerald-800 border-emerald-200">Done</Badge>}
+                  {o.status === 'completed' && <Badge variant="secondary" className="border bg-success-soft text-success border-success/40">Done</Badge>}
                 </div>
                 <div className="text-xs text-muted-foreground">
                   {emp?.name ?? o.employeeId} · {deptName(o.departmentId ?? emp?.departmentId)} · {o.period}
@@ -311,7 +311,7 @@ export default function Objectives({ employees, departments }: Props) {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">
-          <Target className="h-4 w-4 text-amber-600" />
+          <Target className="h-4 w-4 text-primary" />
           <h2 className="text-base font-semibold">Objectives &amp; key results</h2>
         </div>
         <Select value={activePeriod} onValueChange={setPeriod}>
@@ -435,7 +435,7 @@ export default function Objectives({ employees, departments }: Props) {
                     onClick={() => setForm({ ...form, krs: form.krs.filter((x) => x.id !== kr.id) })}
                     aria-label="Remove key result"
                   >
-                    <Trash2 className="h-4 w-4 text-red-600" />
+                    <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
                 </div>
               ))}

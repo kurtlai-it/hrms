@@ -158,7 +158,7 @@ export default function PositionForm({
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <Tabs defaultValue="general" className="flex min-h-0 flex-1 flex-col">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList>
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="jd">Job description</TabsTrigger>
         </TabsList>
@@ -318,7 +318,7 @@ export default function PositionForm({
               />
             </div>
             {suggestion && (
-              <div className="flex flex-wrap items-center gap-2 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
+              <div className="flex flex-wrap items-center gap-2 rounded-md bg-warning-soft px-3 py-2 text-xs text-warning">
                 <Sparkles className="h-3.5 w-3.5 shrink-0" />
                 <span>
                   Market ({suggestion.matchedRole}, {seniorityForLevel(v.level)}+ yrs):{' '}

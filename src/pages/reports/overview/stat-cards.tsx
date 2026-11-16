@@ -1,5 +1,5 @@
 /**
- * Row of headline stat cards, role-scoped via useAuth():
+ * Headline figures as one summary line, role-scoped via useAuth():
  *  - Admin / HR → company-wide: active headcount, present today,
  *    pending approvals (leave + claims + OT) and this month's payroll cost
  *    (finalized run when available, statutory estimate otherwise).
@@ -8,25 +8,25 @@
  *  - Employee   → self only: own attendance this month, own annual-leave
  *    balance, own pending claims.
  */
-import { CalendarCheck, CalendarDays, ClipboardCheck, Receipt, Users, Wallet } from 'lucide-react';
+import { SummaryLine } from '@/components/ui/summary-line';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/lib/useAuth';
 import { useCollection } from '@/lib/db';
 import { fmtRM, monthKey } from '@/lib/utils';
 import type {
   AttendanceRecord, Claim, Employee, LeaveBalance, LeaveRequest, PayrollRun,
 } from '@/lib/types';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { estimateMonthlyEmployerCost, todayISO } from '../lib';
+import { estimateMonthlyEmployerCost, todayISO } from '@/pages/dashboard/lib';
 
 interface StatCard {
   title: string;
   value: string;
   hint: string;
-  icon: typeof Users;
 }
 
 export function StatCards() {
+  const { t } = useTranslation();
   const { role, employeeId, scopeEmployees, scopeByEmployee } = useAuth();
   const { items: employees } = useCollection<Employee>('employees');
   const { items: attendance } = useCollection<AttendanceRecord>('attendance');
@@ -73,48 +73,30 @@ export function StatCards() {
 
     const cards: StatCard[] = [
       {
-        title: 'My attendance this month',
+        title: t('dash.stat.myAttendance'),
         value: String(presentDays + halfDays),
-        hint: `${presentDays} present · ${halfDays} half-day · ${leaveDays} on leave`,
-        icon: CalendarCheck,
+        hint: t('dash.stat.myAttendanceHint', { present: presentDays, half: halfDays, leave: leaveDays }),
       },
       {
-        title: 'My annual leave balance',
-        value: annualLeft === null ? '—' : `${annualLeft} days`,
+        title: t('dash.stat.myLeaveBalance'),
+        value: annualLeft === null ? '—' : t('common.days', { count: annualLeft }),
         hint: balance
-          ? `${balance.annualUsed} used of ${annualTotal} entitled (${year})`
-          : 'No leave balance record yet',
-        icon: CalendarDays,
+          ? t('dash.stat.leaveUsedHint', { used: balance.annualUsed, total: annualTotal, year })
+          : t('dash.stat.noLeaveBalance'),
       },
       {
-        title: 'My pending claims',
+        title: t('dash.stat.myPendingClaims'),
         value: String(myPendingClaims.length),
         hint:
           myPendingClaims.length > 0
-            ? `${fmtRM(pendingClaimsAmount)} awaiting approval`
+            ? t('dash.stat.claimsAwaiting', { amount: fmtRM(pendingClaimsAmount) })
             : myPendingLeaves > 0
-              ? `${myPendingLeaves} leave request${myPendingLeaves > 1 ? 's' : ''} pending`
-              : 'Nothing awaiting approval',
-        icon: Receipt,
+              ? t('dash.stat.leaveRequestsPending', { count: myPendingLeaves })
+              : t('dash.stat.nothingAwaiting'),
       },
     ];
 
-    return (
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {cards.map((c) => (
-          <Card key={c.title} className="rounded-xl">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">{c.title}</CardTitle>
-              <c.icon className="h-4 w-4 text-amber-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-semibold tracking-tight">{c.value}</div>
-              <p className="mt-1 text-xs text-muted-foreground">{c.hint}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    );
+    return <SummaryLine items={cards.map((c) => ({ label: c.title, value: c.value, hint: c.hint }))} />;
   }
 
   // ── Admin / HR / Manager: workforce cards scoped to the visible employees ──
@@ -151,22 +133,22 @@ export function StatCards() {
 
   const cards: StatCard[] = [
     {
-      title: role === 'Manager' ? 'Team headcount' : 'Active headcount',
+      title: t(role === 'Manager' ? 'dash.stat.teamHeadcount' : 'dash.stat.activeHeadcount'),
       value: String(active.length),
-      hint: `${onProbation} on probation · ${scopedEmployees.length - active.length} resigned`,
-      icon: Users,
+      hint: t('dash.stat.headcountHint', {
+        probation: onProbation,
+        resigned: scopedEmployees.length - active.length,
+      }),
     },
     {
-      title: 'Present today',
+      title: t('dash.stat.presentToday'),
       value: String(presentToday),
-      hint: `of ${active.length} active employees clocked in`,
-      icon: CalendarCheck,
+      hint: t('dash.stat.presentHint', { count: active.length }),
     },
     {
-      title: 'Pending approvals',
+      title: t('dash.stat.pendingApprovals'),
       value: String(pendingTotal),
-      hint: `${pendingLeaves} leave · ${pendingClaims} claims · ${pendingOt} OT`,
-      icon: ClipboardCheck,
+      hint: t('dash.stat.pendingHint', { leave: pendingLeaves, claims: pendingClaims, ot: pendingOt }),
     },
   ];
 
@@ -179,34 +161,21 @@ export function StatCards() {
       ? runThisMonth.totalEmployerCost
       : estimateMonthlyEmployerCost(scopedEmployees);
     const payrollHint = runThisMonth
-      ? `Finalized ${thisMonth} run · ${runThisMonth.employeeCount} payslips`
+      ? t('dash.stat.payrollFinalized', { month: thisMonth, count: runThisMonth.employeeCount })
       : draftThisMonth
-        ? `Estimate · ${thisMonth} run still in draft`
+        ? t('dash.stat.payrollDraft', { month: thisMonth })
         : latestRun
-          ? `Estimate · last run ${latestRun.monthKey} at ${fmtRM(latestRun.totalEmployerCost)}`
-          : 'Estimate from current salaries · no run yet';
+          ? t('dash.stat.payrollLastRun', {
+              month: latestRun.monthKey,
+              amount: fmtRM(latestRun.totalEmployerCost),
+            })
+          : t('dash.stat.payrollNoRun');
     cards.push({
-      title: 'Payroll cost this month',
+      title: t('dash.stat.payrollCost'),
       value: fmtRM(payrollCost),
       hint: payrollHint,
-      icon: Wallet,
     });
   }
 
-  return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      {cards.map((c) => (
-        <Card key={c.title} className="rounded-xl">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">{c.title}</CardTitle>
-            <c.icon className="h-4 w-4 text-amber-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-semibold tracking-tight">{c.value}</div>
-            <p className="mt-1 text-xs text-muted-foreground">{c.hint}</p>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  );
+  return <SummaryLine items={cards.map((c) => ({ label: c.title, value: c.value, hint: c.hint }))} />;
 }

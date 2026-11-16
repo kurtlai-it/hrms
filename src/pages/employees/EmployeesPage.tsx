@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Label } from '@/components/ui/label';
+import { useTranslation } from 'react-i18next';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
-import { ArrowUpDown, ListFilter, Search, Sparkles, UserPlus, Users } from 'lucide-react';
+import { ArrowUpDown, ListFilter, Search, UserPlus, Users } from 'lucide-react';
 import { useCollection } from '@/lib/db';
 import { useAuth } from '@/lib/useAuth';
 import { states, stateInfo } from '@/lib/holidays';
@@ -33,7 +35,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { EmployeeAvatar } from './EmployeeAvatar';
 import { StatusBadge, TypeBadge } from './EmployeeBadges';
 import { EmployeeFormDialog } from './EmployeeFormDialog';
 import { NewHireWizard } from './NewHireWizard';
@@ -53,6 +54,7 @@ const SORT_LABELS: Record<SortKey, string> = {
 };
 
 export default function EmployeesPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { role, employeeId, scopeEmployees, user } = useAuth();
   /** Salary visibility + add/edit mutations are Admin/HR-only. */
@@ -97,7 +99,10 @@ export default function EmployeesPage() {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     const list = scoped.filter((e) => {
-      if (q && !`${e.name} ${e.ic} ${e.email}`.toLowerCase().includes(q)) return false;
+      if (q) {
+        const hay = `${e.name} ${e.ic} ${e.ic.replace(/\W/g, '')} ${e.employeeNo ?? ''} ${e.email}`.toLowerCase();
+        if (!hay.includes(q) && !hay.includes(q.replace(/\W/g, ''))) return false;
+      }
       if (deptFilter !== 'all' && e.departmentId !== deptFilter) return false;
       if (stateFilter !== 'all' && e.state !== stateFilter) return false;
       if (statusFilter !== 'all' && e.status !== statusFilter) return false;
@@ -198,31 +203,32 @@ export default function EmployeesPage() {
         </div>
         {isHR && (
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => setWizardOpen(true)}>
-              <Sparkles className="mr-1.5 h-4 w-4 text-amber-600" />
-              New-Hire Wizard
+            <Button variant="outline" onClick={() => setAddOpen(true)}>
+              {t('staffList.addOneForm')}
             </Button>
-            <Button onClick={() => setAddOpen(true)}>
+            <Button onClick={() => setWizardOpen(true)}>
               <UserPlus className="mr-1.5 h-4 w-4" />
-              Add employee
+              {t('staffList.addStaff')}
             </Button>
           </div>
         )}
       </div>
 
-      {isHR && <ProbationStrip />}
-
-      {/* Search + filters */}
-      <Card className="rounded-xl">
-        <CardContent className="space-y-3 p-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              className="pl-9"
-              placeholder="Search by name, NRIC or email…"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
+      {/* Search first: finding a staff member is the main job of this page. */}
+      <section aria-label={t('staffList.searchLabel')} className="space-y-3">
+          <div className="space-y-2">
+            <Label htmlFor="staff-search" className="text-[1.1rem] font-bold">{t('staffList.searchLabel')}</Label>
+            <div className="relative">
+              <Search aria-hidden className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                id="staff-search"
+                type="search"
+                className="h-14 pl-11 text-lg"
+                placeholder={t('staffList.searchPlaceholder')}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
             <Select value={deptFilter} onValueChange={setDeptFilter}>
@@ -278,8 +284,10 @@ export default function EmployeesPage() {
               </Button>
             )}
           </div>
-        </CardContent>
-      </Card>
+      </section>
+
+      {/* Probation needing a decision, while nobody is searching. */}
+      {isHR && !query.trim() && !hasFilters && <ProbationStrip />}
 
       {/* Loading skeleton */}
       {loading && (
@@ -324,17 +332,19 @@ export default function EmployeesPage() {
               <TableRow>
                 {isHR && (
                   <TableHead className="w-10">
-                    <Checkbox
-                      aria-label="Select all filtered employees"
-                      checked={
-                        allFilteredSelected
-                          ? true
-                          : selectedInFilter > 0
-                            ? 'indeterminate'
-                            : false
-                      }
-                      onCheckedChange={(v) => toggleAllFiltered(v === true)}
-                    />
+                    <label className="flex min-h-12 min-w-12 shrink-0 cursor-pointer items-center justify-center">
+                      <Checkbox
+                        aria-label="Select all filtered employees"
+                        checked={
+                          allFilteredSelected
+                            ? true
+                            : selectedInFilter > 0
+                              ? 'indeterminate'
+                              : false
+                        }
+                        onCheckedChange={(v) => toggleAllFiltered(v === true)}
+                      />
+                    </label>
                   </TableHead>
                 )}
                 <TableHead>Employee</TableHead>
@@ -347,7 +357,7 @@ export default function EmployeesPage() {
                   <TableHead className="text-right">
                     <button
                       type="button"
-                      className="inline-flex items-center gap-1 transition-colors hover:text-foreground"
+                      className="inline-flex min-h-12 items-center gap-1 transition-colors hover:text-foreground"
                       onClick={() =>
                         setSort((s) => (s === 'salary-desc' ? 'salary-asc' : 'salary-desc'))
                       }
@@ -356,7 +366,7 @@ export default function EmployeesPage() {
                     </button>
                   </TableHead>
                 )}
-                {isHR && <TableHead className="w-12" />}
+                {isHR && <TableHead className="w-12"><span className="sr-only">Actions</span></TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -369,19 +379,20 @@ export default function EmployeesPage() {
                 >
                   {isHR && (
                     <TableCell onClick={(ev) => ev.stopPropagation()}>
-                      <Checkbox
-                        aria-label={`Select ${e.name}`}
-                        checked={selectedIds.has(e.id)}
-                        onCheckedChange={(v) => toggleOne(e.id, v === true)}
-                      />
+                      <label className="flex min-h-12 min-w-12 shrink-0 cursor-pointer items-center justify-center">
+                        <Checkbox
+                          aria-label={`Select ${e.name}`}
+                          checked={selectedIds.has(e.id)}
+                          onCheckedChange={(v) => toggleOne(e.id, v === true)}
+                        />
+                      </label>
                     </TableCell>
                   )}
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <EmployeeAvatar name={e.name} size="sm" />
                       <div className="min-w-0">
-                        <p className="truncate font-medium">{e.name}</p>
-                        <p className="truncate text-xs text-muted-foreground">{e.email}</p>
+                        <p className="break-words font-medium text-primary">{e.name}</p>
+                        <p className="break-words text-xs text-muted-foreground">{e.email}</p>
                       </div>
                     </div>
                   </TableCell>
@@ -391,8 +402,8 @@ export default function EmployeesPage() {
                     <p className="text-xs text-muted-foreground">{positionTitle(positions, e.positionId)}</p>
                   </TableCell>
                   <TableCell className="text-muted-foreground">{stateInfo(e.state).name}</TableCell>
-                  <TableCell><TypeBadge type={e.employmentType} /></TableCell>
-                  <TableCell><StatusBadge status={e.status} /></TableCell>
+                  <TableCell><TypeBadge type={e.employmentType} exceptionsOnly /></TableCell>
+                  <TableCell><StatusBadge status={e.status} exceptionsOnly /></TableCell>
                   {isHR && <TableCell className="text-right font-medium">{fmtRM(e.baseSalary)}</TableCell>}
                   {isHR && (
                     <TableCell onClick={(ev) => ev.stopPropagation()}>
@@ -412,10 +423,20 @@ export default function EmployeesPage() {
           {filtered.map((e) => (
             <div key={e.id} className="relative">
               <Link to={`/employees/${e.id}`}>
-                <Card className="rounded-xl transition-colors hover:bg-stone-50">
-                  <CardContent className="flex items-center gap-3 p-4">
+                <Card className="rounded-xl transition-colors hover:bg-muted">
+                  <CardContent className="flex flex-wrap items-center gap-3 p-4 pr-14">
                     {isHR && (
-                      <div onClick={(ev) => ev.preventDefault()}>
+                      <div
+                        data-choice-row
+                        className="flex min-h-12 min-w-12 shrink-0 cursor-pointer items-center justify-center"
+                        onClick={(ev) => {
+                          // Inside the card link: never navigate; a click beside the mark toggles too.
+                          ev.preventDefault();
+                          if (!(ev.target as HTMLElement).closest('[role="checkbox"]')) {
+                            toggleOne(e.id, !selectedIds.has(e.id));
+                          }
+                        }}
+                      >
                         <Checkbox
                           aria-label={`Select ${e.name}`}
                           checked={selectedIds.has(e.id)}
@@ -423,20 +444,20 @@ export default function EmployeesPage() {
                         />
                       </div>
                     )}
-                    <EmployeeAvatar name={e.name} />
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate font-medium">{e.name}</p>
-                      <p className="truncate text-xs text-muted-foreground">
+                    {/* Name block keeps 11rem; with Bigger text the salary wraps below instead of squeezing it. */}
+                    <div className="min-w-[min(100%,11rem)] flex-1">
+                      <p className="break-words font-medium text-primary">{e.name}</p>
+                      <p className="break-words text-xs text-muted-foreground">
                         {deptName(departments, e.departmentId)} · {positionTitle(positions, e.positionId)}
                       </p>
                       <div className="mt-1.5 flex flex-wrap gap-1.5">
-                        <StatusBadge status={e.status} />
-                        <TypeBadge type={e.employmentType} />
+                        <StatusBadge status={e.status} exceptionsOnly />
+                        <TypeBadge type={e.employmentType} exceptionsOnly />
                       </div>
                     </div>
                     {isHR && (
-                      <div className="text-right">
-                        <p className="text-sm font-semibold">{fmtRM(e.baseSalary)}</p>
+                      <div className="ml-auto text-right">
+                        <p className="whitespace-nowrap text-sm font-semibold">{fmtRM(e.baseSalary)}</p>
                         <p className="text-xs text-muted-foreground">/ month</p>
                       </div>
                     )}

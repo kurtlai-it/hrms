@@ -1,6 +1,7 @@
 /**
  * e-Claims module — /claims.
- * Compose: dashboard strip → My claims / Approver inbox tabs → payroll &
+ * Compose: the work first (My claims / Approvals tabs), then this month's
+ * figures, chart and claims waiting by person; payroll &
  * MyInvois notes. Submission form lives in a dialog shared by the header
  * button and the list's edit action.
  *
@@ -12,20 +13,21 @@
  * Until the provider lands, the legacy role stub + acting-as selector drive
  * the same rules so the demo keeps working.
  */
+import { fmtRM } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 import { useEffect, useMemo, useState } from 'react';
-import { Info, Plus, Receipt, UserRound } from 'lucide-react';
+import { Plus, UserRound } from 'lucide-react';
 import type { Employee } from '@/lib/types';
 import { useCollection } from '@/lib/db';
 import { useRole } from '@/lib/useRole';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import ApproverInbox from './ApproverInbox';
 import ClaimFormDialog from './ClaimFormDialog';
 import ClaimsDashboard from './ClaimsDashboard';
@@ -39,6 +41,7 @@ import { getActingAsId, setActingAsId as persistActingAsId } from './actingAsSto
 const DEFAULT_EMP_ID = 'emp-13'; // Deepak (Sales) — a frequent claimant in the seed data
 
 export default function ClaimsPage() {
+  const { t } = useTranslation();
   const { role: stubRole } = useRole();
   const auth = useAuthSafe();
   // A logged-in session wins over the legacy stub; logged-out (or the provider
@@ -54,7 +57,8 @@ export default function ClaimsPage() {
     // Per-tenant pointer (audit L2) — see actingAsStorage.ts.
     () => getActingAsId() || DEFAULT_EMP_ID,
   );
-  const [tab, setTab] = useState<'my' | 'approvals'>('my');
+  // null until someone picks a tab: then the page opens on the job (see activeTab).
+  const [tab, setTab] = useState<'my' | 'approvals' | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<ClaimRecord | null>(null);
 
@@ -69,7 +73,7 @@ export default function ClaimsPage() {
   // Role downgraded to Employee while viewing the approvals tab → bounce back.
   // Render-phase adjust (single conditional setState) — no effect needed.
   const canApprove = role !== 'Employee';
-  if (!canApprove && tab !== 'my') {
+  if (!canApprove && tab === 'approvals') {
     setTab('my');
   }
 
@@ -141,10 +145,21 @@ export default function ClaimsPage() {
   );
 
   // Badge = claims this approver can actually decide (scoped, minus their own).
-  const pendingCount = useMemo(
-    () => scopedClaims.filter((c) => c.status === 'submitted' && c.employeeId !== actor.id).length,
+  const pendingClaims = useMemo(
+    () => scopedClaims.filter((c) => c.status === 'submitted' && c.employeeId !== actor.id),
     [scopedClaims, actor.id],
   );
+  const pendingCount = pendingClaims.length;
+  const pendingTotal = pendingClaims.reduce((sum, c) => sum + c.amount, 0);
+
+  // Approvers with claims waiting (or with no claims of their own) open on the queue.
+  const activeTab: 'my' | 'approvals' =
+    tab ?? (canApprove && (pendingCount > 0 || !viewEmployee) ? 'approvals' : 'my');
+
+  function reviewWaiting() {
+    setTab('approvals');
+    document.getElementById('claims-tabs')?.scrollIntoView({ block: 'start' });
+  }
 
   function openNew() {
     setEditing(null);
@@ -184,12 +199,11 @@ export default function ClaimsPage() {
       {/* ── Header ── */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="space-y-1">
-          <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
-            <Receipt className="h-6 w-6 text-amber-600" /> e-Claims
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Submit expenses, track the approval pipeline, and watch reimbursements flow into payroll.
-          </p>
+          <h1 className="text-2xl font-semibold tracking-tight">{t('claimsPage.title')}</h1>
+          <p className="text-muted-foreground">{canApprove ? t('claimsPage.introApprover') : t('claimsPage.introStaff')}</p>
+          {canApprove && pendingCount > 0 && (
+            <p className="font-bold">{t('claimsPage.waitingSentence', { count: pendingCount, amount: fmtRM(pendingTotal) })}</p>
+          )}
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {/* Acting-as is the pre-auth demo stub — hidden once a session exists. */}
@@ -208,30 +222,18 @@ export default function ClaimsPage() {
               </Select>
             </div>
           )}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <span>
-                <Button onClick={openNew} disabled={!viewEmployee}>
-                  <Plus className="h-4 w-4" /> New claim
-                </Button>
-              </span>
-            </TooltipTrigger>
-            {!viewEmployee && (
-              <TooltipContent>This login isn&apos;t linked to an employee record</TooltipContent>
-            )}
-          </Tooltip>
+          {viewEmployee && (
+            <Button variant={canApprove && pendingCount > 0 ? 'outline' : 'default'} onClick={openNew}>
+              <Plus className="h-4 w-4" /> New claim
+            </Button>
+          )}
+          {canApprove && pendingCount > 0 && (
+            <Button onClick={reviewWaiting}>{t('claimsPage.reviewN', { count: pendingCount })}</Button>
+          )}
         </div>
       </div>
 
-      {/* ── Dashboard strip (role-scoped; no leaderboard for Employee) ── */}
-      <ClaimsDashboard
-        claims={scopedClaims}
-        employees={scopedEmployees}
-        hideLeaderboard={role === 'Employee'}
-      />
-
-      {/* ── Tabs: my claims + approver inbox ── */}
-      <Tabs value={tab} onValueChange={(v) => setTab(v as 'my' | 'approvals')}>
+      <Tabs id="claims-tabs" className="scroll-mt-28" value={activeTab} onValueChange={(v) => setTab(v as 'my' | 'approvals')}>
         <TabsList>
           <TabsTrigger value="my" className="gap-1.5">
             My claims
@@ -241,7 +243,7 @@ export default function ClaimsPage() {
             <TabsTrigger value="approvals" className="gap-1.5">
               Approvals
               {pendingCount > 0 && (
-                <Badge className="bg-amber-600 px-1.5 text-white hover:bg-amber-600">{pendingCount}</Badge>
+                <Badge className="bg-primary px-1.5 text-primary-foreground hover:bg-primary">{pendingCount}</Badge>
               )}
             </TabsTrigger>
           )}
@@ -252,8 +254,7 @@ export default function ClaimsPage() {
           ) : (
             <Card className="rounded-xl">
               <CardContent className="py-12 text-center text-sm text-muted-foreground">
-                This login isn&apos;t linked to an employee record, so it has no personal claims.
-                The approvals queue and company dashboard remain available.
+                {t('claimsPage.notLinked')}
               </CardContent>
             </Card>
           )}
@@ -265,29 +266,20 @@ export default function ClaimsPage() {
         )}
       </Tabs>
 
-      {/* ── Notes: payroll flow + MyInvois readiness ── */}
-      <Card className="rounded-xl">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Info className="h-4 w-4 text-amber-600" /> How claims reach your payslip
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-4 text-sm text-muted-foreground md:grid-cols-2">
-          <p>
-            <span className="font-medium text-foreground">Automatic payroll flow.</span> Approved
-            claims are picked up by the next payroll run for the claim month and appear on the
-            payslip as <span className="font-medium text-foreground">non-statutory reimbursement
-            lines</span> — paid in net, excluded from EPF / SOCSO / EIS / PCB wage bases — then the
-            claim is marked <Badge variant="outline" className="border-lime-600 bg-lime-600 text-white">Paid</Badge>.
-          </p>
-          <p>
-            <span className="font-medium text-foreground">MyInvois e-invoice readiness.</span> Receipt
-            labels are stored against every claim, ready to map onto LHDN MyInvois self-billed
-            e-invoice fields when the company enables e-invoicing for employee expenses. Keep the
-            original receipts for 7 years (Income Tax Act 1967, s.82).
-          </p>
-        </CardContent>
-      </Card>
+      {/* ── The month's figures, after the work (role-scoped; Employee sees own only) ── */}
+      <section aria-labelledby="claims-month" className="space-y-3">
+        <h2 id="claims-month" className="text-[1.2rem] font-bold">{t('claimsPage.thisMonth')}</h2>
+        <ClaimsDashboard
+          claims={scopedClaims}
+          employees={scopedEmployees}
+          hideLeaderboard={role === 'Employee'}
+          onReview={canApprove ? reviewWaiting : undefined}
+        />
+
+        {/* ── Tabs: my claims + approver inbox ── */}
+      </section>
+
+      {/* How approved claims reach the payslip, and receipt keeping, are in Help (help.tips.claims). */}
 
       {viewEmployee && (
         <ClaimFormDialog

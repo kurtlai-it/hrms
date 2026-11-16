@@ -9,12 +9,14 @@
  * filter them out defensively. `decidedBy`/audit use the auth user's
  * identity (never the impersonated acting-as stub) once auth is wired.
  */
+import { OwnRequestNote } from '@/components/OwnRequestNote';
+import { claimApprovedMessage, claimRejectedMessage, claimsApprovedMessage } from '@/lib/decisionMessages';
 import { useMemo, useState } from 'react';
-import { AlertTriangle, Check, CheckCheck, Inbox, Paperclip, ShieldAlert, X } from 'lucide-react';
+import { AlertTriangle, Check, CheckCheck, Inbox, Paperclip, X } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Department, Employee } from '@/lib/types';
 import { logAudit, useCollection } from '@/lib/db';
-import { avatarTone, cn, fmtDate, fmtRM, initialsOf, round2 } from '@/lib/utils';
+import { cn, fmtDate, fmtRM, round2 } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -168,8 +170,8 @@ export default function ApproverInbox({
     }
     toast.success(
       targets.length > 1
-        ? `${targets.length} claims approved — ${fmtRM(round2(targets.reduce((s, c) => s + c.amount, 0)))} total`
-        : `Claim approved for ${empById.get(targets[0].employeeId)?.name ?? targets[0].employeeId} — ${fmtRM(targets[0].amount)}`,
+        ? claimsApprovedMessage(targets.length, fmtRM(round2(targets.reduce((s, c) => s + c.amount, 0))))
+        : claimApprovedMessage(empById.get(targets[0].employeeId)?.name ?? targets[0].employeeId, fmtRM(targets[0].amount)),
     );
     setSelected(new Set());
     setDialog(null);
@@ -197,7 +199,7 @@ export default function ApproverInbox({
       entityId: c.id,
       detail: `${categoryMetaOf(c).label} — ${fmtRM(c.amount)} for ${empById.get(c.employeeId)?.name ?? c.employeeId} · ${note}`,
     });
-    toast.success(`Claim rejected for ${empById.get(c.employeeId)?.name ?? c.employeeId} — ${fmtRM(c.amount)}`);
+    toast.success(claimRejectedMessage(empById.get(c.employeeId)?.name ?? c.employeeId, fmtRM(c.amount)));
     setDialog(null);
   }
 
@@ -209,7 +211,7 @@ export default function ApproverInbox({
     return (
       <Tooltip>
         <TooltipTrigger asChild>
-          <span className="inline-flex cursor-help text-amber-600">
+          <span className="inline-flex cursor-help text-primary">
             <AlertTriangle className="h-4 w-4" />
           </span>
         </TooltipTrigger>
@@ -227,18 +229,18 @@ export default function ApproverInbox({
   const rowActions = (c: ClaimRecord) => {
     if (isSelf(c)) {
       return (
-        <span className="inline-flex items-center gap-1 whitespace-nowrap text-xs text-muted-foreground">
-          <ShieldAlert className="h-3.5 w-3.5 text-amber-600" /> Own claim — another approver must decide
-        </span>
+        <OwnRequestNote />
       );
     }
     return (
-      <div className="flex items-center gap-1">
-        <Button variant="ghost" size="sm" className="text-lime-700 hover:text-lime-800" onClick={() => openApprove([c.id])}>
-          <Check className="h-3.5 w-3.5" /> Approve
+      // Same as the leave list: amber Approve, outlined Reject; the buttons keep
+      // their width and wrap to a new line rather than squeezing their words.
+      <div className="flex flex-wrap items-center justify-end gap-2">
+        <Button size="sm" className="shrink-0" onClick={() => openApprove([c.id])}>
+          <Check className="h-4 w-4" aria-hidden /> Approve
         </Button>
-        <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700" onClick={() => openReject(c.id)}>
-          <X className="h-3.5 w-3.5" /> Reject
+        <Button size="sm" variant="outline" className="shrink-0" onClick={() => openReject(c.id)}>
+          <X className="h-4 w-4" aria-hidden /> Reject
         </Button>
       </div>
     );
@@ -249,11 +251,8 @@ export default function ApproverInbox({
     const name = emp?.name ?? 'Unknown';
     return (
       <div className="flex items-center gap-2.5">
-        <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${avatarTone(name)}`}>
-          {initialsOf(name)}
-        </span>
         <div className="min-w-0">
-          <p className="truncate text-sm font-medium">{name}</p>
+          <p className="break-words text-sm font-medium">{name}</p>
           <p className="text-xs text-muted-foreground">{deptName(emp?.departmentId)}</p>
         </div>
       </div>
@@ -290,7 +289,7 @@ export default function ApproverInbox({
       {/* Category totals for the pending queue */}
       {pending.length > 0 && (
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Queue totals</span>
+          <span className="text-xs font-bold text-muted-foreground">Queue totals</span>
           {catTotals.map(([cat, t]) => (
             <Badge key={cat} variant="secondary" className="gap-1.5 font-normal">
               {CATEGORY_LABEL[cat as keyof typeof CATEGORY_LABEL] ?? cat}
@@ -340,14 +339,18 @@ export default function ApproverInbox({
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-10">
-                    <Checkbox
-                      checked={allSelected}
-                      onCheckedChange={(v) =>
-                        setSelected(v === true ? new Set(selectable.map((c) => c.id)) : new Set())
-                      }
-                      disabled={selectable.length === 0}
-                      aria-label="Select all decidable claims"
-                    />
+                    <label className="flex min-h-12 min-w-12 shrink-0 cursor-pointer items-center justify-center">
+                      <label className="flex min-h-12 min-w-12 shrink-0 cursor-pointer items-center justify-center">
+                        <Checkbox
+                          checked={allSelected}
+                          onCheckedChange={(v) =>
+                            setSelected(v === true ? new Set(selectable.map((c) => c.id)) : new Set())
+                          }
+                          disabled={selectable.length === 0}
+                          aria-label="Select all decidable claims"
+                        />
+                      </label>
+                    </label>
                   </TableHead>
                   <TableHead>Employee</TableHead>
                   <TableHead className="w-[34%]">Claim</TableHead>
@@ -358,14 +361,16 @@ export default function ApproverInbox({
               </TableHeader>
               <TableBody>
                 {pending.map((c) => (
-                  <TableRow key={c.id} className={cn(selected.has(c.id) && 'bg-amber-50/60 dark:bg-amber-950/20')}>
+                  <TableRow key={c.id} className={cn(selected.has(c.id) && 'bg-warning-soft')}>
                     <TableCell>
-                      <Checkbox
-                        checked={selected.has(c.id)}
-                        onCheckedChange={(v) => toggle(c.id, v === true)}
-                        disabled={isSelf(c)}
-                        aria-label={isSelf(c) ? 'You cannot decide your own claim' : 'Select claim'}
-                      />
+                      <label className="flex min-h-12 min-w-12 shrink-0 cursor-pointer items-center justify-center">
+                        <Checkbox
+                          checked={selected.has(c.id)}
+                          onCheckedChange={(v) => toggle(c.id, v === true)}
+                          disabled={isSelf(c)}
+                          aria-label={isSelf(c) ? 'You cannot decide your own claim' : 'Select claim'}
+                        />
+                      </label>
                     </TableCell>
                     <TableCell>{employeeCell(c)}</TableCell>
                     <TableCell>{detailCell(c)}</TableCell>
@@ -383,23 +388,25 @@ export default function ApproverInbox({
           {/* ── <md : cards ── */}
           <div className="space-y-3 md:hidden">
             {pending.map((c) => (
-              <Card key={c.id} className={cn('rounded-xl', selected.has(c.id) && 'border-amber-400 bg-amber-50/60 dark:bg-amber-950/20')}>
+              <Card key={c.id} className={cn('rounded-xl', selected.has(c.id) && 'border-warning/40 bg-warning-soft')}>
                 <CardContent className="space-y-3 p-4">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-start gap-2.5">
-                      <Checkbox
-                        checked={selected.has(c.id)}
-                        onCheckedChange={(v) => toggle(c.id, v === true)}
-                        disabled={isSelf(c)}
-                        aria-label={isSelf(c) ? 'You cannot decide your own claim' : 'Select claim'}
-                        className="mt-1"
-                      />
+                      <label className="flex min-h-12 min-w-12 shrink-0 cursor-pointer items-center justify-center">
+                        <Checkbox
+                          checked={selected.has(c.id)}
+                          onCheckedChange={(v) => toggle(c.id, v === true)}
+                          disabled={isSelf(c)}
+                          aria-label={isSelf(c) ? 'You cannot decide your own claim' : 'Select claim'}
+                          className="mt-1"
+                        />
+                      </label>
                       {employeeCell(c)}
                     </div>
                     <span className="text-base font-semibold tabular-nums">{fmtRM(c.amount)}</span>
                   </div>
                   {detailCell(c)}
-                  <div className="flex items-center justify-between gap-2 border-t pt-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-t pt-3">
                     <span className="text-xs text-muted-foreground">
                       Submitted {c.submittedAt ? fmtDate(c.submittedAt) : '—'}
                     </span>
@@ -478,7 +485,7 @@ export default function ApproverInbox({
             <Button variant="outline" onClick={() => setDialog(null)}>Cancel</Button>
             <Button
               variant="destructive"
-              disabled={remarks.trim().length < 3}
+              disabled={remarks.trim().length < 3} disabledReason="Write a remark first (3 letters or more)."
               onClick={confirmReject}
             >
               <X className="h-4 w-4" /> Reject claim

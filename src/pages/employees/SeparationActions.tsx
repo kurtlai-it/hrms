@@ -120,11 +120,11 @@ function ResultSummary({
   return (
     <div className="space-y-3 py-2">
       <p className="text-sm">
-        <span className="font-semibold text-lime-700">{result.succeeded.length}</span> {verb}
+        <span className="font-semibold text-success">{result.succeeded.length}</span> {verb}
         {result.skipped.length > 0 && (
           <>
             {' · '}
-            <span className="font-semibold text-amber-700">{result.skipped.length}</span> skipped
+            <span className="font-semibold text-primary">{result.skipped.length}</span> skipped
           </>
         )}
       </p>
@@ -136,16 +136,16 @@ function ResultSummary({
         </div>
       )}
       {totals && (
-        <p className="rounded-lg bg-stone-50 px-3 py-2 text-xs text-muted-foreground">
+        <p className="rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">
           Linked data: {summarizeCascadeCounts(totals)}
         </p>
       )}
       {result.skipped.length > 0 && (
-        <div className="max-h-32 space-y-1 overflow-y-auto rounded-lg border border-amber-200 bg-amber-50/60 p-2.5 text-xs">
+        <div className="max-h-32 space-y-1 overflow-y-auto rounded-lg border border-warning/40 bg-warning-soft p-2.5 text-xs">
           {result.skipped.map((s) => (
             <p key={s.employeeId}>
               <span className="font-medium text-foreground">{s.name}</span>
-              <span className="text-amber-800"> — {s.reason}</span>
+              <span className="text-warning"> — {s.reason}</span>
             </p>
           ))}
         </div>
@@ -157,7 +157,7 @@ function ResultSummary({
 function ProgressLine({ done, total }: { done: number; total: number }) {
   return (
     <p className="flex items-center gap-2 py-4 text-sm text-muted-foreground">
-      <Loader2 className="h-4 w-4 animate-spin text-amber-600" />
+      <Loader2 className="h-4 w-4 animate-spin text-primary" />
       Processing {done} of {total}…
     </p>
   );
@@ -174,7 +174,7 @@ interface DialogProps {
 /** Name line shown at the top of every dialog so scope is unambiguous. */
 function TargetLine({ targets }: { targets: Employee[] }) {
   return (
-    <p className="rounded-lg bg-stone-50 px-3 py-2 text-xs text-muted-foreground">
+    <p className="rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">
       {targets.length === 1
         ? targets[0]!.name
         : `${targets.length} employees selected — one shared set of terms applies to the whole batch.`}
@@ -283,7 +283,7 @@ function ResignDialog({ targets, actorName, open, onOpenChange, onCompleted }: D
               />
             </div>
             {separable.length < targets.length && (
-              <p className="flex items-start gap-1.5 text-xs text-amber-800">
+              <p className="flex items-start gap-1.5 text-xs text-warning">
                 <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                 {targets.length - separable.length} already-resigned employee(s) will be skipped
                 (use Delete for those records instead).
@@ -301,7 +301,7 @@ function ResignDialog({ targets, actorName, open, onOpenChange, onCompleted }: D
               <Button
                 onClick={submit}
                 disabled={separable.length === 0 || !noticeDate || !effectiveLwd}
-                className="bg-amber-600 text-white hover:bg-amber-700"
+                className="bg-primary text-primary-foreground hover:bg-primary"
               >
                 <UserMinus className="mr-1.5 h-4 w-4" />
                 Confirm resignation{targets.length > 1 ? ` (${separable.length})` : ''}
@@ -454,8 +454,8 @@ function VssDialog({ targets, actorName, open, onOpenChange, onCompleted }: Dial
             </div>
 
             {/* ── Payout + statutory final pay preview ── */}
-            <div className="rounded-xl border border-amber-200/70 bg-amber-50/60 p-3">
-              <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-amber-700">
+            <div className="rounded-xl border border-warning/40 bg-warning-soft p-3">
+              <p className="mb-2 flex items-center gap-1.5 text-xs font-bold text-primary">
                 <HandCoins className="h-3.5 w-3.5" /> Payout preview
               </p>
               {single ? (
@@ -464,7 +464,7 @@ function VssDialog({ targets, actorName, open, onOpenChange, onCompleted }: Dial
                     <dt className="text-muted-foreground">
                       VSS ex-gratia ({monthsNum || 0} mo × {fmtRM(salaryNum)})
                     </dt>
-                    <dd className="font-semibold text-amber-800">{fmtRM(payout)}</dd>
+                    <dd className="font-semibold text-warning">{fmtRM(payout)}</dd>
                   </div>
                   {finalPayPreview && (
                     <div className="flex justify-between gap-4">
@@ -473,9 +473,9 @@ function VssDialog({ targets, actorName, open, onOpenChange, onCompleted }: Dial
                     </div>
                   )}
                   {finalPayPreview && (
-                    <div className="flex justify-between gap-4 border-t border-amber-200/70 pt-1.5">
+                    <div className="flex justify-between gap-4 border-t border-warning/40 pt-1.5">
                       <dt className="font-medium">Indicative total</dt>
-                      <dd className="font-semibold text-amber-800">
+                      <dd className="font-semibold text-warning">
                         {fmtRM(payout + finalPayPreview.estimatedTotal)}
                       </dd>
                     </div>
@@ -501,7 +501,7 @@ function VssDialog({ targets, actorName, open, onOpenChange, onCompleted }: Dial
               <Button
                 onClick={submit}
                 disabled={separable.length === 0 || !lwd || monthsNum <= 0 || (single ? salaryNum <= 0 : false)}
-                className="bg-amber-600 text-white hover:bg-amber-700"
+                className="bg-primary text-primary-foreground hover:bg-primary"
               >
                 <FileSignature className="mr-1.5 h-4 w-4" />
                 Confirm VSS{targets.length > 1 ? ` (${separable.length})` : ''}
@@ -608,7 +608,7 @@ function OtherSeparationDialog({ targets, actorName, open, onOpenChange, onCompl
               />
             </div>
             {reason === 'absconded' && (
-              <p className="flex items-start gap-1.5 rounded-lg border border-orange-200 bg-orange-50/60 p-2.5 text-xs text-orange-900">
+              <p className="flex items-start gap-1.5 rounded-lg border border-warning/40 bg-warning-soft p-2.5 text-xs text-warning">
                 <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                 Absconded employees are flagged on the case — conduct the EA s.12(3) inquiry
                 before treating the contract as terminated.
@@ -626,7 +626,7 @@ function OtherSeparationDialog({ targets, actorName, open, onOpenChange, onCompl
               <Button
                 onClick={submit}
                 disabled={separable.length === 0 || !lwd}
-                className="bg-amber-600 text-white hover:bg-amber-700"
+                className="bg-primary text-primary-foreground hover:bg-primary"
               >
                 <DoorOpen className="mr-1.5 h-4 w-4" />
                 Confirm separation{targets.length > 1 ? ` (${separable.length})` : ''}
@@ -694,7 +694,7 @@ function DeleteDialog({ targets, actorName, open, onOpenChange, onCompleted }: D
     <Dialog open={open} onOpenChange={close}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle className="text-red-700">
+          <DialogTitle className="text-destructive">
             Permanently delete {single ? single.name : `${targets.length} employees`}?
           </DialogTitle>
           <DialogDescription>
@@ -706,7 +706,7 @@ function DeleteDialog({ targets, actorName, open, onOpenChange, onCompleted }: D
         {phase === 'form' && (
           <div className="grid gap-4 py-2">
             {blocked.length > 0 && (
-              <div className="space-y-1.5 rounded-xl border border-red-200 bg-red-50/60 p-3 text-xs text-red-900">
+              <div className="space-y-1.5 rounded-xl border border-destructive/40 bg-danger-soft p-3 text-xs text-destructive">
                 <p className="flex items-start gap-1.5 font-medium">
                   <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                   {blocked.length === 1 ? 'This record' : `${blocked.length} record(s)`} cannot be
@@ -750,8 +750,8 @@ function DeleteDialog({ targets, actorName, open, onOpenChange, onCompleted }: D
               <Button variant="outline" onClick={() => close(false)}>Cancel</Button>
               <Button
                 onClick={submit}
-                disabled={!confirmed}
-                className="bg-red-600 text-white hover:bg-red-700"
+                disabled={!confirmed} disabledReason="Tick the box to confirm first."
+                className="bg-destructive text-destructive-foreground hover:bg-destructive"
               >
                 <Trash2 className="mr-1.5 h-4 w-4" />
                 Delete permanently
@@ -832,7 +832,7 @@ export function SeparationMenu({
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            className="text-red-700 focus:text-red-800"
+            className="text-destructive focus:text-destructive"
             onSelect={() => setDialog('delete')}
           >
             <Trash2 className="mr-2 h-4 w-4" /> Delete (permanent)…

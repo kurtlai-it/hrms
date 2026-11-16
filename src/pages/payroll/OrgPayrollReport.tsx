@@ -42,7 +42,7 @@ export default function OrgPayrollReport({ run }: { run: PayrollRun }) {
   };
 
   return (
-    <Button variant="outline" onClick={handleDownload} disabled={generating}>
+    <Button variant="outline" onClick={handleDownload} disabled={generating} disabledReason={false}>
       {generating ? (
         <Loader2 className="h-4 w-4 animate-spin" />
       ) : (

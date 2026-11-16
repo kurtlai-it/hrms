@@ -66,15 +66,15 @@ function Meta({ h }: { h: Holiday }) {
 
 function CompulsoryCard({ h }: { h: Holiday }) {
   return (
-    <div className="flex items-start gap-2 rounded-xl border bg-muted/40 p-3">
+    <div className="flex items-start gap-2 rounded-xl border p-3">
       <Checkbox checked disabled aria-label={`${h.name} (compulsory, locked)`} className="mt-0.5" />
       <div className="min-w-0 flex-1">
         <p className="flex items-center gap-1.5 text-sm font-medium">
-          <Lock className="h-3 w-3 text-amber-600" /> {h.name}
+          <Lock className="h-3 w-3 text-primary" /> {h.name}
         </p>
         <Meta h={h} />
         <div className="mt-1 flex flex-wrap gap-1">
-          <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100 dark:bg-amber-900/40 dark:text-amber-200">
+          <Badge className="bg-warning-soft text-warning hover:bg-warning-soft">
             Compulsory
           </Badge>
           {h.tentative && <Badge variant="outline" className="border-dashed">Tentative</Badge>}
@@ -98,7 +98,7 @@ function PoolCard({
       className={cn(
         'flex cursor-pointer items-start gap-2 rounded-xl border p-3 transition-colors',
         checked
-          ? 'border-emerald-300 bg-emerald-50/60 dark:border-emerald-900/60 dark:bg-emerald-950/30'
+          ? 'border-success/40 bg-success-soft'
           : 'hover:bg-muted/40',
       )}
     >
@@ -260,11 +260,11 @@ export default function GazettedSelectionPanel({ year, state, actor, canManage }
                     <Meta h={h} />
                     <div className="mt-1">
                       {h.isCompulsoryEA ? (
-                        <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100 dark:bg-amber-900/40 dark:text-amber-200">
+                        <Badge className="bg-warning-soft text-warning hover:bg-warning-soft">
                           Compulsory
                         </Badge>
                       ) : (
-                        <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 dark:bg-emerald-900/40 dark:text-emerald-200">
+                        <Badge className="bg-success-soft text-success hover:bg-success-soft">
                           Chosen
                         </Badge>
                       )}
@@ -299,8 +299,8 @@ export default function GazettedSelectionPanel({ year, state, actor, canManage }
           <Badge
             className={cn(
               total >= STATUTORY_TOTAL
-                ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-100 dark:bg-emerald-900/40 dark:text-emerald-200'
-                : 'bg-amber-100 text-amber-800 hover:bg-amber-100 dark:bg-amber-900/40 dark:text-amber-200',
+                ? 'bg-success-soft text-success hover:bg-success-soft'
+                : 'bg-warning-soft text-warning hover:bg-warning-soft',
             )}
           >
             {total} / {STATUTORY_TOTAL} gazetted days
@@ -311,15 +311,15 @@ export default function GazettedSelectionPanel({ year, state, actor, canManage }
             <Badge variant="outline" className="border-dashed">Not published</Badge>
           )}
           {hasUnpublishedChanges && (
-            <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100 dark:bg-amber-900/40 dark:text-amber-200">
+            <Badge className="bg-warning-soft text-warning hover:bg-warning-soft">
               Unpublished changes
             </Badge>
           )}
         </div>
 
         {stateMismatch && (
-          <Alert className="rounded-xl border-sky-200 bg-sky-50/60 dark:border-sky-900/40 dark:bg-sky-950/30">
-            <Info className="h-4 w-4 text-sky-700 dark:text-sky-400" />
+          <Alert className="rounded-xl border-primary/30 bg-accent">
+            <Info className="h-4 w-4 text-primary" />
             <AlertTitle>One selection per year</AlertTitle>
             <AlertDescription className="text-sm">
               The saved {year} selection is for {stateInfo(stateMismatch.state).name}. Switch the
@@ -331,8 +331,8 @@ export default function GazettedSelectionPanel({ year, state, actor, canManage }
 
         {/* Live advice panel */}
         {validation.valid ? (
-          <Alert className="rounded-xl border-emerald-200 bg-emerald-50/60 dark:border-emerald-900/40 dark:bg-emerald-950/30">
-            <CheckCircle2 className="h-4 w-4 text-emerald-700 dark:text-emerald-400" />
+          <Alert className="rounded-xl border-success/40 bg-success-soft">
+            <CheckCircle2 className="h-4 w-4 text-success" />
             <AlertTitle>Complete</AlertTitle>
             <AlertDescription className="text-sm">
               {STATUTORY_TOTAL} gazetted paid holidays selected ({COMPULSORY_COUNT} compulsory +{' '}
@@ -341,8 +341,8 @@ export default function GazettedSelectionPanel({ year, state, actor, canManage }
             </AlertDescription>
           </Alert>
         ) : (
-          <Alert className="rounded-xl border-amber-200 bg-amber-50/60 dark:border-amber-900/40 dark:bg-amber-950/30">
-            <AlertTriangle className="h-4 w-4 text-amber-700 dark:text-amber-400" />
+          <Alert className="rounded-xl border-warning/40 bg-warning-soft">
+            <AlertTriangle className="h-4 w-4 text-warning" />
             <AlertTitle>Compliance advice</AlertTitle>
             <AlertDescription className="text-sm">
               <ul className="list-disc space-y-1 pl-4">
@@ -354,8 +354,8 @@ export default function GazettedSelectionPanel({ year, state, actor, canManage }
           </Alert>
         )}
         {validation.warnings.length > 0 && (
-          <Alert className="rounded-xl border-amber-200/70 bg-amber-50/40 dark:border-amber-900/30 dark:bg-amber-950/20">
-            <Info className="h-4 w-4 text-amber-700 dark:text-amber-400" />
+          <Alert className="rounded-xl border-warning/40 bg-warning-soft">
+            <Info className="h-4 w-4 text-primary" />
             <AlertTitle>Notes</AlertTitle>
             <AlertDescription className="text-sm">
               <ul className="list-disc space-y-1 pl-4">
@@ -369,9 +369,9 @@ export default function GazettedSelectionPanel({ year, state, actor, canManage }
 
         {/* Compulsory — locked */}
         <div className="space-y-2">
-          <h3 className="text-sm font-medium">
+          <h2 className="text-base font-bold">
             Compulsory by law <span className="text-muted-foreground">(locked — always paid)</span>
-          </h3>
+          </h2>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {compulsory.map((h) => (
               <CompulsoryCard key={`${h.date}-${h.name}`} h={h} />
@@ -383,10 +383,10 @@ export default function GazettedSelectionPanel({ year, state, actor, canManage }
 
         {/* Choosable pool */}
         <div className="space-y-2">
-          <h3 className="text-sm font-medium">
+          <h2 className="text-base font-bold">
             Choose {CHOSEN_COUNT} from the gazetted pool{' '}
             <span className="text-muted-foreground">({chosenCount} selected)</span>
-          </h3>
+          </h2>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {pool.map((h) => (
               <PoolCard key={`${h.date}-${h.name}`} h={h} checked={draft.has(h.date)} onToggle={toggle} />
@@ -407,7 +407,7 @@ export default function GazettedSelectionPanel({ year, state, actor, canManage }
           <Button
             variant="ghost"
             onClick={onReset}
-            className={cn('ml-auto gap-1.5', resetArmed && 'text-rose-600 hover:text-rose-600')}
+            className={cn('ml-auto gap-1.5', resetArmed && 'text-destructive hover:text-destructive')}
           >
             <RotateCcw className="h-4 w-4" />
             {resetArmed ? 'Click again to confirm reset' : `Reset ${year}`}

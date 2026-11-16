@@ -5,20 +5,9 @@
  * years-of-service scatter with the benchmark band, and department averages.
  * Benchmarks come from @/lib/salaryBenchmark — indicative market estimates.
  */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Area,
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  ComposedChart,
-  Line,
-  ResponsiveContainer,
-  Scatter,
-  Tooltip,
-  XAxis,
-  YAxis,
+  Area, Bar, BarChart, CartesianGrid, ComposedChart, Line, ResponsiveContainer, Scatter, Tooltip, XAxis, YAxis, LabelList,
 } from 'recharts';
 import type { TooltipProps } from 'recharts';
 import { Info } from 'lucide-react';
@@ -44,15 +33,16 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { CHART_LABEL, CHART_TICK, barNameLabel, lineEndLabel } from '@/lib/chartText';
 
 type CompaStatus = 'below' | 'in' | 'above';
 
 const compaStatus = (c: number): CompaStatus => (c < 0.9 ? 'below' : c > 1.1 ? 'above' : 'in');
 
 const COMPA_STYLE: Record<CompaStatus, { badge: string; dot: string; label: string }> = {
-  below: { badge: 'border-transparent bg-red-100 text-red-800 hover:bg-red-100', dot: '#dc2626', label: 'Below range' },
-  in: { badge: 'border-transparent bg-green-100 text-green-800 hover:bg-green-100', dot: '#16a34a', label: 'In range' },
-  above: { badge: 'border-transparent bg-amber-100 text-amber-800 hover:bg-amber-100', dot: '#d97706', label: 'Above range' },
+  below: { badge: 'border-transparent bg-danger-soft text-destructive hover:bg-danger-soft', dot: 'hsl(var(--destructive))', label: 'Below range' },
+  in: { badge: 'border-transparent bg-success-soft text-success hover:bg-success-soft', dot: 'hsl(var(--success))', label: 'In range' },
+  above: { badge: 'border-transparent bg-warning-soft text-warning hover:bg-warning-soft', dot: 'hsl(var(--warning))', label: 'Above range' },
 };
 
 interface EquityRow {
@@ -81,13 +71,29 @@ interface BandPoint {
 interface ScatterPoint {
   id: string;
   name: string;
-  role: string;
+  jobTitle: string;
   years: number;
   salary: number;
   compa: number;
 }
 
 const ALL_ROLES = '__all';
+
+/** Shape per status, so it never rests on colour alone: below ▼, in ●, above ▲. */
+function compaPath(status: CompaStatus, x: number, y: number, r = 6): string {
+  if (status === 'in') return `M ${x - r} ${y} a ${r} ${r} 0 1 0 ${2 * r} 0 a ${r} ${r} 0 1 0 ${-2 * r} 0`;
+  const d = status === 'below' ? 1 : -1;
+  return `M ${x - r - 1} ${y - d * r * 0.8} L ${x + r + 1} ${y - d * r * 0.8} L ${x} ${y + d * r} Z`;
+}
+
+/** The status mark as a small icon (summary chips: the chart's key). */
+function CompaMark({ status }: { status: CompaStatus }) {
+  return (
+    <svg aria-hidden width="18" height="18" viewBox="0 0 18 18" className="shrink-0">
+      <path d={compaPath(status, 9, 9, 7)} fill={COMPA_STYLE[status].dot} />
+    </svg>
+  );
+}
 
 /** Seniority prefixes are stripped so "Senior Software Engineer" hits the "Software Engineer" benchmark. */
 const normalizeTitle = (title: string) => title.replace(/^(senior|junior|lead)\s+/i, '');
@@ -102,7 +108,7 @@ function EquityTooltip({ active, payload }: TooltipProps<number, string>) {
         <div className="space-y-0.5">
           <p className="font-semibold">{point.name}</p>
           <p className="text-muted-foreground">
-            {point.role} · {point.years} yrs service
+            {point.jobTitle} · {point.years} yrs service
           </p>
           <p className="tabular-nums">
             {fmtRM(point.salary)} · compa-ratio {point.compa.toFixed(2)}
@@ -122,6 +128,27 @@ function EquityTooltip({ active, payload }: TooltipProps<number, string>) {
 }
 
 export default function EquityAnalyzer() {
+  // Recharts wraps each scatter point in an unnamed role="img" group; give it
+  // the point's name (the custom shape cannot reach its wrapper).
+  const scatterBox = useRef<HTMLDivElement>(null);
+  // Recharts draws the points after it has measured the box, so watch for them.
+  useEffect(() => {
+    const box = scatterBox.current;
+    if (!box) return;
+    const name = () => {
+      for (const g of box.querySelectorAll('.recharts-scatter-symbol[role="img"]')) {
+        const mark = g.querySelector('path[aria-label]');
+        if (!mark) continue;
+        g.setAttribute('aria-label', mark.getAttribute('aria-label')!);
+        mark.removeAttribute('role');
+        mark.removeAttribute('aria-label');
+      }
+    };
+    name();
+    const mo = new MutationObserver(name);
+    mo.observe(box, { childList: true, subtree: true });
+    return () => mo.disconnect();
+  }, []);
   const { items: employees } = useCollection<Employee>('employees');
   const { items: departments } = useCollection<Department>('departments');
   const { items: positions } = useCollection<Position>('positions');
@@ -196,7 +223,7 @@ export default function EquityAnalyzer() {
     () =>
       rows
         .filter((r) => scatterRole === ALL_ROLES || r.matchedRole === scatterRole)
-        .map((r) => ({ id: r.id, name: r.name, role: r.role, years: r.years, salary: r.salary, compa: r.compa })),
+        .map((r) => ({ id: r.id, name: r.name, jobTitle: r.role, years: r.years, salary: r.salary, compa: r.compa })),
     [rows, scatterRole],
   );
 
@@ -235,7 +262,7 @@ export default function EquityAnalyzer() {
                 <p className="text-2xl font-semibold tabular-nums">{counts[k]}</p>
                 <p className="text-xs text-muted-foreground">{COMPA_STYLE[k].label}</p>
               </div>
-              <span className="h-3 w-3 rounded-full" style={{ backgroundColor: COMPA_STYLE[k].dot }} />
+              <CompaMark status={k} />
             </CardContent>
           </Card>
         ))}
@@ -248,7 +275,7 @@ export default function EquityAnalyzer() {
             <div className="space-y-1">
               <CardTitle className="text-base">Salary vs years of service</CardTitle>
               <CardDescription>
-                Each dot is an employee, colored by compa-ratio; the band is the benchmark range.
+                Each mark is an employee; its shape and colour show the compa-ratio. The band is the benchmark range.
               </CardDescription>
             </div>
             <div className="space-y-1.5">
@@ -270,48 +297,63 @@ export default function EquityAnalyzer() {
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="h-[320px] w-full">
+          <div ref={scatterBox} className="h-[320px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={band} margin={{ top: 8, right: 16, bottom: 24, left: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--chart-grid))" vertical={false} />
                 <XAxis
                   dataKey="years"
                   type="number"
                   domain={[0, 20]}
                   tickCount={11}
-                  tick={{ fontSize: 11 }}
-                  label={{ value: 'Years of service', position: 'insideBottom', offset: -14, fontSize: 11 }}
+                  tick={CHART_TICK}
+                  label={{ value: 'Years of service', position: 'insideBottom', offset: -18, ...CHART_LABEL }}
                 />
                 <YAxis
                   type="number"
                   domain={[0, 'auto']}
                   width={44}
-                  tick={{ fontSize: 11 }}
+                  tick={CHART_TICK}
                   tickFormatter={(v: number) => `${Math.round(Number(v) / 1000)}k`}
                 />
                 <Tooltip content={<EquityTooltip />} />
-                <Area dataKey="bandBase" stackId="band" stroke="none" fill="transparent" isAnimationActive={false} />
-                <Area dataKey="bandSpan" stackId="band" stroke="none" fill="#fef3c7" name="Benchmark band" />
+                {/* The band's lower and upper edges are drawn in chart-3 (3:1 on the card); the fill is a soft tint. */}
+                <Area dataKey="bandBase" stackId="band" stroke="hsl(var(--chart-3))" strokeWidth={1.5} fill="transparent" isAnimationActive={false} />
+                <Area dataKey="bandSpan" stackId="band" stroke="hsl(var(--chart-3))" strokeWidth={1.5} fill="hsl(var(--accent))" name="Benchmark band" />
                 <Line
                   dataKey="median"
-                  stroke="#d97706"
+                  stroke="hsl(var(--chart-2))"
                   strokeWidth={2}
                   strokeDasharray="6 4"
                   dot={false}
                   name="Benchmark median"
+                >
+                  <LabelList content={lineEndLabel('Median', band.length)} />
+                </Line>
+                <Scatter
+                  data={scatterPoints}
+                  dataKey="salary"
+                  name="Employees"
+                  shape={(props: unknown) => {
+                    const { cx = 0, cy = 0, payload } = props as { cx?: number; cy?: number; payload: ScatterPoint };
+                    const status = compaStatus(payload.compa);
+                    return (
+                      <path
+                        role="img"
+                        aria-label={`${payload.name}: ${fmtRM(payload.salary)}, ${COMPA_STYLE[status].label}`}
+                        d={compaPath(status, cx, cy)}
+                        fill={COMPA_STYLE[status].dot}
+                      />
+                    );
+                  }}
                 />
-                <Scatter data={scatterPoints} dataKey="salary" name="Employees">
-                  {scatterPoints.map((p) => (
-                    <Cell key={p.id} fill={COMPA_STYLE[compaStatus(p.compa)].dot} fillOpacity={0.85} />
-                  ))}
-                </Scatter>
               </ComposedChart>
             </ResponsiveContainer>
           </div>
           <p className="text-xs text-muted-foreground">
             Band = {scatterRole === ALL_ROLES ? 'generic Malaysian benchmark' : `${scatterRole} benchmark`} at the
             Klang Valley baseline (×1.00); individual rows below apply each employee&apos;s own state wage factor.
-            Dots: red below range (compa &lt; 0.90), green in range (0.90–1.10), amber above (&gt; 1.10).
+            Marks: ▼ red below range (compa &lt; 0.90), ● green in range (0.90–1.10), ▲ amber above (&gt; 1.10).
           </p>
         </CardContent>
       </Card>
@@ -326,11 +368,11 @@ export default function EquityAnalyzer() {
           <div className="h-[240px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={deptStats} margin={{ top: 8, right: 16, bottom: 0, left: 0 }} barCategoryGap="30%">
-                <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" vertical={false} />
-                <XAxis dataKey="code" tick={{ fontSize: 11 }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--chart-grid))" vertical={false} />
+                <XAxis dataKey="code" tick={CHART_TICK} />
                 <YAxis
                   width={44}
-                  tick={{ fontSize: 11 }}
+                  tick={CHART_TICK}
                   tickFormatter={(v: number) => `${Math.round(Number(v) / 1000)}k`}
                 />
                 <Tooltip
@@ -339,17 +381,21 @@ export default function EquityAnalyzer() {
                     name === 'avgSalary' ? 'Avg salary' : 'Avg benchmark median',
                   ]}
                 />
-                <Bar dataKey="avgSalary" name="Avg salary" fill="#f59e0b" radius={[6, 6, 0, 0]} />
-                <Bar dataKey="avgMedian" name="Avg benchmark median" fill="#d6d3d1" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="avgSalary" name="Avg salary" fill="hsl(var(--chart-1))" radius={[6, 6, 0, 0]}>
+                  <LabelList content={barNameLabel('Avg salary', deptStats.map((d) => d.avgSalary))} />
+                </Bar>
+                <Bar dataKey="avgMedian" name="Avg benchmark median" fill="hsl(var(--chart-2))" radius={[6, 6, 0, 0]}>
+                  <LabelList content={barNameLabel('Median', deptStats.map((d) => d.avgMedian))} />
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
           <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-sm bg-amber-500" /> Avg salary
+              <span className="h-2.5 w-2.5 rounded-sm bg-primary" /> Avg salary
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-sm bg-stone-300" /> Avg benchmark median
+              <span className="h-2.5 w-2.5 rounded-sm bg-input" /> Avg benchmark median
             </span>
           </div>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
@@ -434,7 +480,7 @@ export default function EquityAnalyzer() {
                       <TableCell
                         className={cn(
                           'text-right tabular-nums',
-                          delta < 0 ? 'text-red-600' : delta > 0 ? 'text-amber-700' : 'text-muted-foreground',
+                          delta < 0 ? 'text-destructive' : delta > 0 ? 'text-primary' : 'text-muted-foreground',
                         )}
                       >
                         {delta >= 0 ? '+' : ''}
@@ -477,7 +523,7 @@ export default function EquityAnalyzer() {
             ))}
           </div>
 
-          <div className="flex items-start gap-2 rounded-lg bg-amber-50 px-3 py-2.5 text-xs text-amber-900">
+          <div className="flex items-start gap-2 rounded-lg bg-warning-soft px-3 py-2.5 text-xs text-warning">
             <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
             <p>
               Benchmarks are indicative market estimates from the researched 2025–2026 dataset

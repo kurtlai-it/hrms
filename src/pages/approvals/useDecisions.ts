@@ -15,11 +15,12 @@
  *     block, 104h/month cap re-checked at approval time, otApproved flips —
  *     the exact field payrollEngine pays on).
  */
+import { claimApprovedMessage, claimRejectedMessage, claimsApprovedMessage, leaveDecidedMessage, otDecidedMessage } from '@/lib/decisionMessages';
 import { useMemo } from 'react';
 import { toast } from 'sonner';
 import { logAudit, useCollection } from '@/lib/db';
 import type { Employee, LeaveBalance } from '@/lib/types';
-import { fmtDate, fmtRM, round2 } from '@/lib/utils';
+import { fmtRM, round2 } from '@/lib/utils';
 import { actorName, useAuthSafe } from '@/lib/useAuthSafe';
 import { MAX_OT_HOURS_MONTH } from '@/lib/statutory';
 import type { AttendanceX } from '@/pages/attendance/model';
@@ -133,7 +134,7 @@ export function useLeaveDecisions() {
       detail: `${name} — ${LEAVE_TYPE_META[req.type].label} ${req.days}d (${req.startDate} → ${req.endDate})${remarks.trim() ? ` · ${remarks.trim()}` : ''}`,
     });
     if (!opts.quiet) {
-      toast.success(action === 'approved' ? `Leave approved for ${name}` : `Leave rejected for ${name}`);
+      toast.success(leaveDecidedMessage(name, action === 'approved', req.startDate, req.endDate, req.days));
     }
     return { ok: true };
   };
@@ -294,8 +295,8 @@ export function useClaimDecisions() {
     }
     toast.success(
       decidable.length > 1
-        ? `${decidable.length} claims approved — ${fmtRM(round2(decidable.reduce((s, c) => s + c.amount, 0)))} total`
-        : `Claim approved for ${empOf(decidable[0].employeeId)?.name ?? decidable[0].employeeId} — ${fmtRM(decidable[0].amount)}`,
+        ? claimsApprovedMessage(decidable.length, fmtRM(round2(decidable.reduce((s, c) => s + c.amount, 0))))
+        : claimApprovedMessage(empOf(decidable[0].employeeId)?.name ?? decidable[0].employeeId, fmtRM(decidable[0].amount)),
     );
     return { ok: true };
   };
@@ -318,7 +319,7 @@ export function useClaimDecisions() {
       entityId: c.id,
       detail: `${categoryMetaOf(c).label} — ${fmtRM(c.amount)} for ${empOf(c.employeeId)?.name ?? c.employeeId} · ${note}`,
     });
-    toast.success(`Claim rejected for ${empOf(c.employeeId)?.name ?? c.employeeId} — ${fmtRM(c.amount)}`);
+    toast.success(claimRejectedMessage(empOf(c.employeeId)?.name ?? c.employeeId, fmtRM(c.amount)));
     return { ok: true };
   };
 
@@ -375,11 +376,7 @@ export function useOtDecisions() {
       detail: `${empName(rec.employeeId)} ${rec.otHours}h OT on ${rec.date} ${approve ? 'approved' : 'rejected'}${note ? ` · ${note}` : ''}`,
     });
     if (!opts.quiet) {
-      toast.success(
-        approve
-          ? `OT approved for ${empName(rec.employeeId)} — ${rec.otHours}h on ${fmtDate(rec.date)}`
-          : `OT rejected for ${empName(rec.employeeId)} — ${rec.otHours}h on ${fmtDate(rec.date)}`,
-      );
+      toast.success(otDecidedMessage(empName(rec.employeeId), approve, rec.otHours, rec.date));
     }
     return { ok: true };
   };

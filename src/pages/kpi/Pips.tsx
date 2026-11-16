@@ -41,11 +41,11 @@ const isoDate = (d: Date) => d.toISOString().slice(0, 10);
 function statusBadge(s: Pip['status']): string {
   switch (s) {
     case 'active':
-      return 'bg-amber-100 text-amber-800 border-amber-200';
+      return 'bg-warning-soft text-warning border-warning/40';
     case 'completed':
-      return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+      return 'bg-success-soft text-success border-success/40';
     case 'cancelled':
-      return 'bg-stone-200 text-stone-700 border-stone-300';
+      return 'bg-secondary text-foreground border-border';
   }
 }
 
@@ -163,7 +163,7 @@ export default function Pips({ employees }: Props) {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">
-          <ClipboardList className="h-4 w-4 text-amber-600" />
+          <ClipboardList className="h-4 w-4 text-primary" />
           <h2 className="text-base font-semibold">Improvement plans</h2>
         </div>
         {employeeOptions.length > 0 && (
@@ -266,7 +266,7 @@ export default function Pips({ employees }: Props) {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button onClick={createPip} disabled={!empId || !endDate || !goalsText.trim()}>Create PIP</Button>
+            <Button onClick={createPip} disabled={!empId || !endDate || !goalsText.trim()} disabledReason="Fill in the required fields first.">Create PIP</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -278,7 +278,7 @@ export default function Pips({ employees }: Props) {
             <>
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
-                  <ClipboardList className="h-5 w-5 text-amber-600" />
+                  <ClipboardList className="h-5 w-5 text-primary" />
                   {empOf(detail.employeeId)?.name ?? detail.employeeId}
                   <Badge variant="secondary" className={cn('border capitalize', statusBadge(detail.status))}>{detail.status}</Badge>
                 </DialogTitle>
@@ -290,9 +290,9 @@ export default function Pips({ employees }: Props) {
 
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">Goals</Label>
+                  <Label className="text-xs text-muted-foreground font-bold">Goals</Label>
                   {detail.goals.map((g) => (
-                    <div key={g.id} className="flex items-start gap-2.5 rounded-lg border px-3 py-2.5">
+                    <label key={g.id} className="flex cursor-pointer items-start gap-2.5 rounded-lg border px-3 py-2.5">
                       <Checkbox
                         checked={g.status === 'done'}
                         disabled={detail.status !== 'active' || !canManagePip(auth, detail.employeeId)}
@@ -305,20 +305,20 @@ export default function Pips({ employees }: Props) {
                         </div>
                         <div className="text-xs text-muted-foreground">due {fmtDate(g.dueDate)}</div>
                       </div>
-                      {g.status === 'done' && <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />}
-                    </div>
+                      {g.status === 'done' && <CheckCircle2 className="h-4 w-4 shrink-0 text-success" />}
+                    </label>
                   ))}
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">Check-in notes</Label>
+                  <Label className="text-xs text-muted-foreground font-bold">Check-in notes</Label>
                   {detail.notes.length === 0 ? (
                     <p className="rounded-lg border border-dashed px-3 py-4 text-center text-sm text-muted-foreground">
                       No check-ins recorded yet.
                     </p>
                   ) : (
                     detail.notes.map((n) => (
-                      <div key={n.id} className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2.5">
+                      <div key={n.id} className="rounded-xl border border-border bg-muted px-3 py-2.5">
                         <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
                           <span className="font-medium text-foreground">{n.authorName}</span>
                           <span>{fmtDate(n.date)}</span>
@@ -330,7 +330,7 @@ export default function Pips({ employees }: Props) {
                   {detail.status === 'active' && canManagePip(auth, detail.employeeId) && (
                     <div className="flex items-start gap-2">
                       <Textarea rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Add a dated check-in note…" />
-                      <Button size="icon" onClick={addNote} disabled={!note.trim()} aria-label="Add note">
+                      <Button size="icon" onClick={addNote} disabled={!note.trim()} disabledReason="Fill in the required fields first." aria-label="Add note">
                         <Send className="h-4 w-4" />
                       </Button>
                     </div>

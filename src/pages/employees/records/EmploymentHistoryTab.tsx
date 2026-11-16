@@ -162,8 +162,8 @@ export default function EmploymentHistoryTab({ employee, file, readOnly, actorNa
               Cancel
             </Button>
             <Button
-              className="bg-amber-600 text-white hover:bg-amber-700"
-              disabled={!form.company.trim() || !form.role.trim() || !form.from || !form.to}
+              className="bg-primary text-primary-foreground hover:bg-primary"
+              disabled={!form.company.trim() || !form.role.trim() || !form.from || !form.to} disabledReason="Fill in the required fields first."
               onClick={submit}
             >
               {editing ? 'Save changes' : 'Add employment'}

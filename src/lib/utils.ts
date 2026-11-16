@@ -57,17 +57,12 @@ export function round2(n: number): number {
   return Math.round((n + Number.EPSILON) * 100) / 100;
 }
 
-/** Deterministic avatar tint from a name (warm palette). */
-export function avatarTone(name: string): string {
-  const tones = [
-    'bg-amber-100 text-amber-800',
-    'bg-orange-100 text-orange-800',
-    'bg-stone-200 text-stone-700',
-    'bg-yellow-100 text-yellow-800',
-    'bg-red-100 text-red-800',
-    'bg-lime-100 text-lime-800',
-  ];
-  let h = 0;
-  for (const c of name) h = (h * 31 + c.charCodeAt(0)) % 997;
-  return tones[h % tones.length];
+/**
+ * Initials circle tone: one neutral tone for everyone. (It used to vary by
+ * name, borrowing the success/warning/danger colours, which said nothing.)
+ * Lists and tables show the name alone; this is for person cards and pages.
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- callers still pass the name; the tone no longer depends on it
+export function avatarTone(_name?: string): string {
+  return 'bg-tile text-icon-main';
 }

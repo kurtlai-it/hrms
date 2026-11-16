@@ -23,9 +23,9 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
 
 const STATUS_STYLES: Record<OnboardingChecklist['status'], string> = {
-  'not-started': 'border-stone-300 text-stone-600',
-  'in-progress': 'border-amber-500 bg-amber-50 text-amber-700 dark:bg-amber-950/40',
-  completed: 'border-lime-600 bg-lime-50 text-lime-700 dark:bg-lime-950/40',
+  'not-started': 'border-border text-muted-foreground',
+  'in-progress': 'border-warning/40 bg-warning-soft text-warning',
+  completed: 'border-success bg-success-soft text-success',
 };
 
 interface Props {
@@ -95,7 +95,7 @@ export default function ChecklistCard({ checklist, employee, buddy, actorName }:
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="truncate font-medium">{employee?.name ?? 'Unknown employee'}</span>
+              <span className="break-words font-medium">{employee?.name ?? 'Unknown employee'}</span>
               <Badge variant="outline" className={cn('text-xs', STATUS_STYLES[checklist.status])}>
                 {ONBOARDING_STATUS_LABELS[checklist.status]}
               </Badge>
@@ -127,7 +127,7 @@ export default function ChecklistCard({ checklist, employee, buddy, actorName }:
           <div className="mt-4 space-y-4 border-t pt-4">
             {grouped.map(([category, items]) => (
               <div key={category}>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-500">
+                <p className="mb-2 text-xs font-bold text-primary">
                   {category}
                 </p>
                 <ul className="space-y-2">

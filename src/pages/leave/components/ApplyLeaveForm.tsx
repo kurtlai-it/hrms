@@ -223,9 +223,9 @@ export default function ApplyLeaveForm({ employees, leavesApi, balances }: Props
             </div>
           </div>
 
-          <div className="flex items-center justify-between rounded-xl border px-4 py-3">
+          <label htmlFor="half-day" className="flex items-center justify-between rounded-xl border px-4 py-3 cursor-pointer">
             <div className="space-y-0.5">
-              <Label htmlFor="half-day" className="text-sm font-medium">Half day</Label>
+              <span className="text-sm font-medium block font-medium">Half day</span>
               <p className="text-xs text-muted-foreground">
                 {halfDayAllowed ? 'Counts as 0.5 day (morning).' : 'Only for single-day, working-day leave types.'}
               </p>
@@ -236,7 +236,7 @@ export default function ApplyLeaveForm({ employees, leavesApi, balances }: Props
               disabled={!halfDayAllowed}
               onCheckedChange={setHalfDay}
             />
-          </div>
+          </label>
 
           <div className="space-y-2">
             <Label htmlFor="apply-reason">Reason</Label>
@@ -271,13 +271,13 @@ export default function ApplyLeaveForm({ employees, leavesApi, balances }: Props
           )}
 
           {submitted && (
-            <Alert className="border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-100">
+            <Alert className="border-success/40 bg-success-soft text-success">
               <CheckCircle2 className="h-4 w-4" />
               <AlertDescription>{submitted}</AlertDescription>
             </Alert>
           )}
 
-          <Button onClick={onSubmit} disabled={!canSubmit} className="w-full gap-1.5 sm:w-auto">
+          <Button onClick={onSubmit} disabled={!canSubmit} disabledReason="Fill in the required fields first." className="w-full gap-1.5 sm:w-auto">
             <Send className="h-4 w-4" /> Submit request
           </Button>
         </CardContent>
@@ -287,7 +287,7 @@ export default function ApplyLeaveForm({ employees, leavesApi, balances }: Props
       <Card className="rounded-xl lg:col-span-2">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
-            <CalendarClock className="h-4 w-4 text-amber-600" /> Request summary
+            <CalendarClock className="h-4 w-4 text-primary" /> Request summary
           </CardTitle>
           <CardDescription>{LEAVE_TYPE_META[type].hint}</CardDescription>
         </CardHeader>
@@ -323,7 +323,7 @@ export default function ApplyLeaveForm({ employees, leavesApi, balances }: Props
           )}
 
           {count && count.holidays.length > 0 && (
-            <Alert className="border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-100">
+            <Alert className="border-warning/40 bg-warning-soft text-warning">
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>Includes public holiday(s)</AlertTitle>
               <AlertDescription>

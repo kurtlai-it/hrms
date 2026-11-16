@@ -1,0 +1,785 @@
+{
+  "bar": {
+    "back": "Kembali",
+    "home": "Utama",
+    "help": "Bantuan",
+    "me": "Saya",
+    "todo": "Tugasan ({{count}})",
+    "logo": "ASM"
+  },
+  "me": {
+    "language": "Bahasa",
+    "textSize": "Saiz teks",
+    "normal": "Biasa",
+    "big": "Besar",
+    "bigger": "Lebih besar",
+    "signOut": "Log keluar",
+    "screen": "Skrin",
+    "light": "Cerah",
+    "dark": "Gelap",
+    "myPayslips": "Slip gaji saya",
+    "superAdmin": "Konsol Pentadbir Super",
+    "devRole": "Peranan ujian (pembangun sahaja)",
+    "signedInAs": "Log masuk sebagai {{name}} ({{role}})"
+  },
+  "home": {
+    "what": "Apa yang anda mahu buat?",
+    "pick": "Pilih satu:",
+    "start": "Mula",
+    "nothing": "Tiada apa-apa menunggu anda. Permohonan baharu akan dipaparkan di sini.",
+    "todoLeave_one": "Cuti untuk diluluskan ({{count}})",
+    "todoLeave_other": "Cuti untuk diluluskan ({{count}})",
+    "todoClaims_one": "Tuntutan perbelanjaan untuk diluluskan ({{count}}) · {{amount}}",
+    "todoClaims_other": "Tuntutan perbelanjaan untuk diluluskan ({{count}}) · {{amount}}",
+    "todoOt_one": "Kerja lebih masa untuk diluluskan ({{count}})",
+    "todoOt_other": "Kerja lebih masa untuk diluluskan ({{count}})",
+    "todoClockIn": "Anda belum daftar masuk kerja hari ini",
+    "clockIn": "Daftar masuk",
+    "todoPayrollStart": "Gaji {{month}}: belum dimulakan",
+    "todoPayrollFinish": "Gaji {{month}}: draf, belum selesai",
+    "todoOnboarding_one": "Borang staf baharu untuk disemak ({{count}})",
+    "todoOnboarding_other": "Borang staf baharu untuk disemak ({{count}})",
+    "todoOwnLeave_one": "Permohonan cuti anda menunggu keputusan ({{count}})",
+    "todoOwnLeave_other": "Permohonan cuti anda menunggu keputusan ({{count}})",
+    "todoOwnClaims_one": "Tuntutan perbelanjaan anda menunggu keputusan ({{count}})",
+    "todoOwnClaims_other": "Tuntutan perbelanjaan anda menunggu keputusan ({{count}})",
+    "myNumbers": "Angka saya",
+    "leaveLeft": "Baki cuti tahunan",
+    "presentMonth": "Hari hadir bulan ini",
+    "claimsWaiting": "Tuntutan menunggu kelulusan",
+    "noRecord": "Belum ada rekod",
+    "claimsValue_one": "{{count}} tuntutan ({{amount}})",
+    "claimsValue_other": "{{count}} tuntutan ({{amount}})",
+    "waitingFor": "Menunggu anda · {{date}}",
+    "reviewLeave": "Semak cuti",
+    "reviewClaims": "Semak tuntutan",
+    "reviewOt": "Semak kerja lebih masa",
+    "checkForms": "Semak borang",
+    "startPayroll": "Mulakan gaji",
+    "finishPayroll": "Selesaikan gaji",
+    "seeMyLeave": "Lihat cuti saya",
+    "seeMyClaims": "Lihat tuntutan saya",
+    "todoPayrollStartDue": "Gaji {{month}}: belum dimulakan · bayar staf sebelum {{date}}",
+    "todoPayrollFinishDue": "Gaji {{month}}: draf, belum selesai · bayar staf sebelum {{date}}",
+    "todoStaffPay": "Bayar gaji staf bagi {{month}}: tarikh akhir {{date}}",
+    "todoStatutory": "KWSP, PERKESO, SIP dan PCB bagi {{month}}: tarikh akhir {{date}}",
+    "todoProbationEnded_one": "Tempoh percubaan tamat, belum disahkan ({{count}}) · tamat {{date}}",
+    "todoProbationEnded_other": "Tempoh percubaan tamat, belum disahkan ({{count}}) · yang pertama tamat {{date}}",
+    "todoProbationEnds_one": "Tempoh percubaan hampir tamat ({{count}}) · tamat {{date}}",
+    "todoProbationEnds_other": "Tempoh percubaan hampir tamat ({{count}}) · yang pertama tamat {{date}}",
+    "todoContracts_one": "Kontrak hampir tamat ({{count}}) · tamat {{date}}",
+    "todoContracts_other": "Kontrak hampir tamat ({{count}}) · yang pertama tamat {{date}}",
+    "openPayroll": "Buka gaji",
+    "confirmOrExtend": "Sahkan atau lanjutkan",
+    "reviewContracts": "Semak kontrak",
+    "showAll": "Tunjuk semua ({{count}})",
+    "showFewer": "Tunjuk kurang",
+    "nextPayday": "Hari gaji seterusnya",
+    "clockedIn": "Daftar masuk hari ini"
+  },
+  "group": {
+    "staff": "Staf",
+    "time": "Cuti dan kehadiran",
+    "pay": "Gaji",
+    "claims": "Tuntutan",
+    "reports": "Laporan",
+    "company": "Syarikat"
+  },
+  "page": {
+    "findStaff": {
+      "name": "Cari staf"
+    },
+    "addStaff": {
+      "name": "Tambah staf baharu"
+    },
+    "leavingStaff": {
+      "name": "Staf yang berhenti"
+    },
+    "contracts": {
+      "name": "Kontrak"
+    },
+    "approveLeave": {
+      "name": "Luluskan cuti"
+    },
+    "attendanceToday": {
+      "name": "Kehadiran hari ini"
+    },
+    "holidays": {
+      "name": "Cuti umum"
+    },
+    "runPayroll": {
+      "name": "Proses gaji bulanan"
+    },
+    "payslips": {
+      "name": "Slip gaji"
+    },
+    "loansBenefits": {
+      "name": "Pinjaman dan manfaat"
+    },
+    "approveClaims": {
+      "name": "Luluskan tuntutan"
+    },
+    "allClaims": {
+      "name": "Semua tuntutan"
+    },
+    "monthlyReports": {
+      "name": "Laporan bulanan"
+    },
+    "kpi": {
+      "name": "Penilaian staf (KPI)"
+    },
+    "salaryComparison": {
+      "name": "Perbandingan gaji"
+    },
+    "companyDetails": {
+      "name": "Maklumat syarikat"
+    },
+    "departments": {
+      "name": "Jabatan"
+    },
+    "settings": {
+      "name": "Tetapan"
+    },
+    "leave": {
+      "name": "Cuti"
+    },
+    "claims": {
+      "name": "Tuntutan"
+    },
+    "orgChart": {
+      "name": "Carta organisasi"
+    }
+  },
+  "role": {
+    "Admin": "Pentadbir",
+    "HR": "HR",
+    "Manager": "Pengurus",
+    "Employee": "Pekerja",
+    "SuperAdmin": "Pentadbir Super"
+  },
+  "nav": {
+    "dashboard": "Papan pemuka",
+    "approvals": "Kelulusan",
+    "employees": "Pekerja",
+    "contracts": "Kontrak",
+    "organization": "Organisasi",
+    "orgChart": "Carta organisasi",
+    "attendance": "Kehadiran",
+    "leave": "Cuti",
+    "holidays": "Cuti umum",
+    "claims": "Tuntutan",
+    "payroll": "Penggajian",
+    "loansBenefits": "Pinjaman & manfaat",
+    "myPayslips": "Slip gaji saya",
+    "kpi": "KPI",
+    "salaryInsights": "Analisis gaji",
+    "reports": "Laporan",
+    "onboarding": "Kemasukan staf baharu",
+    "offboarding": "Staf yang berhenti",
+    "companySetup": "Persediaan syarikat",
+    "settings": "Tetapan",
+    "superAdmin": "Pentadbir Super"
+  },
+  "shell": {
+    "brand": "MY HRMS",
+    "guest": "Tetamu",
+    "notSignedIn": "Belum log masuk",
+    "systemView": "Paparan sistem",
+    "systemViewBanner": "Anda melihat sistem — masuk ke syarikat untuk mengurus datanya.",
+    "enterCompany": "Masuk ke syarikat…",
+    "openSuperAdmin": "Buka konsol Pentadbir Super"
+  },
+  "search": {
+    "results": "Hasil carian",
+    "noResults": "Tiada hasil untuk “{{query}}”",
+    "searching": "Sedang mencari…",
+    "staffPlaceholder": "Taip nama, nombor staf atau nombor IC"
+  },
+  "leaveType": {
+    "annual": "Cuti tahunan",
+    "sick": "Cuti sakit",
+    "hospitalization": "Cuti hospital",
+    "maternity": "Cuti bersalin",
+    "paternity": "Cuti paterniti",
+    "unpaid": "Cuti tanpa gaji",
+    "emergency": "Cuti kecemasan",
+    "compassionate": "Cuti ihsan"
+  },
+  "claimCategory": {
+    "travel": "Perjalanan",
+    "meal": "Makan",
+    "medical": "Perubatan",
+    "parking": "Letak kereta",
+    "telephone": "Telefon",
+    "training": "Latihan",
+    "other": "Lain-lain"
+  },
+  "common": {
+    "days_one": "{{count}} hari",
+    "days_other": "{{count}} hari",
+    "more": "+{{count}} lagi",
+    "notAvailable": "Tidak tersedia"
+  },
+  "dash": {
+    "title": "Papan pemuka",
+    "subtitleEmployee": "Ringkasan kehadiran, cuti dan tuntutan anda · {{date}}",
+    "subtitleStaff": "Ringkasan tenaga kerja, gaji dan pematuhan statutori · {{date}}",
+    "quickActions": "Tindakan pantas",
+    "qa": {
+      "employees": "Direktori, profil & dokumen",
+      "attendance": "Masuk kerja, syif & kelulusan OT",
+      "claims": "Penghantaran, kelulusan & bayaran",
+      "payroll": "Proses gaji bulanan & slip gaji"
+    },
+    "stat": {
+      "myAttendance": "Kehadiran saya bulan ini",
+      "myAttendanceHint": "{{present}} hadir · {{half}} separuh hari · {{leave}} bercuti",
+      "myLeaveBalance": "Baki cuti tahunan saya",
+      "leaveUsedHint": "{{used}} digunakan daripada {{total}} kelayakan ({{year}})",
+      "noLeaveBalance": "Belum ada rekod baki cuti",
+      "myPendingClaims": "Tuntutan saya yang menunggu",
+      "claimsAwaiting": "{{amount}} menunggu kelulusan",
+      "leaveRequestsPending_one": "{{count}} permohonan cuti menunggu",
+      "leaveRequestsPending_other": "{{count}} permohonan cuti menunggu",
+      "nothingAwaiting": "Tiada yang menunggu kelulusan",
+      "teamHeadcount": "Bilangan staf pasukan",
+      "activeHeadcount": "Bilangan staf aktif",
+      "headcountHint": "{{probation}} dalam percubaan · {{resigned}} telah berhenti",
+      "presentToday": "Hadir hari ini",
+      "presentHint": "daripada {{count}} pekerja aktif sudah masuk kerja",
+      "pendingApprovals": "Menunggu kelulusan",
+      "pendingHint": "{{leave}} cuti · {{claims}} tuntutan · {{ot}} OT",
+      "payrollCost": "Kos gaji bulan ini",
+      "payrollFinalized": "Gaji {{month}} dimuktamadkan · {{count}} slip gaji",
+      "payrollDraft": "Anggaran · gaji {{month}} masih draf",
+      "payrollLastRun": "Anggaran · gaji terakhir {{month}} sebanyak {{amount}}",
+      "payrollNoRun": "Anggaran daripada gaji semasa · belum ada proses gaji"
+    },
+    "compliance": {
+      "title": "Tarikh akhir pematuhan",
+      "desc": "Tarikh penghantaran statutori seterusnya",
+      "dueToday": "Tamat hari ini",
+      "daysLeft_one": "{{count}} hari lagi",
+      "daysLeft_other": "{{count}} hari lagi",
+      "contrib": {
+        "title": "Bayaran caruman KWSP / PERKESO / SIP",
+        "note": "Caruman bagi tempoh gaji sebelumnya"
+      },
+      "cp39": {
+        "title": "CP39 — Bayaran PCB / MTD",
+        "note": "Potongan cukai bulanan kepada LHDN"
+      },
+      "hrd": {
+        "title": "Bayaran levi HRD Corp",
+        "note": "Levi bulanan bagi majikan berdaftar (Akta PSMB 2001)"
+      },
+      "ea": {
+        "title": "Borang EA kepada pekerja",
+        "note": "Penyata saraan tahunan, tahun taksiran sebelumnya"
+      },
+      "formE": {
+        "title": "Borang E majikan",
+        "note": "Penyata tahunan majikan kepada LHDN"
+      }
+    },
+    "holidays": {
+      "title": "Cuti umum akan datang",
+      "next": "{{state}} · {{count}} seterusnya",
+      "none": "Tiada cuti umum akan datang untuk {{state}}.",
+      "eaCompulsory": "EA s.60D",
+      "tentative": "Belum muktamad"
+    },
+    "alerts": {
+      "title": "Amaran",
+      "desc": "Had statutori dan perkara tenaga kerja untuk diperhatikan",
+      "allClear": "Tiada masalah",
+      "allClearDesc": "Tiada isu gaji minimum, had OT atau tempoh percubaan sekarang.",
+      "probationOverdue": "Tempoh percubaan sudah lewat",
+      "probationOverdueDetail": "{{name}} sudah {{days}} melepasi tamat percubaan{{more}} — sahkan atau lanjutkan",
+      "belowMinWage": "Di bawah gaji minimum",
+      "belowMinWageDetail": "{{names}}{{more}} bergaji pokok kurang daripada {{amount}}",
+      "otOverCap": "OT melebihi had bulanan",
+      "otOverCapDetail": "Tertinggi: {{name}} {{hours}} jam (had {{cap}} jam)",
+      "probationEnding": "Tempoh percubaan hampir tamat",
+      "probationEndingDetail": "{{name}} tamat dalam {{days}} — sahkan atau lanjutkan",
+      "foreignEpf": "KWSP pekerja asing terpakai",
+      "foreignEpfDetail_one": "{{count}} pekerja asing — caruman KWSP 2% + 2% adalah wajib (Akta KWSP (Pindaan) 2025)",
+      "foreignEpfDetail_other": "{{count}} pekerja asing — caruman KWSP 2% + 2% adalah wajib (Akta KWSP (Pindaan) 2025)"
+    },
+    "charts": {
+      "headcountTitle": "Bilangan staf mengikut jabatan",
+      "headcountDesc": "Pekerja aktif dan dalam percubaan",
+      "headcountEmpty": "Belum ada pekerja aktif — tambah pekerja untuk melihat taburan.",
+      "employees": "Pekerja",
+      "payrollTitle": "Trend kos gaji",
+      "payrollDesc": "Jumlah kos majikan daripada gaji yang dimuktamadkan (6 terakhir)",
+      "payrollEmpty": "Belum ada gaji yang selesai. Trend bermula selepas gaji pertama selesai. Anggaran kos bulanan sekarang: {{amount}}.",
+      "employerCost": "Kos majikan",
+      "attendanceTitle": "Kadar kehadiran",
+      "attendanceDesc": "Peratus staf berjadual yang hadir, 14 hari lepas",
+      "attendanceEmpty": "Tiada rekod kehadiran dalam 14 hari lepas.",
+      "attendanceRate": "Kadar kehadiran",
+      "claimsTitle": "Tuntutan mengikut kategori",
+      "claimsDesc_one": "{{count}} tuntutan dalam rekod, semua status",
+      "claimsDesc_other": "{{count}} tuntutan dalam rekod, semua status",
+      "claimsEmpty": "Belum ada tuntutan — perbelanjaan yang dihantar akan dikumpulkan di sini.",
+      "total": "Jumlah"
+    },
+    "overview": "Gambaran keseluruhan"
+  },
+  "a11y": {
+    "skip": "Langkau ke kandungan utama",
+    "breadcrumb": "Laluan halaman",
+    "mainNav": "Utama"
+  },
+  "help": {
+    "title": "Bantuan untuk halaman ini",
+    "close": "Tutup",
+    "tips": {
+      "home": [
+        "Kerja yang menunggu anda ada di atas, dengan satu butang bagi setiap tugasan.",
+        "Di bawah “Pergi ke”, tekan gambar untuk membuka halaman. “Lagi” menyenaraikan semua halaman.",
+        "Tekan Utama di atas pada bila-bila masa untuk kembali ke sini.",
+        "Tekan Saya untuk menukar bahasa atau membesarkan teks."
+      ],
+      "staff": [
+        "Taip nama dalam kotak carian untuk mencari staf.",
+        "Tekan nama staf untuk melihat dan mengubah maklumatnya.",
+        "Gunakan \"Tambah staf baharu\" untuk borang langkah demi langkah."
+      ],
+      "time": [
+        "Permohonan cuti yang menunggu anda ditunjukkan dahulu.",
+        "Kehadiran hari ini menunjukkan siapa yang sudah masuk kerja.",
+        "Cuti umum menyenaraikan cuti tahun ini untuk negeri anda.",
+        "Baki cuti mengikut Akta Kerja 1955 (seksyen 60E dan 60F), dikira dari tarikh mula bekerja. Cuti umum dan hari rehat tidak menggunakan baki cuti.",
+        "Baki ditetapkan pada 1 Januari untuk sepanjang tahun, tanpa pengiraan pro rata pada tahun mula bekerja. Hari tambahan syarikat ditambah di atas had minimum undang-undang."
+      ],
+      "pay": [
+        "Proses gaji bulanan dibuat langkah demi langkah. Anda boleh berhenti dan sambung semula.",
+        "Semak jumlah sebelum memuktamadkan bulan itu.",
+        "Slip gaji boleh dicetak atau disimpan sebagai PDF."
+      ],
+      "claims": [
+        "Lampirkan gambar resit bagi setiap tuntutan.",
+        "Tuntutan yang menunggu anda ditunjukkan dahulu.",
+        "Tuntutan yang diluluskan dibayar melalui gaji. Ia dipaparkan pada slip gaji sebagai bayaran balik dan tidak dikira untuk KWSP, PERKESO, SIP atau PCB.",
+        "Simpan resit asal selama 7 tahun (Akta Cukai Pendapatan 1967, seksyen 82).",
+        "Butiran resit disimpan supaya boleh digunakan untuk e-invois LHDN MyInvois jika syarikat anda menggunakannya."
+      ],
+      "reports": [
+        "Pilih bulan dahulu, kemudian laporan.",
+        "Setiap laporan boleh dicetak atau dimuat turun.",
+        "Penilaian staf (KPI) menunjukkan penilaian prestasi."
+      ],
+      "company": [
+        "Maklumat syarikat mengandungi nama, logo dan alamat.",
+        "Jabatan menunjukkan struktur pelaporan.",
+        "Hanya Pentadbir boleh mengubah Tetapan."
+      ],
+      "other": [
+        "Tekan Kembali di atas untuk ke halaman sebelumnya.",
+        "Tekan Utama untuk mula semula.",
+        "Perlukan bantuan? Hubungi sokongan HR."
+      ]
+    },
+    "hrSupport": "Perlukan bantuan? Hubungi sokongan HR di {{ext}}."
+  },
+  "tracker": {
+    "title": "Gaji {{month}}: 5 langkah",
+    "youAreHere": "Anda di sini",
+    "done": "Selesai",
+    "stepN": "Langkah {{n}}:",
+    "allDone": "Kesemua 5 langkah untuk {{month}} sudah selesai.",
+    "s1Title": "Mulakan proses gaji {{month}}",
+    "s1Detail": "Pilih bulan dan staf yang terlibat.",
+    "s2Title": "Semak slip gaji",
+    "s2Detail": "Semak setiap slip gaji dan betulkan bayaran atau potongan tambahan.",
+    "s3Title": "Muktamadkan bulan ini",
+    "s3Detail": "Mengunci slip gaji supaya staf boleh melihatnya.",
+    "s4Title": "Bayar gaji staf",
+    "s4Detail": "Muat turun fail bank dan bayar gaji staf.",
+    "s4DetailDate": "Muat turun fail bank dan bayar gaji staf sebelum {{date}}.",
+    "s5Title": "Bayar KWSP, PERKESO, SIP dan PCB",
+    "s5Detail": "Tarikh akhir {{date}}.",
+    "due": "Tarikh akhir {{date}}",
+    "step": "Langkah {{n}}",
+    "start": "Mula",
+    "open": "Buka",
+    "markDone": "Tanda selesai",
+    "doneBy": "Diselesaikan oleh {{name}} pada {{date}}",
+    "undo": "Batal",
+    "undoTitle": "Buang tanda \"selesai\" pada \"{{step}}\"?",
+    "undoBody": "Ini hanya membuang tanda. Tiada bayaran diubah atau dibatalkan.",
+    "undoConfirm": "Ya, buang tanda",
+    "cancel": "Batal",
+    "stepOf": "Langkah {{n}} daripada 5: {{title}}"
+  },
+  "settings": {
+    "hrPhone": "Telefon atau sambungan sokongan HR",
+    "hrPhoneHint": "Ditunjukkan kepada staf dalam jalur bantuan: \"Perlukan bantuan? Hubungi sokongan HR di …\". Biarkan kosong untuk menyembunyikan ayat itu.",
+    "hrPhonePlaceholder": "cth. 03-1234 5678 samb. 210"
+  },
+  "reports": {
+    "title": "Laporan",
+    "intro": "Laporan untuk HR dan kewangan. Lihat di skrin atau muat turun sebagai hamparan (CSV).",
+    "managerScope": "Hanya jabatan anda ditunjukkan. Laporan gaji dan pematuhan seluruh syarikat untuk Pentadbir dan HR sahaja.",
+    "noAccessTitle": "Tiada akses ke laporan",
+    "noAccessBody": "Laporan untuk Pentadbir, HR dan Pengurus. Jika anda perlukan angka daripada laporan, sila tanya HR.",
+    "noDataTitle": "Belum ada data",
+    "noDataBody": "Laporan menggunakan senarai staf, kehadiran dan gaji. Jika data demo tidak dimuatkan, muatkan semula dari Tetapan.",
+    "openReport": "Buka laporan",
+    "csv": "CSV",
+    "downloadCsvFor": "Muat turun {{title}} sebagai CSV",
+    "downloadCsv": "Muat turun CSV",
+    "rows_one": "{{count}} baris",
+    "rows_other": "{{count}} baris",
+    "month": "Bulan",
+    "salaryTitle": "Laporan gaji",
+    "salaryDesc": "Gaji bagi beberapa bulan: trend, jumlah setiap orang, jabatan dan taburan (proses gaji yang dimuktamadkan sahaja). Muat turun sebagai PDF atau CSV.",
+    "openSalary": "Buka laporan gaji",
+    "noPayslipsTitle": "Tiada slip gaji untuk {{month}}",
+    "noPayslipsHR": "Laporan ini membaca slip gaji yang disimpan. Proses gaji bulan ini untuk menghasilkannya.",
+    "noPayslipsOther": "Laporan ini membaca slip gaji yang disimpan. Gaji {{month}} belum diproses. HR boleh memprosesnya dari halaman Gaji.",
+    "running": "Sedang memproses gaji…",
+    "runFor": "Proses gaji {{month}}",
+    "nothingTitle": "Tiada apa untuk dilaporkan",
+    "nothingBody": "Tiada rekod sepadan dengan laporan ini untuk bulan yang dipilih. Cuba bulan lain.",
+    "meta": {
+      "headcount": {
+        "title": "Laporan bilangan staf",
+        "desc": "Staf mengikut jabatan, negeri dan status pekerjaan."
+      },
+      "attendance": {
+        "title": "Ringkasan kehadiran",
+        "desc": "Hari hadir, kelewatan dan kerja lebih masa (diluluskan dan menunggu) bagi satu bulan."
+      },
+      "leave": {
+        "title": "Liabiliti cuti",
+        "desc": "Cuti tahunan yang belum diambil, dinilai pada gaji harian biasa."
+      },
+      "payroll": {
+        "title": "Daftar gaji",
+        "desc": "Setiap slip gaji dengan KWSP, PERKESO, SIP, PCB dan levi HRD."
+      },
+      "dept-cost": {
+        "title": "Kos gaji mengikut jabatan",
+        "desc": "Kos syarikat bagi setiap jabatan, dengan kod pusat kos (proses gaji yang dimuktamadkan sahaja)."
+      },
+      "compliance": {
+        "title": "Senarai semak pematuhan statutori",
+        "desc": "Tarikh akhir bayaran, kesediaan Borang EA, semakan gaji minimum dan had kerja lebih masa."
+      }
+    },
+    "note": {
+      "headcount": "Gambaran senarai staf hari ini. Staf yang telah berhenti ditunjukkan di bawah Status.",
+      "attendance": "Lewat = daftar masuk selepas syif bermula. Bayaran lebih masa menggunakan kadar Akta Kerja (1.5×, 2×, 3×) bagi lebih masa yang diluluskan sahaja.",
+      "leave": "Cuti tahunan yang belum diambil pada {{year}}, dinilai pada gaji biasa (gaji bulanan ÷ 26, Akta Kerja s.60I(a)). Ini jumlah yang perlu diperuntukkan dalam akaun.",
+      "payroll": "Semua slip gaji untuk {{month}}. \"Staf\" ialah bahagian staf, \"syarikat\" ialah bahagian syarikat. Jumlah adalah tepat seperti yang dikira oleh sistem gaji.",
+      "dept-cost": "Gaji yang dimuktamadkan untuk {{month}} sahaja; draf tidak dimasukkan. Kod pusat kos datang dari Jabatan. Jumlah kos syarikat = gaji kasar + KWSP/PERKESO/SIP syarikat + levi HRD + tuntutan.",
+      "compliance": "Senarai semak yang dikira daripada gaji, kehadiran dan senarai staf. Bayaran kepada KWSP, PERKESO, SIP, LHDN dan HRD Corp tidak direkodkan di sini, jadi semaklah di laman web setiap agensi."
+    },
+    "status": {
+      "pass": "Lulus",
+      "review": "Semak",
+      "actionRequired": "Perlu tindakan",
+      "notDue": "Belum tiba masa",
+      "pending": "Menunggu"
+    },
+    "chart": {
+      "gross": "Gaji kasar",
+      "erStatutory": "KWSP/PERKESO/SIP syarikat",
+      "hrd": "Levi HRD",
+      "claims": "Tuntutan"
+    },
+    "col": {
+      "section": "Bahagian",
+      "category": "Kumpulan",
+      "headcount": "Bilangan staf",
+      "sharePct": "Peratus %",
+      "employee": "Staf",
+      "department": "Jabatan",
+      "present": "Hadir",
+      "late": "Lewat",
+      "absent": "Tidak hadir",
+      "leaveDays": "Cuti",
+      "restDays": "Hari rehat / cuti umum",
+      "otApproved": "Jam lebih masa (diluluskan)",
+      "otPending": "Jam lebih masa (menunggu)",
+      "otPay": "Bayaran lebih masa (diluluskan)",
+      "entitled": "Kelayakan",
+      "carried": "Dibawa ke hadapan",
+      "used": "Digunakan",
+      "balance": "Baki",
+      "dailyRate": "Gaji harian",
+      "liability": "Nilai cuti",
+      "gross": "Gaji kasar",
+      "epfEE": "KWSP (staf)",
+      "epfER": "KWSP (syarikat)",
+      "socsoEE": "PERKESO (staf)",
+      "socsoER": "PERKESO (syarikat)",
+      "eisEE": "SIP (staf)",
+      "eisER": "SIP (syarikat)",
+      "pcb": "PCB",
+      "hrd": "Levi HRD",
+      "net": "Gaji bersih",
+      "cost": "Kos syarikat",
+      "costCenter": "Pusat kos",
+      "erStatutory": "KWSP/PERKESO/SIP syarikat",
+      "claims": "Tuntutan",
+      "totalCost": "Jumlah kos syarikat",
+      "check": "Semakan",
+      "status": "Status",
+      "detail": "Butiran"
+    },
+    "listTitle": "Laporan",
+    "colReport": "Laporan",
+    "colShows": "Kandungan",
+    "colActions": "Tindakan"
+  },
+  "run": {
+    "notFoundTitle": "Proses gaji tidak dijumpai",
+    "notFoundBody": "Ia mungkin telah diganti apabila bulan itu diproses semula.",
+    "backToPayroll": "Kembali ke Gaji",
+    "title": "Gaji {{month}}",
+    "statusFinished": "Selesai",
+    "statusNotFinished": "Belum selesai",
+    "finishedBy": "Diselesaikan pada {{date}} oleh {{name}}.",
+    "startedBy": "Dimulakan pada {{date}} oleh {{name}}. Belum selesai.",
+    "staffPaid": "Staf dibayar",
+    "staffPaidSub": "orang dalam proses ini",
+    "totalBefore": "Jumlah gaji sebelum potongan",
+    "totalBeforeSubGross": "juga dipanggil gaji kasar",
+    "totalTakeHome": "Jumlah gaji bawa pulang",
+    "totalTakeHomeSub": "jumlah yang bank bayar kepada staf",
+    "totalCost": "Jumlah kos kepada syarikat",
+    "totalCostSub": "gaji serta KWSP, PERKESO, SIP syarikat dan levi HRD",
+    "whatNow": "Apa yang perlu dibuat sekarang",
+    "downloadBank": "Muat turun fail bayaran bank",
+    "bankMissing_one": "{{count}} staf tiada maklumat bank: {{names}}. Tambah maklumat itu sebelum menghantar fail kepada bank.",
+    "bankMissing_other": "{{count}} staf tiada maklumat bank: {{names}}. Tambah maklumat itu sebelum menghantar fail kepada bank.",
+    "printAll": "Cetak semua slip gaji",
+    "statutoryFiles": "Fail KWSP, PERKESO, SIP dan PCB",
+    "statutoryDesc": "Muat turun setiap fail, kemudian hantar di laman web agensi sebelum 15 haribulan bulan depan.",
+    "reviewApprove": "Semak dan luluskan",
+    "draftHelp": "Semak setiap orang di bawah. Gunakan Ubah untuk membetulkan bayaran atau potongan tambahan, kemudian tekan Semak dan luluskan.",
+    "warnings_one": "{{count}} perkara untuk disemak",
+    "warnings_other": "{{count}} perkara untuk disemak",
+    "payEach": "Gaji setiap staf",
+    "search": "Cari staf (nama atau IC)",
+    "showAll": "Tunjuk semua butiran",
+    "showFewer": "Tunjuk kurang butiran",
+    "colStaff": "Staf",
+    "colPayBefore": "Gaji sebelum potongan",
+    "colDeductions": "Potongan",
+    "colTakeHome": "Gaji bawa pulang",
+    "colPayslip": "Slip gaji",
+    "colBasic": "Gaji pokok",
+    "colAllowances": "Elaun",
+    "colOvertime": "Kerja lebih masa",
+    "colEpf": "KWSP (staf / syarikat)",
+    "colSocso": "PERKESO (staf / syarikat)",
+    "colEis": "SIP (staf / syarikat)",
+    "colPcb": "Cukai PCB",
+    "colOther": "Potongan lain",
+    "colCost": "Kos kepada syarikat",
+    "hours_one": "{{count}} jam",
+    "hours_other": "{{count}} jam",
+    "ic": "IC {{ic}}",
+    "view": "Lihat",
+    "viewFor": "Lihat slip gaji {{name}}",
+    "viewPayslip": "Lihat slip gaji",
+    "change": "Ubah",
+    "changeFor": "Ubah gaji {{name}}",
+    "total_one": "Jumlah ({{count}} staf)",
+    "total_other": "Jumlah ({{count}} staf)",
+    "totalTakeHomeShort": "Jumlah bawa pulang ({{count}})",
+    "noneMatch": "Tiada yang sepadan dengan \"{{query}}\". Semak ejaan, atau taip sebahagian nama atau nombor IC.",
+    "clearSearch": "Kosongkan carian",
+    "noSlips": "Tiada slip gaji dalam proses ini",
+    "badgeChanged": "Diubah",
+    "badgeOptOut": "Tidak menyertai",
+    "badgeDaily": "Kadar harian",
+    "badgeHourly": "Kadar sejam",
+    "badgeBasicSet": "Gaji pokok ditetapkan secara manual",
+    "mistakeTitle": "Tersilap?",
+    "mistakeBody": "Anda boleh membatalkan proses gaji ini dan memprosesnya semula. Buat ini sebelum bank membayar staf sahaja.",
+    "undoRun": "Batalkan proses gaji ini",
+    "undoTitle": "Batalkan gaji {{month}}?",
+    "undoLose": "Ini tidak boleh dikembalikan. Anda akan kehilangan:",
+    "undoLose1_one": "Proses gaji {{month}} dan {{count}} slip gajinya (jumlah gaji bawa pulang {{amount}}).",
+    "undoLose1_other": "Proses gaji {{month}} dan {{count}} slip gajinya (jumlah gaji bawa pulang {{amount}}).",
+    "undoLose2": "Staf tidak lagi boleh melihat slip gaji ini, dan fail bank, KWSP, PERKESO, SIP dan PCB bulan ini dibuang.",
+    "undoLose3": "Tuntutan yang dibayar dalam proses ini kembali kepada \"diluluskan\" dan akan dibayar dalam proses seterusnya.",
+    "undoYtd": "Angka tahun semasa dikira semula daripada slip gaji yang tinggal.",
+    "keep": "Tidak, simpan",
+    "undoYes": "Ya, batalkan proses",
+    "startAgainTitle": "Perlu mula semula?",
+    "startAgainBody": "Anda boleh memproses bulan ini semula dengan angka terkini, atau membuang draf ini. Belum ada apa-apa yang dibayar.",
+    "rerun": "Proses bulan ini semula",
+    "discard": "Buang draf ini",
+    "rerunTitle": "Proses gaji {{month}} semula?",
+    "rerunBody": "Setiap slip gaji dalam draf ini dikira semula daripada staf, kehadiran dan tuntutan hari ini. Perubahan yang dibuat dengan Ubah akan hilang.",
+    "rerunYes": "Ya, proses semula",
+    "discardTitle": "Buang draf {{month}}?",
+    "discardBody_one": "Draf dan {{count}} slip gajinya akan dipadam. Belum ada bayaran, jadi tiada wang terjejas.",
+    "discardBody_other": "Draf dan {{count}} slip gajinya akan dipadam. Belum ada bayaran, jadi tiada wang terjejas.",
+    "discardYes": "Ya, buang draf",
+    "finalizeTitle": "Luluskan gaji {{month}}?",
+    "finalizeBody1_one": "Ini mengunci {{count}} slip gaji (jumlah gaji bawa pulang {{amount}}). Selepas ini anda tidak boleh mengubah gaji seseorang.",
+    "finalizeBody1_other": "Ini mengunci {{count}} slip gaji (jumlah gaji bawa pulang {{amount}}). Selepas ini anda tidak boleh mengubah gaji seseorang.",
+    "finalizeBody2": "Tuntutan yang diluluskan dalam proses ini ditanda dibayar, dan fail bank serta fail KWSP, PERKESO, SIP dan PCB akan sedia. Untuk mengubah angka kemudian, batalkan proses dan mula semula.",
+    "finalizeYes": "Ya, luluskan",
+    "cancel": "Batal",
+    "toastFinalized": "Gaji {{month}} diluluskan",
+    "toastFinalizedDesc": "Slip gaji telah dikunci. Fail bank serta fail KWSP, PERKESO, SIP dan PCB sudah sedia.",
+    "toastUndone": "Gaji {{month}} dibatalkan",
+    "toastUndoFail": "Tidak dapat membatalkan gaji {{month}}",
+    "toastDiscarded": "Draf {{month}} dibuang",
+    "toastRerun": "Gaji {{month}} dikira semula",
+    "toastDownload": "Muat turun dimulakan",
+    "colClaimsBack": "Tuntutan dibayar balik",
+    "claimsBackSub": "tuntutan dan bayaran balik lain yang dibayar bersama gaji"
+  },
+  "app": {
+    "hello": "Helo, {{name}}",
+    "leave": "Cuti",
+    "attendance": "Kehadiran",
+    "clock": "Daftar masuk/keluar",
+    "claims": "Tuntutan",
+    "allPayslips": "Semua slip gaji",
+    "myPayslips": "Slip gaji saya",
+    "staff": "Staf",
+    "runPayroll": "Jalankan gaji",
+    "reports": "Laporan",
+    "holidays": "Cuti umum",
+    "company": "Syarikat",
+    "approvals": "Kelulusan",
+    "reviews": "Penilaian staf",
+    "more": "Lagi",
+    "allPages": "Semua halaman",
+    "waitingSuffix_one": ", {{count}} menunggu anda",
+    "waitingSuffix_other": ", {{count}} menunggu anda",
+    "helloAlone": "Helo",
+    "goTo": "Pergi ke"
+  },
+  "claimsPage": {
+    "reviewN_one": "Semak {{count}} tuntutan",
+    "reviewN_other": "Semak {{count}} tuntutan",
+    "notLinked": "Akaun ini tidak dipautkan kepada rekod staf, jadi ia tiada tuntutan sendiri. Tuntutan staf anda ada di bawah Kelulusan.",
+    "title": "Tuntutan",
+    "introApprover": "Hantar tuntutan perbelanjaan dan luluskan tuntutan staf anda. Tuntutan yang diluluskan dibayar melalui gaji.",
+    "introStaff": "Hantar tuntutan perbelanjaan anda bersama gambar resit. Tuntutan yang diluluskan dibayar melalui gaji.",
+    "claimedIn": "Dituntut pada {{month}}",
+    "decidedHint_one": "{{count}} tuntutan diputuskan; purata masa dari dihantar hingga keputusan",
+    "decidedHint_other": "{{count}} tuntutan diputuskan; purata masa dari dihantar hingga keputusan",
+    "waitingSentence_one": "{{count}} tuntutan ({{amount}}) menunggu keputusan anda.",
+    "waitingSentence_other": "{{count}} tuntutan ({{amount}}) menunggu keputusan anda.",
+    "byPersonTitle": "Tuntutan menunggu, mengikut staf",
+    "byPersonName": "Staf",
+    "byPersonCount": "Tuntutan",
+    "byPersonAmount": "Jumlah",
+    "byPersonOldest": "Menunggu sejak",
+    "byPersonNone": "Tiada tuntutan menunggu keputusan.",
+    "thisMonth": "Bulan ini",
+    "byPersonLine_one": "{{count}} tuntutan · {{amount}}",
+    "byPersonLine_other": "{{count}} tuntutan · {{amount}}",
+    "waitingSince": "Menunggu sejak {{date}}",
+    "review": "Semak",
+    "reviewFor": "Semak tuntutan daripada {{name}}"
+  },
+  "staffList": {
+    "addStaff": "Tambah staf",
+    "addOneForm": "Tambah dengan satu borang",
+    "searchLabel": "Cari staf",
+    "searchPlaceholder": "Nama, No. KP atau nombor staf"
+  },
+  "msg": {
+    "namesMore": "{{names}} dan {{count}} lagi",
+    "leaveApproved_one": "Cuti diluluskan untuk {{name}}: {{from}} hingga {{to}} ({{count}} hari). Baki cutinya telah dikemas kini.",
+    "leaveApproved_other": "Cuti diluluskan untuk {{name}}: {{from}} hingga {{to}} ({{count}} hari). Baki cutinya telah dikemas kini.",
+    "leaveRejected": "Cuti ditolak untuk {{name}}: {{from}} hingga {{to}}. Baki cutinya tidak berubah.",
+    "leaveBulkApproved_one": "Cuti diluluskan untuk {{names}}. Baki cuti telah dikemas kini.",
+    "leaveBulkApproved_other": "{{count}} permohonan cuti diluluskan: {{names}}. Baki cuti telah dikemas kini.",
+    "claimApproved": "Tuntutan diluluskan untuk {{name}}: {{amount}}. Ia kini menunggu untuk dibayar melalui gaji.",
+    "claimsApproved_one": "{{count}} tuntutan diluluskan, {{amount}}. Ia kini menunggu untuk dibayar melalui gaji.",
+    "claimsApproved_other": "{{count}} tuntutan diluluskan, jumlah {{amount}}. Semuanya kini menunggu untuk dibayar melalui gaji.",
+    "claimRejected": "Tuntutan ditolak untuk {{name}}: {{amount}}. Ia tidak akan dibayar.",
+    "otApproved": "Kerja lebih masa diluluskan untuk {{name}}: {{hours}} jam pada {{date}}. Ia dikira dalam gaji yang meliputi {{date}}.",
+    "otRejected": "Kerja lebih masa ditolak untuk {{name}}: {{hours}} jam pada {{date}}. Ia tidak akan dibayar.",
+    "otBulkApproved_one": "{{count}} rekod kerja lebih masa diluluskan. Ia dikira dalam gaji yang meliputi tarikhnya.",
+    "otBulkApproved_other": "{{count}} rekod kerja lebih masa diluluskan. Setiap satu dikira dalam gaji yang meliputi tarikhnya.",
+    "claimToDraft": "Tuntutan dikembalikan ke draf. Ubah dan hantar semula apabila sedia."
+  },
+  "leaveCal": {
+    "nobody": "Tiada sesiapa bercuti pada {{date}}."
+  },
+  "leavePage": {
+    "title": "Cuti",
+    "introApprover": "Lihat baki cuti, mohon cuti dan luluskan permohonan staf anda.",
+    "introStaff": "Lihat baki cuti anda dan mohon cuti."
+  },
+  "probation": {
+    "title": "Tempoh percubaan untuk disahkan",
+    "count_one": "{{count}} staf",
+    "count_other": "{{count}} staf",
+    "colName": "Staf",
+    "colEnds": "Tempoh percubaan tamat",
+    "colStatus": "Status",
+    "colActions": "Tindakan",
+    "overdue_one": "Lewat {{count}} hari",
+    "overdue_other": "Lewat {{count}} hari",
+    "left_one": "{{count}} hari lagi",
+    "left_other": "{{count}} hari lagi",
+    "extendedTo": "Dilanjutkan hingga {{date}}",
+    "confirm": "Sahkan",
+    "extend": "Lanjutkan…",
+    "history": "Sejarah",
+    "historyCount": "Sejarah ({{count}})"
+  },
+  "leaveBal": {
+    "colType": "Cuti",
+    "colEntitled": "Kelayakan",
+    "colUsed": "Digunakan",
+    "colLeft": "Baki",
+    "colNote": "Nota",
+    "annual": "Cuti tahunan",
+    "sick": "Cuti sakit",
+    "hosp": "Kemasukan hospital",
+    "maternity": "Bersalin",
+    "paternity": "Paterniti",
+    "perConfinement": "{{count}} hari setiap kali"
+  },
+  "leaveQ": {
+    "pendingTitle": "Cuti untuk diluluskan",
+    "pendingIntro": "Kelulusan menolak hari daripada baki cuti staf. Baki disemak semula dahulu.",
+    "ownDept": "Hanya jabatan anda ditunjukkan.",
+    "none": "Tiada permohonan cuti menunggu keputusan.",
+    "colName": "Staf",
+    "colType": "Cuti",
+    "colDates": "Tarikh",
+    "colDays": "Hari",
+    "colReason": "Sebab",
+    "colActions": "Tindakan",
+    "colDecision": "Keputusan",
+    "range": "{{from}} hingga {{to}}",
+    "applied": "Dimohon {{date}}",
+    "halfDay": "separuh hari",
+    "decidedBy": "oleh {{name}}, {{date}}",
+    "remark": "Catatan: {{text}}",
+    "approve": "Luluskan",
+    "reject": "Tolak",
+    "cancel": "Batalkan cuti",
+    "historyTitle": "Keputusan terkini",
+    "historyIntro": "Cuti yang diluluskan boleh dibatalkan sebelum hari pertamanya; hari dikembalikan ke baki.",
+    "historyNone": "Belum ada keputusan.",
+    "showAll": "Tunjuk semua ({{count}})",
+    "showFewer": "Tunjuk kurang",
+    "status_approved": "Diluluskan",
+    "status_rejected": "Ditolak",
+    "status_cancelled": "Dibatalkan",
+    "status_pending": "Menunggu"
+  },
+  "approvals": {
+    "ownRequest": "Orang lain mesti meluluskan permohonan anda sendiri"
+  }
+}

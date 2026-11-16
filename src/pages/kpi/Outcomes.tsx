@@ -121,7 +121,7 @@ export default function Outcomes({ employees, reviews }: Props) {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">
-          <TrendingUp className="h-4 w-4 text-amber-600" />
+          <TrendingUp className="h-4 w-4 text-primary" />
           <h2 className="text-base font-semibold">Review outcomes</h2>
         </div>
         <Select value={activePeriod} onValueChange={setPeriod}>
@@ -147,13 +147,13 @@ export default function Outcomes({ employees, reviews }: Props) {
         ))}
       </div>
 
-      <Card className="rounded-xl border-amber-200 bg-amber-50/60">
-        <CardContent className="flex items-start gap-3 p-4 text-sm text-amber-900">
+      <Card className="rounded-xl border-warning/40 bg-warning-soft">
+        <CardContent className="flex items-start gap-3 p-4 text-sm text-warning">
           <Info className="mt-0.5 h-4 w-4 shrink-0" />
           <p>
             Increment bands are guidelines — sense-check affordability against the payroll budget and validate each
             employee's position in the market range under{' '}
-            <Link to="/insights/salary" className="inline-flex items-center gap-1 font-medium text-amber-800 underline-offset-4 hover:underline">
+            <Link to="/insights/salary" className="inline-flex items-center gap-1 font-medium text-warning underline-offset-4 hover:underline">
               Salary Insights <ArrowRight className="h-3 w-3" />
             </Link>{' '}
             before letters go out.
@@ -176,7 +176,7 @@ export default function Outcomes({ employees, reviews }: Props) {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b text-left text-xs uppercase tracking-wide text-muted-foreground">
+                  <tr className="border-b text-left text-xs text-muted-foreground font-bold">
                     <th className="px-4 py-3 font-medium">Employee</th>
                     <th className="px-4 py-3 font-medium">Score</th>
                     <th className="px-4 py-3 font-medium">Rating</th>
@@ -219,7 +219,7 @@ export default function Outcomes({ employees, reviews }: Props) {
                         <td className="px-4 py-3 text-right">
                           {band.label === 'Poor' && canManagePip(auth, r.employeeId) && (
                             pip ? (
-                              <Badge variant="secondary" className="border bg-red-100 text-red-800 border-red-200">PIP active</Badge>
+                              <Badge variant="secondary" className="border bg-danger-soft text-destructive border-destructive/40">PIP active</Badge>
                             ) : (
                               <Button variant="outline" size="sm" onClick={() => openPip(r)}>
                                 <ClipboardList className="mr-1 h-3.5 w-3.5" /> Start PIP
@@ -251,7 +251,7 @@ export default function Outcomes({ employees, reviews }: Props) {
                         {initialsOf(emp?.name ?? '?')}
                       </span>
                       <div className="min-w-0 flex-1">
-                        <div className="truncate font-medium">{emp?.name ?? r.employeeId}</div>
+                        <div className="break-words font-medium">{emp?.name ?? r.employeeId}</div>
                         <div className="text-xs text-muted-foreground">{score100to5(r.overallScore).toFixed(1)} / 5 · basic {fmtRM(salary)}</div>
                       </div>
                       <Badge variant="outline" className={band.badge}>{band.label}</Badge>
@@ -264,7 +264,7 @@ export default function Outcomes({ employees, reviews }: Props) {
                     </div>
                     {band.label === 'Poor' && canManagePip(auth, r.employeeId) && (
                       pip ? (
-                        <Badge variant="secondary" className="border bg-red-100 text-red-800 border-red-200">PIP active</Badge>
+                        <Badge variant="secondary" className="border bg-danger-soft text-destructive border-destructive/40">PIP active</Badge>
                       ) : (
                         <Button variant="outline" size="sm" className="w-full" onClick={() => openPip(r)}>
                           <ClipboardList className="mr-1 h-3.5 w-3.5" /> Start improvement plan
@@ -320,7 +320,7 @@ export default function Outcomes({ employees, reviews }: Props) {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setPipReview(null)}>Cancel</Button>
-            <Button onClick={createPip} disabled={!pipEnd || !pipGoals.trim()}>Create PIP</Button>
+            <Button onClick={createPip} disabled={!pipEnd || !pipGoals.trim()} disabledReason="Fill in the required fields first.">Create PIP</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

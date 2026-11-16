@@ -69,42 +69,42 @@ export function leaveTopUps(): LeaveTopUpDays {
 export const LEAVE_TYPE_META: Record<LeaveType, { label: string; chip: string; hint: string }> = {
   annual: {
     label: 'Annual',
-    chip: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200',
+    chip: 'bg-warning-soft text-warning',
     hint: 'EA 1955 s.60E — paid, tiered by service length.',
   },
   sick: {
     label: 'Sick',
-    chip: 'bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-200',
+    chip: 'bg-danger-soft text-destructive',
     hint: 'EA 1955 s.60F — MC required; inform employer within 48 hours.',
   },
   hospitalization: {
     label: 'Hospitalization',
-    chip: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200',
+    chip: 'bg-danger-soft text-destructive',
     hint: 'EA 1955 s.60F — separate 60-day aggregate pool.',
   },
   maternity: {
     label: 'Maternity',
-    chip: 'bg-pink-100 text-pink-800 dark:bg-pink-900/40 dark:text-pink-200',
+    chip: 'bg-accent text-accent-foreground',
     hint: 'EA 1955 s.37 — 98 consecutive days, paid at ORP.',
   },
   paternity: {
     label: 'Paternity',
-    chip: 'bg-teal-100 text-teal-800 dark:bg-teal-900/40 dark:text-teal-200',
+    chip: 'bg-accent text-accent-foreground',
     hint: 'EA 1955 s.60FA — 7 consecutive days per confinement.',
   },
   unpaid: {
     label: 'Unpaid',
-    chip: 'bg-stone-200 text-stone-700 dark:bg-stone-700/50 dark:text-stone-200',
+    chip: 'bg-secondary text-foreground',
     hint: 'Deducted from payroll at ORP per day (s.60I).',
   },
   emergency: {
     label: 'Emergency',
-    chip: 'bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-200',
+    chip: 'bg-warning-soft text-warning',
     hint: 'Company policy — paid, not deducted from statutory balances.',
   },
   compassionate: {
     label: 'Compassionate',
-    chip: 'bg-lime-100 text-lime-800 dark:bg-lime-900/40 dark:text-lime-200',
+    chip: 'bg-success-soft text-success',
     hint: 'Company policy — paid, not deducted from statutory balances.',
   },
 };

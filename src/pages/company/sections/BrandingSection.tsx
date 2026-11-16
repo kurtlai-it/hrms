@@ -14,7 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Field, SaveButton, SectionCard } from '../../settings/shared';
-import { ACCENT_PRESETS, applyCompanyBranding } from '../branding';
+import { ACCENT_PRESETS, applyCompanyBranding, brandSwatchHex } from '../branding';
 import { useCompanySetup, useUnsavedGuard, UNSAVED_HINT } from '../store';
 
 const HEX_RE = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
@@ -29,21 +29,23 @@ interface Draft {
 /** Mini dashboard mock that re-themes itself with the draft accent color. */
 function BrandingPreview({ logoText, accentColor }: { logoText: string; accentColor: string }) {
   const valid = HEX_RE.test(accentColor.trim());
-  const accent = valid ? accentColor.trim() : '#b45309';
+  // The same contrast guard the app applies, so the preview shows what staff will see.
+  const accent = brandSwatchHex(valid ? accentColor.trim() : undefined);
   return (
     <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
       {/* mock app header */}
       <div className="flex items-center gap-2 border-b px-4 py-2.5">
         <span
-          className="flex h-7 w-7 items-center justify-center rounded-lg text-[11px] font-bold text-white"
+          // colors-ok: white text on the guarded tenant color (4.5:1)
+          className="flex h-7 w-7 items-center justify-center rounded-lg text-xs font-bold text-white"
           style={{ backgroundColor: accent }}
         >
           {(logoText.trim() || '?').slice(0, 3).toUpperCase()}
         </span>
         <span className="text-sm font-semibold">{logoText.trim() || 'Company'}</span>
         <span className="ml-auto flex gap-1.5">
-          <span className="h-2 w-2 rounded-full bg-stone-200" />
-          <span className="h-2 w-2 rounded-full bg-stone-200" />
+          <span className="h-2 w-2 rounded-full bg-secondary" />
+          <span className="h-2 w-2 rounded-full bg-secondary" />
         </span>
       </div>
       {/* mock body */}
@@ -51,8 +53,8 @@ function BrandingPreview({ logoText, accentColor }: { logoText: string; accentCo
         <div className="grid grid-cols-3 gap-2">
           {['Headcount', 'Payroll', 'Leave'].map((label, i) => (
             <div key={label} className="rounded-lg border p-2.5">
-              <p className="text-[10px] text-muted-foreground">{label}</p>
-              <p className="mt-0.5 text-sm font-semibold" style={i === 0 ? { color: accent } : undefined}>
+              <p className="text-xs text-muted-foreground">{label}</p>
+              <p className={cn('mt-0.5 text-sm font-semibold', i === 0 && 'text-primary')}>
                 {[30, 'RM 84k', 4][i]}
               </p>
             </div>
@@ -61,13 +63,14 @@ function BrandingPreview({ logoText, accentColor }: { logoText: string; accentCo
         {/* mock progress bars */}
         <div className="space-y-1.5">
           {[80, 55, 30].map((w, i) => (
-            <div key={i} className="h-1.5 overflow-hidden rounded-full bg-stone-100">
+            <div key={i} className="h-1.5 overflow-hidden rounded-full bg-muted">
               <div className="h-full rounded-full" style={{ width: `${w}%`, backgroundColor: accent, opacity: 1 - i * 0.25 }} />
             </div>
           ))}
         </div>
         {/* mock primary action */}
         <div className="flex items-center gap-2">
+          {/* colors-ok: white text on the guarded tenant color (4.5:1) */}
           <span className="rounded-md px-3 py-1.5 text-xs font-medium text-white" style={{ backgroundColor: accent }}>
             Run payroll
           </span>
@@ -164,7 +167,7 @@ export default function BrandingSection() {
         description="Identity shown in the app shell and on payslips. The accent color re-themes the live app for this company."
         action={
           <div className="flex items-center gap-2">
-            {dirty ? <span className="text-xs font-medium text-amber-700">{UNSAVED_HINT}</span> : null}
+            {dirty ? <span className="text-xs font-medium text-primary">{UNSAVED_HINT}</span> : null}
             <SaveButton onSave={onSave} disabled={!valid} />
           </div>
         }
@@ -187,9 +190,10 @@ export default function BrandingSection() {
                     key={p.hex}
                     type="button"
                     title={`${p.name} (${p.hex})`}
+                    aria-label={p.name}
                     onClick={() => set('accentColor', p.hex)}
                     className={cn(
-                      'flex h-8 w-8 items-center justify-center rounded-full border-2 transition-transform hover:scale-110',
+                      'flex size-12 items-center justify-center rounded-full border-2 transition-transform hover:scale-110',
                       draft.accentColor.trim().toLowerCase() === p.hex.toLowerCase()
                         ? 'border-foreground'
                         : 'border-transparent',
@@ -197,7 +201,7 @@ export default function BrandingSection() {
                     style={{ backgroundColor: p.hex }}
                   >
                     {draft.accentColor.trim().toLowerCase() === p.hex.toLowerCase() ? (
-                      <Check className="h-4 w-4 text-white" />
+                      <Check className="h-4 w-4 text-white" /* colors-ok: on a preset swatch, all >= 4.5:1 with white */ />
                     ) : null}
                   </button>
                 ))}
@@ -210,12 +214,12 @@ export default function BrandingSection() {
                     className="w-32 pl-10 font-mono"
                     value={draft.accentColor}
                     onChange={(e) => set('accentColor', e.target.value)}
-                    placeholder="#b45309"
+                    placeholder="#2E2F70"
                   />
                 </div>
               </div>
             </Field>
-            {!hexValid ? <p className="text-xs text-destructive">Enter a valid hex color, e.g. #b45309.</p> : null}
+            {!hexValid ? <p className="text-xs text-destructive">Enter a valid hex color, e.g. #2E2F70.</p> : null}
             <p className="text-xs text-muted-foreground">
               Saved on <code className="rounded bg-muted px-1 py-0.5">Company.branding</code> and applied via CSS
               variables on <code className="rounded bg-muted px-1 py-0.5">:root</code> (

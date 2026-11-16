@@ -109,7 +109,7 @@ export default function AcademicsTab({ employee, file, readOnly, actorName }: Ta
               <div className="min-w-0">
                 <p className="flex flex-wrap items-center gap-2 text-sm font-medium">
                   {a.course}
-                  <Badge variant="outline" className="border-transparent bg-stone-100 text-stone-700">
+                  <Badge variant="outline" className="border-transparent bg-muted text-foreground">
                     {a.level}
                   </Badge>
                 </p>
@@ -195,7 +195,7 @@ export default function AcademicsTab({ employee, file, readOnly, actorName }: Ta
               Cancel
             </Button>
             <Button
-              className="bg-amber-600 text-white hover:bg-amber-700"
+              className="bg-primary text-primary-foreground hover:bg-primary"
               disabled={
                 !form.institution.trim() ||
                 !form.course.trim() ||

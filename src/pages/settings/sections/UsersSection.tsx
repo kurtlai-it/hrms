@@ -10,21 +10,9 @@
  * SuperAdmin protected). The table refreshes via the auth change feed
  * (subscribeUsers / getUsersVersion).
  */
+import { SummaryLine } from '@/components/ui/summary-line';
 import { useMemo, useState, useSyncExternalStore } from 'react';
-import {
-  Activity,
-  Ban,
-  CircleCheck,
-  Info,
-  KeyRound,
-  MoreHorizontal,
-  RotateCcw,
-  Search,
-  ShieldCheck,
-  Trash2,
-  UserPlus,
-  Users,
-} from 'lucide-react';
+import { Ban, Info, KeyRound, MoreHorizontal, RotateCcw, Search, ShieldCheck, Trash2, UserPlus } from 'lucide-react';
 import { useCollection } from '@/lib/db';
 import {
   getUsersVersion,
@@ -78,16 +66,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { SectionCard } from '../shared';
 
 const ROLE_STYLE: Record<AuthRole, string> = {
-  SuperAdmin: 'border-transparent bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300',
-  Admin: 'border-transparent bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300',
-  HR: 'border-transparent bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-300',
-  Manager: 'border-transparent bg-stone-200 text-stone-700 dark:bg-stone-800 dark:text-stone-300',
+  SuperAdmin: 'border-transparent bg-danger-soft text-destructive',
+  Admin: 'border-transparent bg-warning-soft text-warning',
+  HR: 'border-transparent bg-warning-soft text-warning',
+  Manager: 'border-transparent bg-secondary text-foreground',
   Employee: 'border-transparent bg-muted text-muted-foreground',
 };
 
 const STATUS_STYLE: Record<AccountStatus, string> = {
-  active: 'border-transparent bg-lime-100 text-lime-800 dark:bg-lime-950 dark:text-lime-300',
-  disabled: 'border-transparent bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-300',
+  active: 'border-transparent bg-success-soft text-success',
+  disabled: 'border-transparent bg-warning-soft text-warning',
 };
 
 const ROLE_ORDER: AuthRole[] = ['SuperAdmin', 'Admin', 'HR', 'Manager', 'Employee'];
@@ -228,7 +216,7 @@ export default function UsersSection() {
           {status === 'active' ? (
             <DropdownMenuItem
               disabled={isProtected || isSelf}
-              className="text-orange-700 focus:text-orange-800 dark:text-orange-400"
+              className="text-primary focus:text-warning"
               onSelect={() => setRevokeTarget(a)}
             >
               <Ban className="mr-2 h-4 w-4" /> Revoke access…
@@ -240,7 +228,7 @@ export default function UsersSection() {
           )}
           <DropdownMenuItem
             disabled={isProtected || isSelf}
-            className="text-red-600 focus:text-red-700 dark:text-red-400"
+            className="text-destructive focus:text-destructive"
             onSelect={() => setRemoveTarget(a)}
           >
             <Trash2 className="mr-2 h-4 w-4" /> Remove account…
@@ -260,10 +248,10 @@ export default function UsersSection() {
   };
 
   const statTiles = [
-    { label: 'Total accounts', value: stats.total, icon: Users, cls: 'text-stone-600' },
-    { label: 'Active', value: stats.active, icon: CircleCheck, cls: 'text-lime-700' },
-    { label: 'Revoked', value: stats.revoked, icon: Ban, cls: 'text-orange-700' },
-    { label: 'Never logged in', value: stats.neverLoggedIn, icon: Activity, cls: 'text-stone-500' },
+    { label: 'Total accounts', value: stats.total },
+    { label: 'Active', value: stats.active },
+    { label: 'Revoked', value: stats.revoked },
+    { label: 'Never logged in', value: stats.neverLoggedIn },
   ];
 
   return (
@@ -283,18 +271,7 @@ export default function UsersSection() {
         </AlertDescription>
       </Alert>
 
-      {/* Stats strip */}
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {statTiles.map((s) => (
-          <div key={s.label} className="rounded-xl border bg-card p-4">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <s.icon className={cn('h-3.5 w-3.5', s.cls)} />
-              {s.label}
-            </div>
-            <p className="mt-1 text-2xl font-semibold tabular-nums">{s.value}</p>
-          </div>
-        ))}
-      </div>
+      <SummaryLine items={statTiles.map((s) => ({ label: s.label, value: s.value }))} />
 
       <SectionCard
         icon={ShieldCheck}
@@ -338,14 +315,14 @@ export default function UsersSection() {
                     <TableHead>Linked employee</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Last login</TableHead>
-                    {canManage && <TableHead className="w-12 text-right"> </TableHead>}
+                    {canManage && <TableHead className="w-12 text-right"><span className="sr-only">Actions</span></TableHead>}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filtered.map((a) => {
                     const linked = linkedLabel(a);
                     return (
-                      <TableRow key={a.id} className={statusOf(a) === 'disabled' ? 'opacity-60' : undefined}>
+                      <TableRow key={a.id} className={statusOf(a) === 'disabled' ? 'bg-muted' : undefined}>
                         <TableCell>
                           <code className="rounded bg-muted px-1.5 py-0.5 text-sm font-medium">{a.username}</code>
                           {a.id === user?.id && (
@@ -378,13 +355,13 @@ export default function UsersSection() {
               {filtered.map((a) => {
                 const linked = linkedLabel(a);
                 return (
-                  <div key={a.id} className="flex items-center gap-3 rounded-lg border p-3">
-                    <div className="min-w-0 flex-1">
+                  <div key={a.id} className="flex flex-wrap items-center gap-3 rounded-lg border p-3">
+                    <div className="min-w-[min(12rem,100%)] flex-1">
                       <div className="flex flex-wrap items-center gap-1.5">
                         <code className="rounded bg-muted px-1.5 py-0.5 text-sm font-medium">{a.username}</code>
                         {statusBadge(a)}
                       </div>
-                      <p className="mt-1 truncate text-xs text-muted-foreground">
+                      <p className="mt-1 break-words text-xs text-muted-foreground">
                         {linked.name}
                         {linked.name !== '—' ? ` · ${linked.sub}` : ''}
                       </p>
@@ -439,7 +416,7 @@ export default function UsersSection() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction className="bg-orange-600 text-white hover:bg-orange-700" onClick={confirmRevoke}>
+            <AlertDialogAction className="bg-primary text-primary-foreground hover:bg-primary" onClick={confirmRevoke}>
               Revoke access
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -458,7 +435,7 @@ export default function UsersSection() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction className="bg-red-600 text-white hover:bg-red-700" onClick={confirmRemove}>
+            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive" onClick={confirmRemove}>
               Remove account
             </AlertDialogAction>
           </AlertDialogFooter>

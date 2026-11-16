@@ -383,7 +383,7 @@ describe('aggregateSalaryReport — totals match hand-summed finalized payslips'
     });
     expect(m.companyName).toBe('ASM Tech Sdn Bhd');
     expect(m.companyCode).toBe('COMPANY');
-    expect(m.accentColor).toBe('#b45309');
+    expect(m.accentColor).toBe('#2E2F70');
   });
 });
 

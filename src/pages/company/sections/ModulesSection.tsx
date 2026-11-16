@@ -16,9 +16,9 @@ import { MODULE_DEFS, type PlanHint } from '../modules';
 import { useCompanySetup } from '../store';
 
 const PLAN_BADGE_CLS: Record<PlanHint, string> = {
-  'All plans': 'border-transparent bg-stone-200 text-stone-700 dark:bg-stone-800 dark:text-stone-300',
-  Pro: 'border-transparent bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300',
-  Enterprise: 'border-transparent bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-300',
+  'All plans': 'border-transparent bg-secondary text-foreground',
+  Pro: 'border-transparent bg-warning-soft text-warning',
+  Enterprise: 'border-transparent bg-warning-soft text-warning',
 };
 
 export default function ModulesSection() {
@@ -65,8 +65,8 @@ export default function ModulesSection() {
         description={`${enabled.size} of ${MODULE_DEFS.length} modules enabled for ${company.name}. Disabled modules are hidden from navigation and their routes are gated (via isModuleEnabled). Data is never deleted — re-enabling restores full access.`}
       >
         {outside.length > 0 ? (
-          <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50/70 p-3 dark:border-amber-900 dark:bg-amber-950/30">
-            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+          <div className="flex items-start gap-3 rounded-lg border border-warning/40 bg-warning-soft p-3">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning" />
             <div className="space-y-1 text-sm">
               {outside.map((key) => (
                 <p key={key}>
@@ -85,10 +85,10 @@ export default function ModulesSection() {
           {MODULE_DEFS.map((m) => {
             const on = enabled.has(m.key);
             return (
-              <div
+              <label
                 key={m.key}
                 className={cn(
-                  'flex items-start justify-between gap-3 rounded-xl border p-4 transition-colors',
+                  'flex cursor-pointer items-start justify-between gap-3 rounded-xl border p-4 transition-colors',
                   on ? 'bg-card' : 'bg-muted/40',
                 )}
               >
@@ -106,7 +106,7 @@ export default function ModulesSection() {
                   onCheckedChange={(v) => toggle(m.key, v)}
                   aria-label={`Toggle ${m.label}`}
                 />
-              </div>
+              </label>
             );
           })}
         </div>

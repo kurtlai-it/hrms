@@ -6,6 +6,7 @@
 import { calcEPF, calcSOCSO, calcEIS, hrdfLevy } from '@/lib/statutory';
 import { ageFromDob, round2 } from '@/lib/utils';
 import type { Employee } from '@/lib/types';
+import { formatDate } from '@/i18n';
 
 /** Local date → 'YYYY-MM-DD'. */
 export function isoOf(d: Date): string {
@@ -28,15 +29,15 @@ export function addMonths(d: Date, months: number): Date {
   return next;
 }
 
-/** 'YYYY-MM-DD' → '5 Mar' (short axis label). */
+/** 'YYYY-MM-DD' → '5 Mar' (short axis label, UI language). */
 export function shortDate(iso: string): string {
-  return new Date(`${iso}T00:00:00`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  return formatDate(iso, { day: 'numeric', month: 'short' });
 }
 
-/** 'YYYY-MM' → 'Mar 26' (short axis label). */
+/** 'YYYY-MM' → 'Mar 26' (short axis label, UI language). */
 export function shortMonth(mk: string): string {
   const [y, m] = mk.split('-').map(Number);
-  return new Date(y, m - 1, 1).toLocaleDateString('en-GB', { month: 'short', year: '2-digit' });
+  return formatDate(new Date(y, m - 1, 1), { month: 'short', year: '2-digit' });
 }
 
 /**
@@ -63,9 +64,8 @@ export function estimateMonthlyEmployerCost(employees: Employee[]): number {
 }
 
 export interface ComplianceDeadline {
-  id: string;
-  title: string;
-  note: string;
+  /** Also the locale key: dash.compliance.<id>.title / .note */
+  id: 'contrib' | 'cp39' | 'hrd' | 'ea' | 'formE';
   due: string; // ISO date
 }
 
@@ -95,36 +95,25 @@ export function complianceDeadlines(from: Date = new Date()): ComplianceDeadline
   const midnight = new Date(from.getFullYear(), from.getMonth(), from.getDate());
   const feb = nextAnnual(1, 28, midnight);
   const lastDayFeb = new Date(feb.getFullYear(), 2, 0); // day 0 of March = last day of Feb
-  return [
-    {
-      id: 'contrib',
-      title: 'EPF / SOCSO / EIS remittance',
-      note: 'Contributions for the previous wage period',
-      due: isoOf(nextMonthly(15, midnight)),
-    },
-    {
-      id: 'cp39',
-      title: 'CP39 — PCB / MTD payment',
-      note: 'Monthly tax deductions to LHDN',
-      due: isoOf(nextMonthly(15, midnight)),
-    },
-    {
-      id: 'hrd',
-      title: 'HRD Corp levy remittance',
-      note: 'Monthly levy for registered employers (PSMB Act 2001)',
-      due: isoOf(nextMonthly(15, midnight)),
-    },
-    {
-      id: 'ea',
-      title: 'Form EA to employees',
-      note: 'Annual remuneration statement, previous YA',
-      due: isoOf(lastDayFeb),
-    },
-    {
-      id: 'form-e',
-      title: 'Form E employer return',
-      note: 'Annual employer declaration to LHDN',
-      due: isoOf(nextAnnual(2, 31, midnight)),
-    },
-  ].sort((a, b) => a.due.localeCompare(b.due));
+  const deadlines: ComplianceDeadline[] = [
+    { id: 'contrib', due: isoOf(nextMonthly(15, midnight)) },
+    { id: 'cp39', due: isoOf(nextMonthly(15, midnight)) },
+    { id: 'hrd', due: isoOf(nextMonthly(15, midnight)) },
+    { id: 'ea', due: isoOf(lastDayFeb) },
+    { id: 'formE', due: isoOf(nextAnnual(2, 31, midnight)) },
+  ];
+  return deadlines.sort((a, b) => a.due.localeCompare(b.due));
+}
+
+/**
+ * Name for the Home greeting: the linked employee's name, else the login
+ * username made readable ('admin' → 'Admin', 'jane.doe' → 'Jane Doe').
+ */
+export function greetingName(employeeName: string | undefined, username: string | undefined): string {
+  if (employeeName?.trim()) return employeeName.trim();
+  return (username ?? '')
+    .split(/[._\s-]+/)
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
 }

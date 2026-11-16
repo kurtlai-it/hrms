@@ -26,11 +26,11 @@ export default function EmployeeLoansCard({ employeeId }: { employeeId: string }
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center justify-between text-base">
           <span className="flex items-center gap-2">
-            <HandCoins className="h-4 w-4 text-amber-600" /> Loans &amp; benefits
+            <HandCoins className="h-4 w-4 text-primary" /> Loans &amp; benefits
           </span>
           <Link
             to="/loans"
-            className="flex items-center gap-1 text-xs font-normal text-amber-700 underline-offset-4 hover:underline dark:text-amber-500"
+            className="flex items-center gap-1 text-xs font-normal text-primary underline-offset-4 hover:underline"
           >
             Open <ChevronRight className="h-3 w-3" />
           </Link>

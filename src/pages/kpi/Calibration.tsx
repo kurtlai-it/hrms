@@ -6,7 +6,7 @@
 import { useMemo, useState } from 'react';
 import { AlertTriangle, Scale } from 'lucide-react';
 import {
-  Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Cell,
+  Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Cell, LabelList,
 } from 'recharts';
 import type { Employee } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -22,6 +22,7 @@ import {
   BANDS, BIAS_THRESHOLD_5, FORCED_DISTRIBUTION, bandFor100, score100to5, type ReviewExt,
 } from './lib';
 import { isFinalReview } from '@/lib/kpiEngine';
+import { CHART_TICK, valueLabel } from '@/lib/chartText';
 
 interface Props {
   employees: Employee[];
@@ -36,7 +37,8 @@ const HIST_BUCKETS: { min: number; max: number; label: string }[] = [
   { min: 4.5, max: 5.01, label: '≥ 4.5' },
 ];
 
-const BUCKET_COLORS = ['#f87171', '#fb923c', '#fbbf24', '#a3e635', '#34d399'];
+// Low to high. Rose (lowest) and green (highest) sit at opposite ends, never side by side.
+const BUCKET_COLORS = ['hsl(var(--destructive))', 'hsl(var(--chart-6))', 'hsl(var(--chart-4))', 'hsl(var(--chart-1))', 'hsl(var(--success))'];
 
 /** Minimum reviews before a manager's average is bias-flagged. */
 const BIAS_MIN_SAMPLE = 2;
@@ -115,7 +117,7 @@ export default function Calibration({ employees, reviews }: Props) {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">
-          <Scale className="h-4 w-4 text-amber-600" />
+          <Scale className="h-4 w-4 text-primary" />
           <h2 className="text-base font-semibold">Calibration</h2>
         </div>
         <Select value={activePeriod} onValueChange={setPeriod}>
@@ -148,18 +150,19 @@ export default function Calibration({ employees, reviews }: Props) {
               <CardContent>
                 <div className="h-64">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={histogram} margin={{ top: 8, right: 8, left: -18, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
-                      <XAxis dataKey="label" tickLine={false} axisLine={false} fontSize={12} />
-                      <YAxis allowDecimals={false} tickLine={false} axisLine={false} fontSize={12} />
+                    <BarChart data={histogram} margin={{ top: 28, right: 8, left: -18, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--chart-grid))" />
+                      <XAxis dataKey="label" tickLine={false} axisLine={false} tick={CHART_TICK} />
+                      <YAxis allowDecimals={false} tickLine={false} axisLine={false} tick={CHART_TICK} />
                       <Tooltip
-                        cursor={{ fill: 'rgba(0,0,0,0.04)' }}
+                        cursor={{ fill: 'hsl(var(--muted))' }}
                         formatter={(value) => [`${value} employees`, 'Count']}
                       />
                       <Bar dataKey="count" radius={[6, 6, 0, 0]}>
                         {histogram.map((h) => (
-                          <Cell key={h.label} fill={h.fill} fillOpacity={0.75} />
+                          <Cell key={h.label} fill={h.fill} />
                         ))}
+                        <LabelList content={valueLabel()} />
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
@@ -182,26 +185,26 @@ export default function Calibration({ employees, reviews }: Props) {
                     key={m.reviewerId}
                     className={cn(
                       'flex items-center justify-between gap-3 rounded-xl border px-4 py-3',
-                      m.flagged && 'border-orange-200 bg-orange-50',
+                      m.flagged && 'border-warning/40 bg-warning-soft',
                     )}
                   >
                     <div className="min-w-0">
-                      <div className="truncate text-sm font-medium">{empName(m.reviewerId)}</div>
+                      <div className="break-words text-sm font-medium">{empName(m.reviewerId)}</div>
                       <div className="text-xs text-muted-foreground">{m.count} reviews</div>
                     </div>
                     <div className="text-right">
                       <div className="text-sm font-semibold">{m.avg5.toFixed(2)} / 5</div>
-                      <div className={cn('text-xs', m.dev > 0 ? 'text-lime-700' : m.dev < 0 ? 'text-orange-700' : 'text-muted-foreground')}>
+                      <div className={cn('text-xs', m.dev > 0 ? 'text-success' : m.dev < 0 ? 'text-primary' : 'text-muted-foreground')}>
                         {m.dev > 0 ? '+' : ''}{m.dev.toFixed(2)} vs company
                       </div>
                     </div>
                     {m.flagged ? (
-                      <Badge variant="secondary" className="border bg-orange-100 text-orange-800 border-orange-200">
+                      <Badge variant="secondary" className="border bg-warning-soft text-warning border-warning/40">
                         <AlertTriangle className="mr-1 h-3 w-3" />
                         {m.dev > 0 ? 'Lenient' : 'Strict'}
                       </Badge>
                     ) : (
-                      <Badge variant="secondary" className="border bg-lime-100 text-lime-800 border-lime-200">OK</Badge>
+                      <Badge variant="secondary" className="border bg-success-soft text-success border-success/40">OK</Badge>
                     )}
                   </div>
                 ))}
@@ -230,13 +233,13 @@ export default function Calibration({ employees, reviews }: Props) {
                 },
               ].map((bar) => (
                 <div key={bar.title} className="space-y-1.5">
-                  <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{bar.title}</div>
+                  <div className="text-xs font-bold text-muted-foreground">{bar.title}</div>
                   <div className="flex h-7 w-full overflow-hidden rounded-lg border bg-muted/40">
                     {bar.rows.map((r) => (
                       <div
                         key={r.band}
-                        className={cn('flex items-center justify-center text-[10px] font-semibold text-white', r.dot)}
-                        style={{ width: `${r.pct}%`, minWidth: r.pct > 0 ? 28 : 0 }}
+                        className={cn('flex items-center justify-center text-xs font-semibold', r.dot)}
+                        style={{ width: `${r.pct}%`, minWidth: r.pct > 0 ? 44 : 0 }}
                         title={`${r.band}: ${r.pct}%`}
                       >
                         {r.pct > 0 ? `${r.pct}%` : ''}

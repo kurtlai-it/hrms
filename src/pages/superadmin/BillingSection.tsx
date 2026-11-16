@@ -21,8 +21,9 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
-  Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, XAxis, YAxis,
+  Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, XAxis, YAxis, LabelList,
 } from 'recharts';
+import { barNameLabel, pieValueLabel } from '@/lib/chartText';
 import { useTenant } from '@/lib/useTenant';
 import { fmtDate, fmtRM, monthKey } from '@/lib/utils';
 import {
@@ -60,11 +61,11 @@ import { downloadInvoicePdf } from './invoicePdf';
 
 export function InvoiceStatusBadge({ status }: { status: InvoiceStatus }) {
   const styles: Record<InvoiceStatus, string> = {
-    draft: 'border-transparent bg-stone-200 text-stone-700 dark:bg-stone-800 dark:text-stone-300',
-    issued: 'border-transparent bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300',
-    paid: 'border-transparent bg-lime-100 text-lime-800 dark:bg-lime-950 dark:text-lime-300',
-    overdue: 'border-transparent bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300',
-    void: 'border-transparent bg-stone-200 text-stone-500 line-through dark:bg-stone-800 dark:text-stone-400',
+    draft: 'border-transparent bg-secondary text-foreground',
+    issued: 'border-transparent bg-warning-soft text-warning',
+    paid: 'border-transparent bg-success-soft text-success',
+    overdue: 'border-transparent bg-danger-soft text-destructive',
+    void: 'border-transparent bg-secondary text-muted-foreground line-through',
   };
   const labels: Record<InvoiceStatus, string> = {
     draft: 'Draft',
@@ -83,14 +84,14 @@ export function InvoiceStatusBadge({ status }: { status: InvoiceStatus }) {
 // ── Charts config ────────────────────────────────────────────────────────────
 
 const revenueConfig = {
-  invoiced: { label: 'Invoiced', color: '#d97706' },
-  collected: { label: 'Collected', color: '#65a30d' },
+  invoiced: { label: 'Invoiced', color: 'hsl(var(--chart-1))' },
+  collected: { label: 'Collected', color: 'hsl(var(--chart-5))' },
 } satisfies ChartConfig;
 
 const planChartConfig = {
-  free: { label: PLAN_CATALOG.free.label, color: '#a8a29e' },
-  pro: { label: PLAN_CATALOG.pro.label, color: '#d97706' },
-  enterprise: { label: PLAN_CATALOG.enterprise.label, color: '#92400e' },
+  free: { label: PLAN_CATALOG.free.label, color: 'hsl(var(--chart-3))' },
+  pro: { label: PLAN_CATALOG.pro.label, color: 'hsl(var(--chart-2))' },
+  enterprise: { label: PLAN_CATALOG.enterprise.label, color: 'hsl(var(--chart-1))' },
 } satisfies ChartConfig;
 
 function ChartCard(props: {
@@ -104,7 +105,7 @@ function ChartCard(props: {
     <Card className="rounded-xl">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
-          <Icon className="h-4 w-4 text-amber-600" />
+          <Icon className="h-4 w-4 text-primary" />
           {title}
         </CardTitle>
         <CardDescription>{description}</CardDescription>
@@ -423,21 +424,21 @@ export default function BillingSection() {
           label="ARR"
           value={fmtRM(analytics.arr)}
           sub="run-rate — MRR × 12"
-          tone="bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-300"
+          tone="bg-warning-soft text-warning"
         />
         <StatCard
           icon={Wallet}
           label={`Collected ${monthKey()}`}
           value={fmtRM(analytics.collected)}
           sub="paid invoices, this calendar month"
-          tone="bg-lime-100 text-lime-700 dark:bg-lime-950 dark:text-lime-300"
+          tone="bg-success-soft text-success"
         />
         <StatCard
           icon={Receipt}
           label="Outstanding AR"
           value={fmtRM(analytics.ar)}
           sub="issued + overdue, unpaid"
-          tone="bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300"
+          tone="bg-danger-soft text-destructive"
         />
       </div>
 
@@ -455,8 +456,12 @@ export default function BillingSection() {
               <YAxis tickLine={false} axisLine={false} width={44} />
               <ChartTooltip content={<ChartTooltipContent />} />
               <ChartLegend content={<ChartLegendContent />} />
-              <Bar dataKey="invoiced" fill="var(--color-invoiced)" radius={[4, 4, 0, 0]} maxBarSize={20} />
-              <Bar dataKey="collected" fill="var(--color-collected)" radius={[4, 4, 0, 0]} maxBarSize={20} />
+              <Bar dataKey="invoiced" fill="var(--color-invoiced)" radius={[4, 4, 0, 0]} maxBarSize={20}>
+                <LabelList content={barNameLabel('Invoiced', revenueData.map((d) => d.invoiced))} />
+              </Bar>
+              <Bar dataKey="collected" fill="var(--color-collected)" radius={[4, 4, 0, 0]} maxBarSize={20}>
+                <LabelList content={barNameLabel('Collected', revenueData.map((d) => d.collected))} />
+              </Bar>
             </BarChart>
           </ChartContainer>
         </ChartCard>
@@ -477,6 +482,8 @@ export default function BillingSection() {
                   innerRadius="58%"
                   outerRadius="85%"
                   strokeWidth={2}
+                  label={pieValueLabel}
+                  labelLine={false}
                 >
                   {planData.map((d) => (
                     <Cell key={d.plan} fill={d.fill} />
@@ -511,7 +518,7 @@ export default function BillingSection() {
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
           {agingBuckets.map(({ key, bucket }) => (
             <div key={key} className="rounded-lg border p-3">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              <p className="text-xs font-bold text-muted-foreground">
                 {agingLabels[key]}
               </p>
               <p className="mt-1 text-lg font-semibold tabular-nums">{fmtRM(bucket.amount)}</p>
@@ -536,7 +543,7 @@ export default function BillingSection() {
         ) : (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              <p className="text-xs font-bold text-muted-foreground">
                 Past due
               </p>
               {analytics.risk.pastDue.length === 0 ? (
@@ -545,10 +552,10 @@ export default function BillingSection() {
                 analytics.risk.pastDue.map(({ subscription, company }) => (
                   <div
                     key={subscription.id}
-                    className="flex items-center justify-between gap-2 rounded-lg border border-red-200 bg-red-50/60 p-3 dark:border-red-900 dark:bg-red-950/20"
+                    className="flex items-center justify-between gap-2 rounded-lg border border-destructive/40 bg-danger-soft p-3"
                   >
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium">{company.name}</p>
+                      <p className="break-words text-sm font-medium">{company.name}</p>
                       <p className="text-xs text-muted-foreground">
                         {PLAN_CATALOG[subscription.plan].label} · {subscription.seats} seats ·{' '}
                         {fmtRM(subscription.seats * subscription.unitPrice)}/mo list
@@ -556,7 +563,7 @@ export default function BillingSection() {
                     </div>
                     <Badge
                       variant="outline"
-                      className="border-transparent bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300"
+                      className="border-transparent bg-danger-soft text-destructive"
                     >
                       Past due
                     </Badge>
@@ -565,7 +572,7 @@ export default function BillingSection() {
               )}
             </div>
             <div className="space-y-2">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              <p className="text-xs font-bold text-muted-foreground">
                 Trials ending ≤ 7 days
               </p>
               {analytics.risk.trialsEnding.length === 0 ? (
@@ -574,17 +581,17 @@ export default function BillingSection() {
                 analytics.risk.trialsEnding.map(({ company, daysLeft }) => (
                   <div
                     key={company.id}
-                    className="flex items-center justify-between gap-2 rounded-lg border border-amber-200 bg-amber-50/60 p-3 dark:border-amber-900 dark:bg-amber-950/20"
+                    className="flex items-center justify-between gap-2 rounded-lg border border-warning/40 bg-warning-soft p-3"
                   >
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium">{company.name}</p>
+                      <p className="break-words text-sm font-medium">{company.name}</p>
                       <p className="text-xs text-muted-foreground">
                         Trial ends {company.trialEndsAt ? fmtDate(company.trialEndsAt) : '—'}
                       </p>
                     </div>
                     <Badge
                       variant="outline"
-                      className="border-transparent bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300"
+                      className="border-transparent bg-warning-soft text-warning"
                     >
                       {daysLeft}d left
                     </Badge>
@@ -679,7 +686,7 @@ export default function BillingSection() {
                             variant="ghost"
                             size="icon"
                             title="Issue invoice"
-                            className="text-amber-700 hover:text-amber-800 dark:text-amber-400"
+                            className="text-primary hover:text-warning"
                             onClick={() => {
                               issueInvoice(inv.id);
                               toast.success(`${inv.invoiceNo} issued`, {
@@ -695,7 +702,7 @@ export default function BillingSection() {
                             variant="ghost"
                             size="icon"
                             title="Record payment"
-                            className="text-lime-700 hover:text-lime-800 dark:text-lime-400"
+                            className="text-success hover:text-success"
                             onClick={() => setPayTarget(inv)}
                           >
                             <Banknote className="h-4 w-4" />
@@ -716,7 +723,7 @@ export default function BillingSection() {
                                 variant="ghost"
                                 size="icon"
                                 title="Void invoice"
-                                className="text-red-600 hover:text-red-700 dark:text-red-400"
+                                className="text-destructive hover:text-destructive"
                                 onClick={() => onVoid(inv)}
                               >
                                 <AlertTriangle className="h-4 w-4" />

@@ -53,7 +53,7 @@ function Row({ label, value }: { label: string; value?: string }) {
 }
 
 function SectionTitle({ children }: { children: string }) {
-  return <p className="pt-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{children}</p>;
+  return <p className="pt-2 text-xs font-bold text-muted-foreground">{children}</p>;
 }
 
 /**
@@ -104,7 +104,7 @@ function SubmissionDocItem({
   return (
     <li className="flex items-center gap-3 rounded-xl border p-2.5">
       {loading ? (
-        <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-stone-100 dark:bg-stone-800">
+        <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-muted">
           <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" aria-label="Loading document" />
         </span>
       ) : url?.startsWith('data:image') ? (
@@ -116,12 +116,12 @@ function SubmissionDocItem({
           />
         </a>
       ) : (
-        <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-stone-100 dark:bg-stone-800">
+        <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-muted">
           <FileText className="h-5 w-5 text-muted-foreground" />
         </span>
       )}
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium">{d.fileName}</p>
+        <p className="break-words text-sm font-medium">{d.fileName}</p>
         <p className="text-xs text-muted-foreground">
           {d.kind} · {fmtSize(d.sizeBytes)}
         </p>
@@ -308,14 +308,14 @@ export default function SubmissionReviewDialog({
               : 'Not accepted.'}
           </p>
           {submission.reviewNotes && (
-            <p className="rounded-lg bg-stone-100 p-3 text-xs text-muted-foreground dark:bg-stone-900/60">
+            <p className="rounded-lg bg-muted p-3 text-xs text-muted-foreground">
               Review note: {submission.reviewNotes}
             </p>
           )}
         </div>
 
         {rejecting && (
-          <div className="grid gap-2 rounded-xl border border-red-200 bg-red-50/60 p-3 dark:border-red-900/50 dark:bg-red-950/20">
+          <div className="grid gap-2 rounded-xl border border-destructive/40 bg-danger-soft p-3">
             <Label htmlFor="rj-reason" className="text-sm">
               Reason for returning this submission
             </Label>
@@ -343,7 +343,7 @@ export default function SubmissionReviewDialog({
               <Button variant="outline" onClick={() => setRejecting(false)}>
                 Back
               </Button>
-              <Button variant="destructive" onClick={confirmReject} disabled={!reason.trim()}>
+              <Button variant="destructive" onClick={confirmReject} disabled={!reason.trim()} disabledReason="Fill in the required fields first.">
                 Confirm rejection
               </Button>
             </>
@@ -354,7 +354,7 @@ export default function SubmissionReviewDialog({
               </Button>
               <Button
                 onClick={() => onApproveRequest(submission)}
-                className="bg-amber-600 text-white hover:bg-amber-700"
+                className="bg-primary text-primary-foreground hover:bg-primary"
               >
                 <ThumbsUp className="mr-1.5 h-4 w-4" /> Approve &amp; create employee
               </Button>

@@ -3,16 +3,17 @@
  * Entitlements are computed from joinDate (service tiers) and can be synced
  * into the `leaveBalances` collection on demand.
  */
+import { useTranslation } from 'react-i18next';
+import { TypeBadge } from '@/pages/employees/EmployeeBadges';
 import { useMemo, useState } from 'react';
-import { Baby, HeartPulse, RefreshCw, Sun, Thermometer } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { logAudit, type CollectionApi } from '@/lib/db';
-import { cn, fmtDate } from '@/lib/utils';
+import { fmtDate } from '@/lib/utils';
 import type { Employee, LeaveBalance } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
@@ -30,44 +31,8 @@ interface Props {
   balancesApi: CollectionApi<LeaveBalance>;
 }
 
-function usagePct(used: number, entitled: number): number {
-  if (entitled <= 0) return 0;
-  return Math.min(100, Math.round((used / entitled) * 100));
-}
-
-function BalanceCard(props: {
-  icon: typeof Sun;
-  title: string;
-  entitled: number;
-  used: number;
-  extra?: string;
-}) {
-  // B5: show the true remaining figure — a negative balance must be visible,
-  // not silently clamped to zero.
-  const remaining = props.entitled - props.used;
-  return (
-    <Card className="rounded-xl">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">{props.title}</CardTitle>
-        <props.icon className="h-4 w-4 text-amber-600" />
-      </CardHeader>
-      <CardContent className="space-y-2">
-        <div className={cn('text-2xl font-semibold', remaining < 0 && 'text-rose-600 dark:text-rose-400')}>
-          {remaining}
-          <span className="text-sm font-normal text-muted-foreground">
-            {' '}/ {props.entitled} days left{remaining < 0 ? ' (overdrawn)' : ''}
-          </span>
-        </div>
-        <Progress value={usagePct(props.used, props.entitled)} className="h-2" />
-        <p className="text-xs text-muted-foreground">
-          {props.used} used{props.extra ? ` · ${props.extra}` : ''}
-        </p>
-      </CardContent>
-    </Card>
-  );
-}
-
 export default function BalancesPanel({ employees, balancesApi }: Props) {
+  const { t } = useTranslation();
   const auth = useAuthScope();
   const [selectedId, setSelectedId] = useState<string>(employees[0]?.id ?? '');
   const [syncMsg, setSyncMsg] = useState<string | null>(null);
@@ -169,7 +134,7 @@ export default function BalancesPanel({ employees, balancesApi }: Props) {
           </div>
           {auth.isHROrAdmin && (
             <div className="flex flex-wrap gap-2 sm:ml-auto">
-              <Button onClick={onSyncOne} className="gap-1.5">
+              <Button variant="outline" onClick={onSyncOne} className="gap-1.5">
                 <RefreshCw className="h-4 w-4" /> Sync EA entitlements
               </Button>
               <Button variant="outline" onClick={onSyncAll}>Sync all employees</Button>
@@ -186,7 +151,7 @@ export default function BalancesPanel({ employees, balancesApi }: Props) {
       {/* Service profile */}
       <div className="flex flex-wrap items-center gap-2 text-sm">
         <span className="font-medium">{emp.name}</span>
-        <Badge variant="secondary">{emp.employmentType}</Badge>
+        <TypeBadge type={emp.employmentType} />
         <Badge variant="outline">{TIER_LABELS[ent.tier]} service tier</Badge>
         <span className="text-muted-foreground">
           Joined {fmtDate(emp.joinDate)} · {ent.serviceYears} yrs service
@@ -195,60 +160,55 @@ export default function BalancesPanel({ employees, balancesApi }: Props) {
         </span>
       </div>
 
-      {/* Balance cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <BalanceCard
-          icon={Sun}
-          title="Annual leave"
-          entitled={annualEntitled}
-          used={annualUsed}
-          extra={
-            bal && bal.carriedForward > 0
-              ? `incl. ${bal.carriedForward} carried forward${topNote(top.annual)}`
-              : `EA tier ${ent.annual - top.annual}${topNote(top.annual)}`
-          }
-        />
-        <BalanceCard
-          icon={Thermometer}
-          title="Sick leave"
-          entitled={sickEntitled}
-          used={sickUsed}
-          extra={`EA tier ${ent.sick - top.sick}${topNote(top.sick)}`}
-        />
-        <BalanceCard
-          icon={HeartPulse}
-          title="Hospitalization pool"
-          entitled={hospEntitled}
-          used={hospUsed}
-          extra={`separate 60-day aggregate${topNote(top.hospitalization)}`}
-        />
-        <Card className="rounded-xl">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              {emp.gender === 'female' ? 'Maternity' : 'Paternity'}
-            </CardTitle>
-            <Baby className="h-4 w-4 text-amber-600" />
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="text-2xl font-semibold">
-              {emp.gender === 'female' ? ent.maternity : ent.paternity}
-              <span className="text-sm font-normal text-muted-foreground"> days / confinement</span>
-            </div>
-            <p className="text-xs text-muted-foreground">
+      {/* This person's balances: one small table. */}
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>{t('leaveBal.colType')}</TableHead>
+            <TableHead className="text-right">{t('leaveBal.colEntitled')}</TableHead>
+            <TableHead className="text-right">{t('leaveBal.colUsed')}</TableHead>
+            <TableHead className="text-right">{t('leaveBal.colLeft')}</TableHead>
+            <TableHead>{t('leaveBal.colNote')}</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {[
+            {
+              key: 'annual',
+              label: t('leaveBal.annual'),
+              entitled: annualEntitled,
+              used: annualUsed,
+              note: bal && bal.carriedForward > 0
+                ? `incl. ${bal.carriedForward} carried forward${topNote(top.annual)}`
+                : `EA tier ${ent.annual - top.annual}${topNote(top.annual)}`,
+            },
+            { key: 'sick', label: t('leaveBal.sick'), entitled: sickEntitled, used: sickUsed, note: `EA tier ${ent.sick - top.sick}${topNote(top.sick)}` },
+            { key: 'hosp', label: t('leaveBal.hosp'), entitled: hospEntitled, used: hospUsed, note: `separate 60-day aggregate${topNote(top.hospitalization)}` },
+          ].map((r) => (
+            <TableRow key={r.key}>
+              <TableCell className="font-bold">{r.label}</TableCell>
+              <TableCell className="text-right tabular-nums">{r.entitled}</TableCell>
+              <TableCell className="text-right tabular-nums">{r.used}</TableCell>
+              <TableCell className="text-right font-bold tabular-nums">{Math.max(0, r.entitled - r.used)}</TableCell>
+              <TableCell className="whitespace-normal text-muted-foreground">{r.note}</TableCell>
+            </TableRow>
+          ))}
+          <TableRow>
+            <TableCell className="font-bold">{emp.gender === 'female' ? t('leaveBal.maternity') : t('leaveBal.paternity')}</TableCell>
+            <TableCell className="text-right tabular-nums" colSpan={3}>
+              {t('leaveBal.perConfinement', { count: emp.gender === 'female' ? ent.maternity : ent.paternity })}
+            </TableCell>
+            <TableCell className="whitespace-normal text-muted-foreground">
               {emp.gender === 'female'
                 ? `EA 1955 s.37 — paid at ORP; allowance needs ≥ 90 days worked in the 9 months before confinement.${top.maternity > 0 ? ` Includes +${top.maternity} company top-up day(s).` : ''}`
                 : `EA 1955 s.60FA — married, ≥ 12 months service, up to 5 confinements.${top.paternity > 0 ? ` Includes +${top.paternity} company top-up day(s).` : ''}`}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
 
-      {/* Entitlement snapshot policy note (QA B8 — documented company policy) */}
-      <p className="text-xs text-muted-foreground">
-        Policy note: entitlements are snapshotted as of 1 January each year (calendar-year
-        harmonization); the full year&apos;s entitlement is granted from the join year without
-        proration. Company top-up days apply on top of the EA statutory minimums (EA s.7).
-      </p>
+      {/* The entitlement policy (1 January snapshot, no proration, company top-ups)
+          is explained in Help (help.tips.time). */}
 
       {/* All-employee overview (hidden for Employee role — scoped to self) */}
       {auth.role !== 'Employee' && (
@@ -284,7 +244,7 @@ export default function BalancesPanel({ employees, balancesApi }: Props) {
                     <TableRow key={e.id}>
                       <TableCell className="font-medium">{e.name}</TableCell>
                       <TableCell>
-                        <Badge variant="secondary">{e.employmentType}</Badge>
+                        <TypeBadge type={e.employmentType} exceptionsOnly />
                       </TableCell>
                       <TableCell className="text-right">
                         {b?.annualUsed ?? 0} / {(b?.annualEntitled ?? en.annual) + (b?.carriedForward ?? 0)}
@@ -309,7 +269,7 @@ export default function BalancesPanel({ employees, balancesApi }: Props) {
                 <div key={e.id} className="rounded-xl border p-3">
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-sm font-medium">{e.name}</span>
-                    <Badge variant="secondary">{e.employmentType}</Badge>
+                    <TypeBadge type={e.employmentType} exceptionsOnly />
                   </div>
                   <div className="mt-2 grid grid-cols-3 gap-2 text-center text-xs text-muted-foreground">
                     <div>

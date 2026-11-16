@@ -141,7 +141,7 @@ export default function LoanDetailSheet({ loan, employee, readOnly, actor, onOpe
                           {e.paidInRunId ? (
                             <Link
                               to={`/payroll/runs/${e.paidInRunId}`}
-                              className="text-xs text-amber-700 underline-offset-4 hover:underline dark:text-amber-500"
+                              className="text-xs text-primary underline-offset-4 hover:underline"
                             >
                               View run
                             </Link>

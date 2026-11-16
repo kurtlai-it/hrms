@@ -155,22 +155,24 @@ export default function DepartmentDialog({
                   key={c.value}
                   type="button"
                   title={c.name}
+                  aria-label={c.name}
                   onClick={() => setColor(c.value)}
                   className={cn(
-                    'flex h-8 w-8 items-center justify-center rounded-full border-2 transition',
+                    'flex size-12 items-center justify-center rounded-full border-2 transition',
                     color === c.value ? 'border-foreground' : 'border-transparent',
                   )}
                   style={{ backgroundColor: c.value }}
                 >
-                  {color === c.value && <Check className="h-4 w-4 text-white" />}
+                  {color === c.value && <Check className="h-4 w-4 text-white" /* colors-ok: on a department swatch, all >= 4.5:1 with white */ />}
                 </button>
               ))}
               <input
                 type="color"
                 value={color}
                 onChange={(e) => setColor(e.target.value)}
-                className="h-8 w-10 cursor-pointer rounded-md border bg-transparent p-0.5"
+                className="h-12 w-14 cursor-pointer rounded-[6px] border-2 border-input bg-transparent p-1"
                 title="Custom colour"
+                aria-label="Custom colour"
               />
             </div>
           </div>
